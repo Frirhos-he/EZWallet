@@ -40,55 +40,64 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
-|   Stakeholder x..     |             | 
+|   User     | The entity that uses the system         | 
+| Administrator       | Priviledged entity            |
+|   Google Play / Apple Store     | Platform to distribuite the system            |
+|   Google Ads     |  System to visualize advertisement           |
+|  Developer      | Programmers involved in the production of the system            |
+|  Analyst      | Domain expert             |
 
 # Context Diagram and interfaces
 
 ## Context Diagram
-\<Define here Context diagram using UML use case diagram>
 
-\<actors are a subset of stakeholders>
+![Context Diagram](/V1/ContextDiagram.png)
+
+### Actor
+
+- User
+- Administrator
+- Google Ads
+- Analyst
+
 
 ## Interfaces
-\<describe here each interface in the context diagram>
 
-\<GUIs will be described graphically in a separate document>
 
 | Actor | Logical Interface | Physical Interface  |
-| ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
+| ------------- |:-------------:| :-----:|
+|  User    | GUI (To define - insert expenses, list categorized expenses)  | Smartphone |
+|  Administrator    | GUI(To define - all functions, manage accounts)  | PC  |
+|  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
+|  Analyst    | GUI(To define - all functions, data analysis) | PC |
+
 
 # Stories and personas
-\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
 
-\<Persona is-an-instance-of actor>
+Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses.
 
-\<stories will be formalized later as scenarios in use cases>
-
-
+Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not. 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-\<In the form DO SOMETHING, or VERB NOUN, describe high level capabilities of the system>
-
-\<they match to high level use cases>
-
 | ID        | Description  |
 | ------------- |:-------------:| 
-|  FR1     |  |
-|  FR2     |   |
-| FRx..  | | 
+|  FR1     | Manage account |
+|  FR2     | Show list of categorized transactions  |
+| FR3  | Manage categories |
+| FR4  | Manage advertisements |  
+| FR5  | Manage analysis |  
+
 
 ## Non Functional Requirements
 
-\<Describe constraints on functional requirements>
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     |   |  | |
-|  NFR2     | |  | |
-|  NFR3     | | | |
+|  NFR1     | Usability  | User with <6m mobile experience is capable of using the functions of the application | |
+|  NFR2     |Portability | iOS v10, Android v9.0  | |
+|  NFR3     | Security | - | |
 | NFRx .. | | | | 
 
 

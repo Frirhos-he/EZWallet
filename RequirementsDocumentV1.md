@@ -33,10 +33,7 @@ Version: V1 - description of EZWallet in CURRENT form (as received by teachers)
 # Informal description
 EZWallet (read EaSy Wallet) is a software application designed to help individuals and families keep track of their expenses. Users can enter and categorize their expenses, allowing them to quickly see where their money is going. EZWallet is a powerful tool for those looking to take control of their finances and make informed decisions about their spending.
 
-
-
 # Stakeholders
-
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
@@ -47,7 +44,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 `TODO: insert context diagram`
 
 ### Actor
-
 - User
 
 ## Interfaces
@@ -61,7 +57,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Functional and non functional requirements
 
 ## Functional Requirements
-
 | ID        | Description  |
 | ------------- |:-------------:|
 |  FR1     | Create account |
@@ -82,9 +77,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 
 # Use case diagram and use cases
-`TODO: insert use case diagram`
 
 ## Use case diagram
+`TODO: insert use case diagram`
 
 ### Use case Login
 | Actors Involved        | User |

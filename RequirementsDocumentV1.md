@@ -37,72 +37,52 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Stakeholders
 
-
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-| Administrator       | Priviledged entity            |
-|   Google Play / Apple Store     | Platform to distribuite the system            |
-|   Google Ads     |  System to visualize advertisement           |
-|  Developer      | Programmers involved in the production of the system            |
-|  Analyst      | Domain expert             |
 
 # Context Diagram and interfaces
 
 ## Context Diagram
-
-![Context Diagram](/V1/ContextDiagram.png)
+`TODO: insert context diagram`
 
 ### Actor
 
 - User
-- Administrator
-- Google Ads
-- Analyst
-
 
 ## Interfaces
-
-
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (To define - insert expenses, list categorized expenses)  | Smartphone |
-|  Administrator    | GUI(To define - all functions, manage accounts)  | PC  |
-|  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
-|  Analyst    | GUI(To define - all functions, data analysis) | PC |
-
+|  User    | GUI (insert/delete/view transactions, create categories)  | Smartphone |
 
 # Stories and personas
+`TODO: insert stories and personas`
 
-Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses.
-
-Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not. 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
 | ID        | Description  |
-| ------------- |:-------------:| 
-|  FR1     | Manage account |
-|  FR2     | Show list of categorized transactions  |
-| FR3  | Manage categories |
-| FR4  | Manage advertisements |  
-| FR5  | Manage analysis |  
+| ------------- |:-------------:|
+|  FR1     | Create account |
+| FR2  | Create categories |
+| FR3  | Manage transactions |
+| FR3.1  | Create transaction |
+| FR3.2  | Delete transaction |
+| FR3.3  | View transactions |   
 
 
 ## Non Functional Requirements
-
+`TODO: insert non functional requirements v1`
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     | Usability  | User with <6m mobile experience is capable of using the functions of the application | |
-|  NFR2     |Portability | iOS v10, Android v9.0  | |
-|  NFR3     | Security | - | |
+|  NFR1     |  | | |
 | NFRx .. | | | | 
 
 
 # Use case diagram and use cases
-
+`TODO: insert use case diagram`
 
 ## Use case diagram
 
@@ -116,7 +96,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | 1) The user insert a wrong password. 2) The account doesn't exist. |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | The user is authorized to use the app |
@@ -129,7 +109,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  6	 | The user is authorized|
 
 ##### Scenario 2 (User with token)
-| Scenario 2.1 | |
+| Scenario 2.1 | User with token |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an access token and/or a refresh token |
 |  Post condition     | The user is authorized to use the app |
@@ -139,7 +119,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  3	 | The user is authorized |
 
 ##### Scenario 3 (Exception)
-| Scenario 3.1 | |
+| Scenario 3.1 | Password is wrong |
 | ------------- |:-------------:| 
 |  Precondition     | The password is wrong  |
 |  Post condition     | The user is not authorized to use the app |
@@ -148,7 +128,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  2     | The user insert a wrong password |
 |  3	 | The system send back an error to the user |
 
-| Scenario 3.2 | |
+| Scenario 3.2 | Email doen't exist |
 | ------------- |:-------------:| 
 |  Precondition     | The account doesn't exist |
 |  Post condition     | The user is not authorized to use the app |
@@ -167,7 +147,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | 1) The email is already used by another user |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |
@@ -178,7 +158,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  4	 | The user has now an account |
 
 ##### Scenario 2 (Exceptions)
-| Scenario 2.1 | |
+| Scenario 2.1 | Email already in use |
 | ------------- |:-------------:| 
 |  Precondition     | The email is already used by another user |
 |  Post condition     | The account is not created for the user |
@@ -200,7 +180,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | The transaction is created inside the user's account |
@@ -219,7 +199,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has a transaction inside his account |
 |  Post condition     | The transaction is deleted |
@@ -238,7 +218,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | All the transactions are shown to the user |
@@ -257,7 +237,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | The new category is created |
@@ -277,7 +257,7 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | All the categories are shown to the user |
@@ -295,17 +275,8 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  Variants     | - |
 |  Exceptions     | - |
 
-### Use case Get Users
-| Actors Involved        | Admin |
-| ------------- |:-------------:| 
-|  Precondition     | The user has an account |
-|  Post condition     | All the transactions are shown to the user |
-|  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
-|  Variants     | - |
-|  Exceptions     | - |
-
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | |
+| Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
@@ -313,6 +284,44 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
 |  2     | The system retreive all the transactions and the categories from the database |
 |  3	 | The list of transactions joined with the respective categories description are sent to the user |
+
+### Use case Get Users
+| Actors Involved        | Admin |
+| ------------- |:-------------:| 
+|  Precondition     | The admin has rights to access the users  |
+|  Post condition     | All the users are shown to the admin |
+|  Nominal Scenario     | The admin want to view all users inside the database, all the users are shown |
+|  Variants     | The admin want to search for a specific user |
+|  Exceptions     | 1) When filtering by username the username and the refresh token don't match |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The admin has rights to access the users  |
+|  Post condition     | All the users are shown to the admin |
+| Step#        | Description  |
+|  1     | The admin querys the database to retrieve all the users |  
+|  2     | The system retreive all users inside the database |
+|  3	 | The list of users is sent to the admin |
+
+##### Scenario 2 (Filter by username)
+| Scenario 2.1 | Filter by username - success |
+| ------------- |:-------------:| 
+|  Precondition     | The admin has rights to access the users  |
+|  Post condition     | The specific user is shown to the admin |
+| Step#        | Description  |
+|  1     | The admin querys the database to retrieve the user |  
+|  2     | The system retreive the user inside the database |
+|  3	 | The user's data is sent to the admin |
+
+| Scenario 2.2 | Filter by username - exception |
+| ------------- |:-------------:| 
+|  Precondition     | The admin has rights to access the users  |
+|  Post condition     | The specific user is not shown to the admin |
+| Step#        | Description  |
+|  1     | The admin querys the database to retrieve the user |  
+|  2     | The given username and refresh token don't match |
+|  3	 | The system send to the admin an error |
 
 # Glossary
 

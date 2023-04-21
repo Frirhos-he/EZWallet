@@ -96,7 +96,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Use case diagram and use cases
 
 ## Use case diagram
-![Use Case Diagram](./media/UseCaseDiagramv1.png)
+![Use Case Diagram](./media/UseCaseDiagramV1.png)
 
 ### Use case Login
 | Actors Involved        | User |

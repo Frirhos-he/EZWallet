@@ -9,46 +9,49 @@ Consider the EZWallet  project in CURRENT version (as received by the teachers),
 # Estimate by size
 ### 
 |             | Estimate                        |             
-| ----------- | ------------------------------- |  
-| NC =  Estimated number of classes to be developed   |                             |             
-|  A = Estimated average size per class, in LOC       |                            | 
-| S = Estimated size of project, in LOC (= NC * A) | |
-| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |                                      |   
-| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | | 
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |                    |               
+| ----------- | :-------------------------------: |  
+| NC =  Estimated number of classes to be developed   |    21                   |             
+|  A = Estimated average size per class, in LOC       |        38                    | 
+| S = Estimated size of project, in LOC (= NC * A) |807 |
+| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |       807 / 10 = 80 person hours                               |   
+| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 30 * 80 = 2400€ | 
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |    80/(8 * 5 * 4)  = 0.5 weeks              |               
 
 # Estimate by product decomposition
 ### 
 |         component name    | Estimated effort (person hours)   |             
-| ----------- | ------------------------------- | 
-|requirement document    | |
-| GUI prototype ||
-|design document ||
-|code ||
-| unit tests ||
-| api tests ||
-| management documents  ||
+| ----------- | :-------------------------------: | 
+|requirement document    |  30 |
+| GUI prototype |   10|
+|design document | 50|
+|code | 50|
+| unit tests | 35|
+| api tests | 35|
+| management documents  | 10|
 
 
 
 # Estimate by activity decomposition
 ### 
 |         Activity name    | Estimated effort (person hours)   |             
-| ----------- | ------------------------------- | 
-| | |
+| ----------- | :-------------------------------: | 
+| <ul> <li> Requirement Gathering: <ul> <li> Identify user requirements</li><li> Identify structural requirements</li><li>Perform workflow analysis</li><li>Perform Estimation documentation</li><li>Plan the software specifications</li><li>Software specifications review</li></ul></ul>| 40 |
+|<ul> <li>Design</li><ul><li>Perform system design</li><li>Perform functional design</li><li>Select the working environment</li><li>Design the Website Wireframe sketch</li></ul> </ul>| 60 |
+| <ul><li>Developing</li><ul><li>Docker + npm configuration</li><li>Backend:</li><ul><li>Database connection</li> <li>Api generation</li><li>Security system</li></ul></ul> |50|
+| <ul><li>Testing and production</li><ul><li>User acceptance testing</li><li>Usability testing</li><li>Deployment</li></ul> |70 |
 ###
-Insert here Gantt chart with above activities
 
+![grant](/ezwallet/media/grantt.png)
 # Summary
 
 Report here the results of the three estimation approaches. The  estimates may differ. Discuss here the possible reasons for the difference
 
 |             | Estimated effort                        |   Estimated duration |          
-| ----------- | ------------------------------- | ---------------|
-| estimate by size ||
-| estimate by product decomposition ||
-| estimate by activity decomposition ||
+| ----------- | :-------------------------------: | :---------------:|
+| estimate by size |80ph|0.5 weeks
+| estimate by product decomposition | 100ph|1
+| estimate by activity decomposition |220ph|1.4 weeks
 
-
+Considering the estimation performed based on size would consider only the effort put on writing code to implement the final web application while instead the effort based on the activity would very likely consider the best approximation of the resulting terms of the project since it involves in deep the analysis of the activities carried out. Finally the product decomposition would only consider the time needed to produce the documentations and the final code which anyway would help to give an idea of the final estimation but yet not enough.
 
 

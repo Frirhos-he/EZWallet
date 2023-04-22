@@ -360,17 +360,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the application, and their relationships> 
-
-\<concepts must be used consistently all over the document, ex in use cases, requirements etc>
+![System Design](./media/GlossaryV1.png)
 
 # System Design
 ![System Design](./media/SystemDesignV1.png)
 
 # Deployment Diagram 
 ![Deployment Diagram](./media/DeploymentDiagramV1.png)
-
-
-
-
-

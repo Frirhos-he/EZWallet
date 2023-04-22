@@ -1,6 +1,6 @@
 # Requirements Document - current EZWallet
 
-Date: 
+Date: 22/04/2023
 
 Version: V1 - description of EZWallet in CURRENT form (as received by teachers)
 
@@ -56,7 +56,11 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 
 # Stories and personas
-`TODO: insert stories and personas`
+| Persona       | Story  |
+| ------------- |:-------------:|
+|  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
+|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his wallet. |
+|  stuedent (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes get the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
 
 # Functional and non functional requirements
 
@@ -363,10 +367,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # System Design
 ![System Design](./media/SystemDesignV1.png)
 
-
 # Deployment Diagram 
+![Deployment Diagram](./media/DeploymentDiagramV1.png)
 
-\<describe here deployment diagram >
 
 
 

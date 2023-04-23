@@ -51,7 +51,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (insert/delete/view transactions, create categories)  | Smartphone/PC/Tablet |
+|  User    | GUI (insert/delete/view transactions, create categories)  | Smartphone/Tablet/PC |
 |  Admin    | API (GetUser, GetUserByName)  | PC |
 
 
@@ -77,8 +77,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | FR3  | Manage transactions |
 | FR3.1  | Create transaction |
 | FR3.2  | Delete transaction |
-| FR3.3  | View list of transactions |   
-
+| FR3.3  | View list of transactions |
+|  FR4     | Show list of categorized transactions  |   
+| FR5 | Manage accounts |
+| FR5.1 | View list of users' accounts |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |

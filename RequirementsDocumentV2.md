@@ -1,13 +1,13 @@
 # Requirements Document - future EZWallet
 
-Date: 
+Date: 23/04/2023
 
 Version: V2 - description of EZWallet in FUTURE form (as proposed by the team)
 
  
 | Version number | Change |
 | ----------------- |:-----------|
-| | | 
+| v2 | Added functionalities: `TODO: list of functionalities added` | 
 
 
 # Contents
@@ -37,7 +37,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-| Administrator       | Priviledged entity            |
+| 	Admin       | Priviledged entity            |
 |   Google Play / Apple Store     | Platform to distribuite the system            |
 |   Google Ads     |  System to visualize advertisement           |
 |  Developer      | Programmers involved in the production of the system            |
@@ -46,40 +46,47 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Context Diagram and interfaces
 
 ## Context Diagram
-![Context Diagram](/V1/ContextDiagram.png)
+![Context Diagram](./media/ContextDiagramV2.png)
 
 ### Actor
 - User
-- Administrator
+- Admin
 - Google Ads
 - Analyst
 
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (to do - insert/delete/view transactions, create categories, list categorized expenses)  | Smartphone |
-|  Administrator    | GUI(To define - all functions, manage accounts)  | PC  |
+|  User    | GUI (`TODO`)  | Smartphone/Tablet/PC |
+|  Admin   | GUI(`TODO`)  | PC  |
 |  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
-|  Analyst    | GUI(To define - all functions, data analysis) | PC |
+|  Analyst    | GUI(`TODO`) | PC |
 
 # Stories and personas
-Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses.
-
-Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not. 
+| Persona       | Story  |
+| ------------- |:-------------:|
+|  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
+|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his wallet. |
+|  stuedent (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes get the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
+| high salary, male, 35 yo | Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not.  |
 
 # Functional and non functional requirements
-
-## Functional Requirements
 | ID        | Description  |
-| ------------- |:-------------:| 
-|  FR1     | Create account |
-| FR2  | Create categories |
+| ------------- |:-------------:|
+|  FR1     | Account Functionalities |
+|  FR1.1     | Sign up |
+|  FR1.2     | Log In |
+|  FR1.3     | Log Out |
+| FR2  | Handle categories |
+| FR2.1  | Create category |
+| FR2.1  | View list of categories |
 | FR3  | Manage transactions |
 | FR3.1  | Create transaction |
 | FR3.2  | Delete transaction |
-| FR3.3  | View transactions | 
-|  FR4     | Manage accounts |
-|  FR5     | Show list of categorized transactions  |
+| FR3.3  | View list of transactions |   
+|  FR4     | Show list of categorized transactions  |   
+| FR5 | Manage accounts |
+| FR5.1 | View list of users' accounts |
 | FR6  | Manage categories |
 | FR7  | Manage advertisements |  
 | FR8  | Manage analysis |   
@@ -87,17 +94,26 @@ Marco just started a new job and is planning a trip for his future holidays thus
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     | Usability  | User with <6m mobile experience is capable of using the functions of the application | |
-|  NFR2     |Portability | iOS v10, Android v9.0  | |
-|  NFR3     | Security | - | |
-| NFRx .. | | | | 
+| NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
+|  NFR2     | Security | The system uses access and refresh token to handle the authorization to the app | FR1.2 and FR1.3 |
+|  NFR3     | Portability | The application is develepoed as a web app that can work on the major browsers (Chrome, Firefox, Safari, Opera, Edge) | All FR |
+|  NFR3.1     | Portability | Support from Chrome v108.0 | All FR |
+|  NFR3.2     | Portability | Support from Firefox v100.3 | All FR |
+|  NFR3.3     | Portability | Support from Safari v15.6.1 | All FR |
+|  NFR3.4     | Portability | Support from Opera v87 | All FR |
+|  NFR3.5     | Portability | Support from Edge v107.0 | All FR |
+|  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
+| NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
+| NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
+| NFR7 | Reliability | The failure rate should be under 1 failure per hundred hours | All FR | 
+| NFR7 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
 
 
 
 # Use case diagram and use cases
 
-
 ## Use case diagram
+`TODO`
 
 ### Use case Login
 | Actors Involved        | User |
@@ -150,6 +166,26 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  2     | The user insert a wrong email |
 |  3	 | The system send back an error to the user |
 
+### Use case Log Out
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user is logged in (he has referesh token) |
+|  Post condition     | The user is logged out (the tokens are removed) |
+|  Nominal Scenario     | The user wants to log out, it successfully log out  |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user is logged in (he has referesh token) |
+|  Post condition     | The user is logged out (the tokens are removed) |
+| Step#        | Description  |
+|  1     | The user asks to log out |  
+|  2     | The system seek for the refresh token of the user who's making the request |
+|  3	 | The system finds the entry of the user and remove it from the database |
+|  4	 | The user has now complete the log out |
+
 ### Use case Sign up
 | Actors Involved        | User |
 | ------------- |:-------------:| 
@@ -181,7 +217,6 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  3	 | The system detects that the email is already in use |
 |  4	 | The system returns an error to the user |
 |  5	 | The account creation fails |
-
 
 ### Use case Create Transaction
 | Actors Involved        | User |
@@ -337,19 +372,13 @@ Marco just started a new job and is planning a trip for his future holidays thus
 |  3	 | The system send to the admin an error |
 
 # Glossary
-
-\<use UML class diagram to define important terms, or concepts in the domain of the application, and their relationships> 
-
-\<concepts must be used consistently all over the document, ex in use cases, requirements etc>
+`TODO`
 
 # System Design
-\<describe here system design>
-
-\<must be consistent with Context diagram>
+`TODO`
 
 # Deployment Diagram 
-
-\<describe here deployment diagram >
+`TODO`
 
 
 

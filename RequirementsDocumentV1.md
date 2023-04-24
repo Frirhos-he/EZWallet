@@ -133,7 +133,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The user insert a wrong password |
 |  3	 | The system send back an error to the user |
 
-| Scenario 3.2 | Email doen't exist |
+| Scenario 3.2 | Email doesn't exist |
 | ------------- |:-------------:| 
 |  Precondition     | The account doesn't exist |
 |  Post condition     | The user is not authorized to use the app |
@@ -251,8 +251,8 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system retreive all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
-##### Scenario 1 (Variant Labeled Transactions)
-| Scenario 1.1 | Nominal Scenario |
+##### Scenario 2 (Variant Labeled Transactions)
+| Scenario 2.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
@@ -336,7 +336,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The user asks information about a specific user |  
 |  2     | The given username and refresh token don't match |
-|  3	 | The system send to the admin an error |
+|  3	 | The system send to the user an error |
 
 # Glossary
 

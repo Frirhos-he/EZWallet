@@ -56,7 +56,7 @@ Report here the results of the three estimation approaches. The  estimates may d
 
 
 
-The size estimation is determined by counting the number of modules in the web application as classes. This includes the files containing the application's functionality, which outline its structure. The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned files. Ultimately, the estimation is based on the current functionality offered by the web application thus is reasonable to consider this number.
+The estimation by size is determined by counting the number of modules in the web application as classes. This includes the files containing the application's functionality, which outline its structure. The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned files. Ultimately, the estimation is based on the current functionality offered by the web application thus is reasonable to consider this number.
 
 
 The estimation based on product decomposition is based on the evalutation of the ideas as well as the complexity of the application and the technlogy used. Notice, it is little higher with respect to the previous estimation because former additional factors are considered.

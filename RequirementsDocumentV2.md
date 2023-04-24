@@ -7,7 +7,7 @@ Version: V2 - description of EZWallet in FUTURE form (as proposed by the team)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add media to a transaction (photo)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li></ul>  | 
+| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add media to a transaction (photo)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li><li>Privacy and security settings</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li></ul>  | 
 
 
 # Contents
@@ -41,6 +41,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |   Google Ads     |  System to visualize advertisement           |
 |  Developer      | Programmers involved in the production of the system            |
 |  Data Analyst      | Perform analytics on the data            |
+|  Third party company      | Buys data and analytics from our database            |
 
 # Context Diagram and interfaces
 
@@ -52,14 +53,16 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 - Admininstrator
 - Google Ads
 - Data Analyst
+- Third party company
 
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
 |  User    | GUI (handle transactions, categories. View simple analytics avout his profile)  | Smartphone/Tablet/PC |
 |  Administrator   | GUI(handle users data with a privileged role)  | PC  |
-|  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
+|  Google Ads    | API:https://developers.google.com/google-ads/api/docs/start| Internet |
 |  Data Analyst    | GUI(compute analytics on all the users data) | PC |
+|  Third Party Company    | Retrive our data and analytics from our database (API:https://ezwallet.com/api/doc) | PC |
 
 # Stories and personas
 `TODO> add new personas and stories that use new features`
@@ -75,21 +78,22 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ID        | Description  |
 | ------------- |-------------|
 |  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li><li>FR1.4</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li><li>Manage access rights</li></ul> </ul> |
-| <ul><li>FR2</li><ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
-|  <ul><li>FR3</li><ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Add media to a transaction (photo)</li></ul></ul> |
-| <ul><li>FR4</li><ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
-| <ul><li>FR5</li><ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
-| <ul><li>FR6</li><ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create a new wallet</li><li>Insert transaction into a wallet</li><li>Show list of wallets</li></ul></ul> |
-| <ul><li>FR7</li><ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Accept/Refuse a friend request</li><li>Delete a friend</li><li>Show list of friends</li><li>Ask a friend to share a transaction</li><li>Accept to share a transaction with a friend</li></ul></ul> |
-| <ul><li>FR8</li><ul><li>FR8.1</li><li>FR8.2</li></ul></ul> | <ul><li>Manage ads</li><ul><li>Receive ad</li><li>Show ad</li></ul></ul> |
-| <ul><li>FR9</li><ul><li>FR9.1</li><li>FR9.2</li><li>FR9.3</li><li>FR9.4</li><li>FR9.4</li></ul></ul> | <ul><li>Data analysis</li><ul><li>Show average income and outcome per year/month/week/day</li><li>Show average income and outcome per similar categories</li><li>Show rank of years/months/week with most money flow</li><li>Show total number of users</li><li>Show total number of transactions per categories</li></ul> |
+| <ul><li>FR2:<ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
+|  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Add media to a transaction (photo)</li></ul></ul> |
+| <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
+| <ul><li>FR5:<ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
+| <ul><li>FR6:<ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li><li>FR6.4</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create a new wallet</li><li>Insert transaction into a wallet</li><li>Remove transaction from a wallet</li><li>Show list of wallets</li></ul></ul> |
+| <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Accept/Refuse a friend request</li><li>Delete a friend</li><li>Show list of friends</li><li>Ask a friend to share a transaction</li><li>Accept to share a transaction with a friend</li></ul></ul> |
+| <ul><li>FR8:<ul><li>FR8.1</li><li>FR8.2</li></ul></ul> | <ul><li>Manage ads</li><ul><li>Receive ad</li><li>Show ad</li></ul></ul> |
+| <ul><li>FR9:<ul><li>FR9.1</li><li>FR9.2</li><li>FR9.3</li><li>FR9.4</li><li>FR9.4</li></ul></ul> | <ul><li>Data analysis</li><ul><li>Show average income and outcome per year/month/week/day</li><li>Show average income and outcome per similar categories</li><li>Show rank of years/months/week with most money flow</li><li>Show total number of users</li><li>Show total number of transactions per categories</li></ul> |
+| <ul><li>FR10:<ul><li>FR10.1</li><li>FR10.2</li></ul></ul> | <ul><li>Manage security settings</li><ul><li>Allow third party companies to use user's personal data</li><li>Deny third party companies to use user's personal data </li></ul></ul> |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
 | NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
-|  <ul><li>NFR2</li><ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul></ul>  | FR1.2 and FR1.3 |
-|  <ul><li>NFR3</li><ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul></ul> | All FR |
+|  <ul><li>NFR2:<ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul></ul>  | FR1.2 and FR1.3 |
+|  <ul><li>NFR3:<ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul></ul> | All FR |
 |  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
 | NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 | NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
@@ -109,11 +113,12 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |F7|yes|yes|||
 |F8||||yes|
 |F9|||yes||
+|F10|yes|yes|||
 
 # Use case diagram and use cases
 
 ## Use case diagram
-`TODO`
+![Use Case Diagram](./media/UseCaseDiagramV2.png)
 
 ### Use case Log In
 | Actors Involved        | User |

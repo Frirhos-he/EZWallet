@@ -37,7 +37,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-|  Developer      | Programmers involved in the production of the system   |
+|  Developers      | Programmers involved in the production of the system   |
 
 # Context Diagram and interfaces
 
@@ -64,29 +64,26 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Functional Requirements
 | ID        | Description  |
 | ------------- |-------------|
-|  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Account Functionalities : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
+|  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access Management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
 | <ul><li>FR2</li><ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
 |  <ul><li>FR3</li><ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li></ul></ul> |
-| <ul><li>FR5</li><ul><li>FR5.1</li></ul></ul> | <ul><li>Manage accounts</li><ul><li> View list of users' accounts</li></ul></ul> |
+| <ul><li>FR4</li><ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| -----|:-----:|
 | NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
-|  NFR2     | Security | The system uses access and refresh token to handle the authorization to the app | FR1.2 and FR1.3 |
+|  <ul><li>NFR2</li><ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul></ul>  | FR1.2 and FR1.3 |
 |  <ul><li>NFR3</li><ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul></ul> | All FR |
 |  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
 | NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 | NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
-| NFR7 | Reliability | The failure rate should be under 1 failure per hundred hours | All FR | 
-| NFR8 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
 
 # Use case diagram and use cases
-
 ## Use case diagram
 ![Use Case Diagram](./media/UseCaseDiagramV1.png)
 
-### Use case Login
+### Use case Log In
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
@@ -227,13 +224,13 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system delete the transaction from the database |
 |  3	 | The transaction is deleted and the user cannot see it anymore in the app |
 
-### Use case Get Transaction
+### Use case View Transactions
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
 |  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
-|  Variants     | - |
+|  Variants     |  All the transactions with their respective category (type and color) are shown to the user |
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
@@ -245,6 +242,16 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  1     | The user asks to view all his transactions |  
 |  2     | The system retreive all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
+
+##### Scenario 1 (Variant Labeled Transactions)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
+| Step#        | Description  |
+|  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
+|  2     | The system retreive all the transactions and the categories from the database |
+|  3	 | The list of transactions joined with the respective categories description are sent to the user |
 
 ### Use case Create Category
 | Actors Involved        | User |
@@ -266,7 +273,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system create a new cateogry |
 |  3	 | The category is now available to the user |
 
-### Use case Get Category
+### Use case View Categories
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
@@ -285,26 +292,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system retreive all the categories of the user from the database |
 |  3	 | The list of categories is sent to the user |
 
-### Use case Get Labels
-| Actors Involved        | User |
-| ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in |
-|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
-|  Nominal Scenario     | The user want to view all his transaction in more detail, all the transactions are shown with their respective category type and color |
-|  Variants     | - |
-|  Exceptions     | - |
-
-##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | Nominal Scenario |
-| ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in |
-|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
-| Step#        | Description  |
-|  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
-|  2     | The system retreive all the transactions and the categories from the database |
-|  3	 | The list of transactions joined with the respective categories description are sent to the user |
-
-### Use case Get Users
+### Use case View Accounts
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in  |
@@ -344,7 +332,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Glossary
 
-![System Design](./media/GlossaryV1.png)
+![Glossary](./media/GlossaryV1.png)
 
 # System Design
 ![System Design](./media/SystemDesignV1.png)

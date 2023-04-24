@@ -45,7 +45,7 @@ The estimation based on product decomposition is based on the evalutation of the
 
 The estimated time based on activity decomposition is subject to multiple factors, including the team members' experience, their workload on other projects that might impede the overall timeline, team-building commitments, mislead project planning and brainstorming meetings. Consequently, the estimated activities may take more time than any previously discussed estimations.
 
-![grant](./media/grantt.png)
+<div style="text-align:center"><img src="./media/grantt.png"  width="800" height="400"/></div>
 # Summary
 
 Report here the results of the three estimation approaches. The  estimates may differ. Discuss here the possible reasons for the difference

@@ -17,7 +17,6 @@ Consider the EZWallet  project in CURRENT version (as received by the teachers),
 | C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 30 * 80 = 2400€ | 
 | Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |    80/(8 * 5 * 4)  = 0.5 weeks              |               
 
-The size estimation is determined by counting the number of modules in the web application as classes. This includes the files containing the application's functionality, which outline its structure. The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned files. Ultimately, the estimation is based on the current functionality offered by the web application thus is reasonable to consider this number.
 
 # Estimate by product decomposition
 ### 
@@ -31,7 +30,6 @@ The size estimation is determined by counting the number of modules in the web a
 | api tests | 35|
 | management documents  | 10|
 
-The estimation based on product decomposition is based on the evalutation of the ideas as well as the complexity of the application and the technlogy used. Notice, it is little higher with respect to the previous estimation because former additional factors are considered.
 
 # Estimate by activity decomposition
 ### 
@@ -43,7 +41,6 @@ The estimation based on product decomposition is based on the evalutation of the
 | <ul><li>Testing and production</li><ul><li>User acceptance testing</li><li>Usability testing</li><li>Deployment</li></ul> |70 |
 ###
 
-The estimated time based on activity decomposition is subject to multiple factors, including the team members' experience, their workload on other projects that might impede the overall timeline, team-building commitments, mislead project planning and brainstorming meetings. Consequently, the estimated activities may take more time than any previously discussed estimations.
 
 <div style="text-align:center"><img src="./media/grantt.png"  width="800" height="400"/></div>
 
@@ -57,6 +54,11 @@ Report here the results of the three estimation approaches. The  estimates may d
 | estimate by product decomposition | 100ph|<1 weeks
 | estimate by activity decomposition |220ph|1.4 weeks
 
-Considering the estimation performed based on size would consider only the effort put on writing code to implement the final web application while instead the effort based on the activity would very likely consider the best approximation of the resulting terms of the project since it involves in deep the analysis of the activities carried out. Finally the product decomposition would only consider the time needed to produce the documentations and the final code which anyway would help to give an idea of the final estimation but yet not enough.
 
 
+The size estimation is determined by counting the number of modules in the web application as classes. This includes the files containing the application's functionality, which outline its structure. The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned files. Ultimately, the estimation is based on the current functionality offered by the web application thus is reasonable to consider this number.
+
+
+The estimation based on product decomposition is based on the evalutation of the ideas as well as the complexity of the application and the technlogy used. Notice, it is little higher with respect to the previous estimation because former additional factors are considered.
+
+The estimated time based on activity decomposition is subject to multiple factors, including the team members' experience, their workload on other projects that might impede the overall timeline, team-building commitments, mislead project planning and brainstorming meetings. Consequently, the estimated activities may take more time than any previously discussed estimations.

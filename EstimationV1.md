@@ -42,7 +42,7 @@ Consider the EZWallet  project in CURRENT version (as received by the teachers),
 ###
 
 
-<div style="text-align:center"><img src="./media/grantt.png"  width="800" height="400"/></div>
+<div style="text-align:center"><img src="./media/V1/grantt.png"  width="800" height="400"/></div>
 
 # Summary
 

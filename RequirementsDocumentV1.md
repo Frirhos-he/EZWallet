@@ -42,7 +42,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Context Diagram and interfaces
 
 ## Context Diagram
-![Context Diagram](./media/ContextDiagramV1.png)
+![Context Diagram](./media/V1/ContextDiagramV1.png)
 
 ### Actor
 - User
@@ -89,7 +89,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Use case diagram and use cases
 ## Use case diagram
-![Use Case Diagram](./media/UseCaseDiagramV1.png)
+![Use Case Diagram](./media/V1/UseCaseDiagramV1.png)
 
 ### Use case Log In
 | Actors Involved        | User |
@@ -340,10 +340,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Glossary
 
-![Glossary](./media/GlossaryV1.png)
+![Glossary](./media/V1/GlossaryV1.png)
 
 # System Design
-![System Design](./media/SystemDesignV1.png)
+![System Design](./media/V1/SystemDesignV1.png)
 
 # Deployment Diagram 
-![Deployment Diagram](./media/DeploymentDiagramV1.png)
+![Deployment Diagram](./media/V1/DeploymentDiagramV1.png)

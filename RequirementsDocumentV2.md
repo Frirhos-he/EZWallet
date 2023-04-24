@@ -50,7 +50,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 ### Actor
 - User
-- Admin
+- Admininstrator
 - Google Ads
 - Analyst
 
@@ -58,7 +58,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
 |  User    | GUI (`TODO`)  | Smartphone/Tablet/PC |
-|  Admin   | GUI(`TODO`)  | PC  |
+|  Administrator   | GUI(`TODO`)  | PC  |
 |  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
 |  Analyst    | GUI(`TODO`) | PC |
 
@@ -73,40 +73,22 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Functional and non functional requirements
 | ID        | Description  |
 | ------------- |:-------------:|
-|  FR1     | Account Functionalities |
-|  FR1.1     | Sign up |
-|  FR1.2     | Log In |
-|  FR1.3     | Log Out |
-| FR2  | Handle categories |
-| FR2.1  | Create category |
-| FR2.1  | View list of categories |
-| FR3  | Manage transactions |
-| FR3.1  | Create transaction |
-| FR3.2  | Delete transaction |
-| FR3.3  | View list of transactions |   
-|  FR4     | Show list of categorized transactions  |   
-| FR5 | Manage accounts |
-| FR5.1 | View list of users' accounts |
-| FR6  | Manage categories |
-| FR7  | Manage advertisements |  
-| FR8  | Manage analysis |   
+|  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access Management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
+| <ul><li>FR2</li><ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
+|  <ul><li>FR3</li><ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li></ul></ul> |
+| <ul><li>FR4</li><ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
 | NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
-|  NFR2     | Security | The system uses access and refresh token to handle the authorization to the app | FR1.2 and FR1.3 |
-|  NFR3     | Portability | The application is develepoed as a web app that can work on the major browsers (Chrome, Firefox, Safari, Opera, Edge) | All FR |
-|  NFR3.1     | Portability | Support from Chrome v108.0 | All FR |
-|  NFR3.2     | Portability | Support from Firefox v100.3 | All FR |
-|  NFR3.3     | Portability | Support from Safari v15.6.1 | All FR |
-|  NFR3.4     | Portability | Support from Opera v87 | All FR |
-|  NFR3.5     | Portability | Support from Edge v107.0 | All FR |
+|  <ul><li>NFR2</li><ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul></ul>  | FR1.2 and FR1.3 |
+|  <ul><li>NFR3</li><ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul></ul> | All FR |
 |  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
 | NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 | NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
 | NFR7 | Reliability | The failure rate should be under 1 failure per hundred hours | All FR | 
-| NFR7 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
+| NFR8 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
 
 
 
@@ -115,7 +97,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Use case diagram
 `TODO`
 
-### Use case Login
+### Use case Log In
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
@@ -221,7 +203,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ### Use case Create Transaction
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The transaction is created inside the user's account |
 |  Nominal Scenario     | The user want to create a transaction, the transaction is successfully created|
 |  Variants     | - |
@@ -230,7 +212,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The transaction is created inside the user's account |
 | Step#        | Description  |
 |  1     | The user asks to create a transaction (giving: name, amount, type) |  
@@ -256,29 +238,39 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system delete the transaction from the database |
 |  3	 | The transaction is deleted and the user cannot see it anymore in the app |
 
-### Use case Get Transaction
+### Use case View Transactions
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
 |  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
-|  Variants     | - |
+|  Variants     |  All the transactions with their respective category (type and color) are shown to the user |
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions |  
 |  2     | The system retreive all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
+##### Scenario 1 (Variant Labeled Transactions)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
+| Step#        | Description  |
+|  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
+|  2     | The system retreive all the transactions and the categories from the database |
+|  3	 | The list of transactions joined with the respective categories description are sent to the user |
+
 ### Use case Create Category
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
 |  Nominal Scenario     | The user want to create a category, the category is created|
 |  Variants     | - |
@@ -287,7 +279,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
 |  Nominal Scenario     | The user want to create a category, the category is created|
 | Step#        | Description  |
@@ -295,10 +287,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system create a new cateogry |
 |  3	 | The category is now available to the user |
 
-### Use case Get Category
+### Use case View Categories
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the categories are shown to the user |
 |  Nominal Scenario     | The user want to view all his categories, all the categories are shown |
 |  Variants     | - |
@@ -307,69 +299,50 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
+|  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the categories are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his categories |  
 |  2     | The system retreive all the categories of the user from the database |
 |  3	 | The list of categories is sent to the user |
 
-### Use case Get Labels
+### Use case View Accounts
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account |
-|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
-|  Nominal Scenario     | The user want to view all his transaction in more detail, all the transactions are shown with their respective category type and color |
-|  Variants     | - |
-|  Exceptions     | - |
-
-##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | Nominal Scenario |
-| ------------- |:-------------:| 
-|  Precondition     | The user has an account |
-|  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
-| Step#        | Description  |
-|  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
-|  2     | The system retreive all the transactions and the categories from the database |
-|  3	 | The list of transactions joined with the respective categories description are sent to the user |
-
-### Use case Get Users
-| Actors Involved        | Admin |
-| ------------- |:-------------:| 
-|  Precondition     | The admin has rights to access the users  |
-|  Post condition     | All the users are shown to the admin |
-|  Nominal Scenario     | The admin want to view all users inside the database, all the users are shown |
-|  Variants     | The admin want to search for a specific user |
+|  Precondition     | The user has an account and he's logged in  |
+|  Post condition     | All the users are shown |
+|  Nominal Scenario     | The user want to view all users inside the database, all the users are shown |
+|  Variants     | The user want to search for a specific user |
 |  Exceptions     | 1) When filtering by username the username and the refresh token don't match |
 
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The admin has rights to access the users  |
-|  Post condition     | All the users are shown to the admin |
+|  Precondition     | The user has an account and he's logged in  |
+|  Post condition     | All the users are shown |
 | Step#        | Description  |
-|  1     | The admin querys the database to retrieve all the users |  
+|  1     | The user asks to search all users|  
 |  2     | The system retreive all users inside the database |
-|  3	 | The list of users is sent to the admin |
+|  3	 | The list of users is sent back |
 
 ##### Scenario 2 (Filter by username)
 | Scenario 2.1 | Filter by username - success |
 | ------------- |:-------------:| 
-|  Precondition     | The admin has rights to access the users  |
-|  Post condition     | The specific user is shown to the admin |
+|  Precondition     | The user has an account and he's logged in  |
+|  Post condition     | The specific user is shown |
 | Step#        | Description  |
-|  1     | The admin querys the database to retrieve the user |  
+|  1     | The user asks information about a specific user |  
 |  2     | The system retreive the user inside the database |
-|  3	 | The user's data is sent to the admin |
+|  3	 | The user's data is sent back |
 
 | Scenario 2.2 | Filter by username - exception |
 | ------------- |:-------------:| 
-|  Precondition     | The admin has rights to access the users  |
-|  Post condition     | The specific user is not shown to the admin |
+|  Precondition     | The user has an account and he's logged in  |
+|  Post condition     | The specific user is not shown |
 | Step#        | Description  |
-|  1     | The admin querys the database to retrieve the user |  
+|  1     | The user asks information about a specific user |  
 |  2     | The given username and refresh token don't match |
-|  3	 | The system send to the admin an error |
+|  3	 | The system send to the administrator an error |
 
 # Glossary
 `TODO`

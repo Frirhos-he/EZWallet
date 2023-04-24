@@ -50,7 +50,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (insert/delete/view transactions, create categories)  | PC |
+|  User    | GUI (handle transactions, categories and view users)  | PC |
 
 # Stories and personas
 | Persona       | Story  |
@@ -64,7 +64,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Functional Requirements
 | ID        | Description  |
 | ------------- |-------------|
-|  <ul> <li> FR1 <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access Management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
+|  <ul> <li> FR1 <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
 | <ul><li>FR2<ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
 |  <ul><li>FR3<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li></ul></ul> |
 | <ul><li>FR4<ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
@@ -78,6 +78,14 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
 | NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 | NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
+
+## Table of Access Rights
+||User|
+|-----|:------:|
+|F1|yes|
+|F2|yes|
+|F3|yes|
+|F3|yes|
 
 # Use case diagram and use cases
 ## Use case diagram

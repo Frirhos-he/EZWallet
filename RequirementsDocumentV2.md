@@ -7,7 +7,7 @@ Version: V2 - description of EZWallet in FUTURE form (as proposed by the team)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v2 | Added functionalities: `TODO: list of functionalities added` | 
+| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add media to a transaction (photo)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li></ul>  | 
 
 
 # Contents
@@ -37,11 +37,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-| 	Admin       | Priviledged entity            |
-|   Google Play / Apple Store     | Platform to distribuite the system            |
+| 	Administator       | Priviledged entity            |
 |   Google Ads     |  System to visualize advertisement           |
 |  Developer      | Programmers involved in the production of the system            |
-|  Analyst      | Domain expert             |
+|  Data Analyst      | Perform analytics on the data            |
 
 # Context Diagram and interfaces
 
@@ -52,17 +51,18 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 - User
 - Admininstrator
 - Google Ads
-- Analyst
+- Data Analyst
 
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (`TODO`)  | Smartphone/Tablet/PC |
-|  Administrator   | GUI(`TODO`)  | PC  |
+|  User    | GUI (handle transactions, categories. View simple analytics avout his profile)  | Smartphone/Tablet/PC |
+|  Administrator   | GUI(handle users data with a privileged role)  | PC  |
 |  Google Ads    | Api:https://developers.google.com/google-ads/api/docs/start| Internet |
-|  Analyst    | GUI(`TODO`) | PC |
+|  Data Analyst    | GUI(compute analytics on all the users data) | PC |
 
 # Stories and personas
+`TODO> add new personas and stories that use new features`
 | Persona       | Story  |
 | ------------- |:-------------:|
 |  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
@@ -71,12 +71,18 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | high salary, male, 35 yo | Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not.  |
 
 # Functional and non functional requirements
+## Functional Requirements
 | ID        | Description  |
-| ------------- |:-------------:|
-|  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access Management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
+| ------------- |-------------|
+|  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li><li>FR1.4</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li><li>Manage access rights</li></ul> </ul> |
 | <ul><li>FR2</li><ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
-|  <ul><li>FR3</li><ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li></ul></ul> |
+|  <ul><li>FR3</li><ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Add media to a transaction (photo)</li></ul></ul> |
 | <ul><li>FR4</li><ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
+| <ul><li>FR5</li><ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
+| <ul><li>FR6</li><ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create a new wallet</li><li>Insert transaction into a wallet</li><li>Show list of wallets</li></ul></ul> |
+| <ul><li>FR7</li><ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Accept/Refuse a friend request</li><li>Delete a friend</li><li>Show list of friends</li><li>Ask a friend to share a transaction</li><li>Accept to share a transaction with a friend</li></ul></ul> |
+| <ul><li>FR8</li><ul><li>FR8.1</li><li>FR8.2</li></ul></ul> | <ul><li>Manage ads</li><ul><li>Receive ad</li><li>Show ad</li></ul></ul> |
+| <ul><li>FR9</li><ul><li>FR9.1</li><li>FR9.2</li><li>FR9.3</li><li>FR9.4</li><li>FR9.4</li></ul></ul> | <ul><li>Data analysis</li><ul><li>Show average income and outcome per year/month/week/day</li><li>Show average income and outcome per similar categories</li><li>Show rank of years/months/week with most money flow</li><li>Show total number of users</li><li>Show total number of transactions per categories</li></ul> |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
@@ -90,7 +96,19 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | NFR7 | Reliability | The failure rate should be under 1 failure per hundred hours | All FR | 
 | NFR8 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
 
-
+## Table of Access Rights
+||User|Administartor|Data analyst|Ads|
+|-----|:------:|:------:|:------:|:------:|
+|F1.1-3|yes|yes|||
+|F1.4||yes|||
+|F2|yes|yes|||
+|F3|yes|yes|||
+|F4||yes|||
+|F5|yes|yes|yes||
+|F6|yes|yes|||
+|F7|yes|yes|||
+|F8||||yes|
+|F9|||yes||
 
 # Use case diagram and use cases
 

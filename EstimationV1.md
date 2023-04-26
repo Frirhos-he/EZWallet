@@ -55,9 +55,10 @@ Report here the results of the three estimation approaches. The  estimates may d
 
 
 
-The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionality, which outline its structure. The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. Ultimately, the estimation is based on the current functionality offered by the web application thus is reasonable to consider this number.
+The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionality, which outlines its structure.\
+The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.\
+Ultimately, this technique considers the current functionality offered by the web application thus is reasonable to be considered. 
 
+The estimation based on product decomposition is based on the evaluation of the ideas as well as the complexity of the application and the technology used. Notice how it is higher than the previous estimation due to the consideration of the aforementioned factors.
 
-The estimation based on product decomposition is based on the evalutation of the ideas as well as the complexity of the application and the technlogy used. Notice, it is little higher with respect to the previous estimation because former additional factors are considered.
-
-The estimated time based on activity decomposition is subject to multiple factors, including the team members' experience, their workload on other projects that might impede the overall timeline, team-building commitments, mislead project planning and brainstorming meetings. Consequently, the estimated activities may take more time than any previously discussed estimations.
+The estimated time based on activity decomposition is subject to multiple factors, including the team members' experience, their workload on other projects that might impede the overall timeline, team-building commitments, misleading project planning and brainstorming meetings. Consequently, the estimated activities may take more time than any previously discussed estimations.

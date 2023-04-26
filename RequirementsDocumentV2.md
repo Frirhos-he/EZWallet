@@ -7,7 +7,7 @@ Version: V2 - description of EZWallet in FUTURE form (as proposed by the team)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add media to a transaction (photo)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li><li>Privacy and security settings</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li></ul>  | 
+| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li><li>Privacy and security settings</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li></ul>  | 
 
 
 # Contents
@@ -79,11 +79,11 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |-------------|
 |  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li><li>FR1.4</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li><li>Manage access rights</li></ul> </ul> |
 | <ul><li>FR2:<ul><li>FR2.1</li><li>FR2.2</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>View list of categories</li></ul></ul> |
-|  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Add media to a transaction (photo)</li></ul></ul> |
+|  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li></ul></ul> |
 | <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
 | <ul><li>FR5:<ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
-| <ul><li>FR6:<ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li><li>FR6.4</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create a new wallet</li><li>Insert transaction into a wallet</li><li>Remove transaction from a wallet</li><li>Show list of wallets</li></ul></ul> |
-| <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Accept/Refuse a friend request</li><li>Delete a friend</li><li>Show list of friends</li><li>Ask a friend to share a transaction</li><li>Accept to share a transaction with a friend</li></ul></ul> |
+| <ul><li>FR6:<ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li><li>FR6.4</li><li>FR6.5</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create a new wallet</li><li>Insert transaction into a wallet</li><li>Remove transaction from a wallet</li><li>Show list of wallets</li><li>Show list of transactions inside a wallet</li></ul></ul> |
+| <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li><li>FR7.6</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Responde to a friend request</li><li>Show list of friend request pending</li><li>Delete a friend</li><li>Show list of friends</li><li>Ask a friend to share a transaction</li><li>Accept to share a transaction with a friend</li></ul></ul> |
 | <ul><li>FR8:<ul><li>FR8.1</li><li>FR8.2</li></ul></ul> | <ul><li>Manage ads</li><ul><li>Receive ad</li><li>Show ad</li></ul></ul> |
 | <ul><li>FR9:<ul><li>FR9.1</li><li>FR9.2</li><li>FR9.3</li><li>FR9.4</li><li>FR9.4</li></ul></ul> | <ul><li>Data analysis</li><ul><li>Show average income and outcome per year/month/week/day</li><li>Show average income and outcome per similar categories</li><li>Show rank of years/months/week with most money flow</li><li>Show total number of users</li><li>Show total number of transactions per categories</li></ul> |
 | <ul><li>FR10:<ul><li>FR10.1</li><li>FR10.2</li></ul></ul> | <ul><li>Manage security settings</li><ul><li>Allow third party companies to use user's personal data</li><li>Deny third party companies to use user's personal data </li></ul></ul> |
@@ -267,7 +267,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
 |  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
-|  Variants     |  All the transactions with their respective category (type and color) are shown to the user |
+|  Variants     |  1)All the transactions with their respective category (type and color) are shown to the user. 2)The transactions are filtered with respect to the category. 3) The transactions are filtered with respect to the date |
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
@@ -280,15 +280,35 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system retreive all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
-##### Scenario 1 (Variant Labeled Transactions)
-| Scenario 1.1 | Nominal Scenario |
+##### Scenario 2 (Variant Labeled Transactions)
+| Scenario 2.1 | Labeled Transactions |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
 |  2     | The system retreive all the transactions and the categories from the database |
-|  3	 | The list of transactions joined with the respective categories description are sent to the user |
+|  3	 | The list of transactions joined with the respective categories description is sent to the user |
+
+##### Scenario 3 (Variant Transactions filtered by category)
+| Scenario 3.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transactions that match the categories selected by the user are shown |
+| Step#        | Description  |
+|  1     | The user asks to view all the transactions that corresponds only to certain categories |  
+|  2     | The system retreive all the transactions that match the categories criteria chosen by the user  |
+|  3	 | The list of transactions of the chosen categories is sent back |
+
+##### Scenario 4 (Variant Transaction filtered by date)
+| Scenario 4.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transactions that match the time window selected by the user are shown |
+| Step#        | Description  |
+|  1     | The user asks to view all the transactions that corresponds only to a certain time window |  
+|  2     | The system retreive all the transactions that match the time window criteria chosen by the user  |
+|  3	 | The list of transactions of the chosen time window is sent back |
 
 ### Use case Create Category
 | Actors Involved        | User |
@@ -304,8 +324,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
-|  Nominal Scenario     | The user want to create a category, the category is created|
-| Step#        | Description  |
 |  1     | The user asks to create a category (giving: type, color) |  
 |  2     | The system create a new cateogry |
 |  3	 | The category is now available to the user |
@@ -330,42 +348,242 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The list of categories is sent to the user |
 
 ### Use case View Accounts
-| Actors Involved        | User |
+| Actors Involved        | Administrator |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in  |
+|  Precondition     | The aministrator has an account and he's logged in  |
 |  Post condition     | All the users are shown |
-|  Nominal Scenario     | The user want to view all users inside the database, all the users are shown |
-|  Variants     | The user want to search for a specific user |
+|  Nominal Scenario     | The aministrator want to view all users inside the database, all the users are shown |
+|  Variants     | The aministrator want to search for a specific user |
 |  Exceptions     | 1) When filtering by username the username and the refresh token don't match |
 
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in  |
+|  Precondition     | The aministrator has an account and he's logged in  |
 |  Post condition     | All the users are shown |
 | Step#        | Description  |
-|  1     | The user asks to search all users|  
+|  1     | The aministrator asks to search all users|  
 |  2     | The system retreive all users inside the database |
 |  3	 | The list of users is sent back |
 
 ##### Scenario 2 (Filter by username)
 | Scenario 2.1 | Filter by username - success |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in  |
+|  Precondition     | The aministrator has an account and he's logged in  |
 |  Post condition     | The specific user is shown |
 | Step#        | Description  |
-|  1     | The user asks information about a specific user |  
+|  1     | The aministrator asks information about a specific user |  
 |  2     | The system retreive the user inside the database |
 |  3	 | The user's data is sent back |
 
 | Scenario 2.2 | Filter by username - exception |
 | ------------- |:-------------:| 
-|  Precondition     | The user has an account and he's logged in  |
+|  Precondition     | The aministrator has an account and he's logged in  |
 |  Post condition     | The specific user is not shown |
 | Step#        | Description  |
-|  1     | The user asks information about a specific user |  
+|  1     | The aministrator asks information about a specific user |  
 |  2     | The given username and refresh token don't match |
 |  3	 | The system send to the administrator an error |
+
+### Use case View Analytics
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The analytics regarding the account are shown|
+|  Nominal Scenario     | The user want to view all his analytics, all the analytics are shown |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The analytics regarding the account are shown |
+| Step#        | Description  |
+|  1     | The user asks to view all his analytics |  
+|  2     | The system retreive all the data to compute the analytics |
+|  3	 | The system send back the data  |
+|  4	 | The GUI shows: 1.A pie chart divided by category, 2.An histogram based on time, 3.The total amount of income/outcome |
+
+### Use case Export Analytics
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The analytics regarding the account are exported in an excel file |
+|  Nominal Scenario     | The user want to view his analytics inside an excel file, all the analytics are exported inside an excel file |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The analytics regarding the account are exported in an excel file |
+| Step#        | Description  |
+|  1     | The user ask the system to export all his analytics inside an excel file |  
+|  2     | The system retreive all the data to compute the analytics |
+|  3	 | The system store the data inside an excel file  |
+|  4	 | The file is sent back |
+
+### Use case Create Wallet
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | A new wallet is created |
+|  Nominal Scenario     | The user want to create a wallet, the wallet is created|
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | A new wallet is created |
+|  1     | The user asks to create a wallet (giving a new name) |  
+|  2     | The system create a new wallet |
+|  3	 | The wallet is now available to the user |
+
+### Use case View Wallets
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the wallets are shown to the user |
+|  Nominal Scenario     | The user want to view all his wallets, all the wallets are shown |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the wallets are shown to the user |
+| Step#        | Description  |
+|  1     | The user asks to view all his wallets |  
+|  2     | The system retreive all the wallets of the user from the database |
+|  3	 | The list of wallets is sent to the user |
+
+### Use case View Transactions inside a wallet
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transaction inside a wallet shown to the user |
+|  Nominal Scenario     | The user want to view all the transaction inside a wallet, all the transaction inside a wallet are shown |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the transaction inside a wallet shown to the user |
+| Step#        | Description  |
+|  1     | The user asks to view all the transaction inside a wallet |  
+|  2     | The system retreive all the transaction inside a wallet of the user from the database |
+|  3	 | The list of transactions inside a wallet is sent to the user |
+
+### Use case Insert some transactions inside a wallet
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, he has at least a wallet and a transaction |
+|  Post condition     | The transacions are inserted into the specific wallet |
+|  Nominal Scenario     | The user wants to insert into a wallet some transactions, the transactions are then inserted into the specific wallet |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, he has at least a wallet and a transaction |
+|  Post condition     | The transacions are inserted into the specific wallet |
+|  1     | The user send to the server the list of categories and the wallet in which the transactions will be inserted into |  
+|  2     | The system insert into the wallet the list of transactions selected by the user |
+|  3	 | The wallet is now up to date |
+
+### Use case Delete some transactions inside a wallet
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, he has at least a wallet and a transaction inside it |
+|  Post condition     | The transacions are deleted from the specific wallet |
+|  Nominal Scenario     | The user wants to deleted from a wallet some transactions, the transactions are then deleted from the specific wallet |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, he has at least a wallet and a transaction inside it |
+|  Post condition     | The transacions are deleted from the specific wallet |
+|  1     | The user send to the server the list of categories and the wallet from which the transactions will be deleted from |  
+|  2     | The system deleted from the wallet the list of transactions selected by the user |
+|  3	 | The wallet is now up to date |
+
+### Use case Send friend request
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | A friend request is sent to a specific user |
+|  Nominal Scenario     | The user want to send a friend request to another user, the friend request is succescully sent |
+|  Variants     | - |
+|  Exceptions     | 1)The username of the receiver doesn't exist |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, the receiver's username exist |
+|  Post condition     | A friend request is sent to a specific user |
+| Step#        | Description  |
+|  1     | The user send to the server the username of the user of which he wants to be friend with |  
+|  2     | The system check if the user exist, then he sends the friend request to that specific user  |
+|  3	 | The friend request is sent |
+
+##### Scenario 2 (Exceptions)
+| Scenario 1.2 | The username of the reciever doesn't exist |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The friend request is not sent to the specific user |
+| Step#        | Description  |
+|  1     | The user send to the server the username of the user of which he wants to be friend with |  
+|  2     | The system check if the user exist, the user doesn't exist  |
+|  3	 | The friend request is not sent and the sender of the friend request receive an error |
+
+### Use case Responde friend request
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, there's a friend request pending |
+|  Post condition     | A friend request from a specific user is accepted or refused |
+|  Nominal Scenario     | The user want to responde to a friend request from another user, the friend request is succescully accepted/refused |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in, there's a friend request pending |
+|  Post condition     | A friend request from a specific user is accepted or refused |
+| Step#        | Description  |
+|  1     | The user send to the server the response to the corresponding friend request |  
+|  2     | The system write the result of the friend request inside the database  |
+|  3	 | The friend request is responded |
+
+### Use case View list of pending friend requests
+| Actors Involved        | User |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the pending friend requests are shown to the user |
+|  Nominal Scenario     | The user want to view all his pending friend requests, all the pending friend requests are shown |
+|  Variants     | - |
+|  Exceptions     | - |
+
+##### Scenario 1 (Nominal Scenario)
+| Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | All the pending friend requests are shown to the user |
+| Step#        | Description  |
+|  1     | The user asks to view all his pending friend requests |  
+|  2     | The system retreive all the pending friend requests of the user from the database |
+|  3	 | The list of pending friend requests is sent to the user |
+
 
 # Glossary
 `TODO`

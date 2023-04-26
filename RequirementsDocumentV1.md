@@ -251,15 +251,15 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system retreive all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
-##### Scenario 1 (Variant Labeled Transactions)
-| Scenario 1.1 | Nominal Scenario |
+##### Scenario 2 (Variant Labeled Transactions)
+| Scenario 2.1 | Labeled Transactions |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
 |  2     | The system retreive all the transactions and the categories from the database |
-|  3	 | The list of transactions joined with the respective categories description are sent to the user |
+|  3	 | The list of transactions joined with the respective categories description is sent to the user |
 
 ### Use case Create Category
 | Actors Involved        | User |
@@ -275,8 +275,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
-|  Nominal Scenario     | The user want to create a category, the category is created|
-| Step#        | Description  |
 |  1     | The user asks to create a category (giving: type, color) |  
 |  2     | The system create a new cateogry |
 |  3	 | The category is now available to the user |
@@ -336,7 +334,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The user asks information about a specific user |  
 |  2     | The given username and refresh token don't match |
-|  3	 | The system send to the admin an error |
+|  3	 | The system send to the user an error |
 
 # Glossary
 
@@ -347,3 +345,10 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 
 # Deployment Diagram 
 ![Deployment Diagram](./media/DeploymentDiagramV1.png)
+
+# Defect Table
+| Defect | Description |
+|:------:|:-----------:|
+| Admin missing | Some functionalities (i.e. FR4-View Users should be reserved to an administrator and it should be forbidden to the users) |
+| Date field not properly used | When inserting a transaction the user should be able to set a chosen date (he is not able now) | 
+

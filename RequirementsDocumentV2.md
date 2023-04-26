@@ -788,7 +788,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Glossary
 ![Glossary](./media/V2/UML_V2.png)
 # System Design
-![System Design](./media/V2/System_Design_-_analytics.png.png)
+![System Design](./media/V2/System_Design_-_analytics.png)
 # Deployment Diagram 
 ![Deployment Diagram](./media/V2/Deployment_-_Third_Company.png)
 

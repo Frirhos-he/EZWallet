@@ -46,7 +46,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # Context Diagram and interfaces
 
 ## Context Diagram
-![Context Diagram](./media/ContextDiagramV2.png)
+![Context Diagram](./media/V2/ContextDiagramV2.png)
 
 ### Actor
 - User
@@ -79,14 +79,14 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |-------------|
 |  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
 | <ul><li>FR2:<ul><li>FR2.1</li><li>FR2.2</li><li>FR2.3</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>Delete category</li><li>View list of categories</li></ul></ul> |
-|  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.6</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Filter transactions by wallet</li></ul></ul> |
-| <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li><li>FR4.3</li><li>FR4.4</li></ul></ul> | <ul><li>View users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li><li>Grant access rights</li><li>Revoke access rights</li></ul></ul> |
+|  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Filter transactions by wallet</li></ul></ul> |
+| <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li><li>FR4.3</li><li>FR4.4</li></ul></ul> | <ul><li>Manage users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li><li>Grant access rights</li><li>Revoke access rights</li></ul></ul> |
 | <ul><li>FR5:<ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
 | <ul><li>FR6:<ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create wallet</li><li>Delete wallet</li><li>Show list of wallets</li></ul></ul> |
-| <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.4</li><li>FR7.5</li><li>FR7.6</li><li>FR7.7</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Respond to a friend request</li><li>Show list of friend requests pending</li><li>Remove a friend</li><li>Show list of friends</li><li>Send a share transaction request to a friend</li><li>Responde to share a transaction with a friend</li><li>Show list of share transaction requests pending</li></ul></ul> |
+| <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.5</li><li>FR7.5</li><li>FR7.6</li><li>FR7.7</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Respond to a friend request</li><li>Show list of friend requests pending</li><li>Delete friend</li><li>Show list of friends</li><li>Send a share transaction request to a friend</li><li>Responde to share a transaction with a friend</li><li>Show list of share transaction requests pending</li></ul></ul> |
 | <ul><li>FR8:<ul><li>FR8.1</li><li>FR8.2</li></ul></ul> | <ul><li>Manage ads</li><ul><li>Receive ad</li><li>Show ad</li></ul></ul> |
 | <ul><li>FR9:<ul><li>FR9.1</li><li>FR9.2</li><li>FR9.3</li><li>FR9.4</li><li>FR9.5</li></ul></ul> | <ul><li>Data analysis</li><ul><li>Show average income and outcome per year/month/week/day</li><li>Show average income and outcome per similar categories</li><li>Show rank of years/months/week with most money flow</li><li>Show total number of users</li><li>Show total number of transactions per categories</li></ul> |
-| <ul><li>FR10:<ul><li>FR10.1</li><li>FR10.2</li></ul></ul> | <ul><li>Manage security settings</li><ul><li>Allow third party companies to use user's personal data</li><li>Deny third party companies to use user's personal data </li></ul></ul> |
+| <ul><li>FR10:<ul><li>FR10.1</li><li>FR10.2</li></ul></ul> | <ul><li>Manage privacy settings</li><ul><li>Allow third party companies to use user's personal data</li><li>Deny third party companies to use user's personal data </li></ul></ul> |
 
 ## Non Functional Requirements
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
@@ -108,7 +108,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |F2|yes|yes|||
 |F3|yes|yes|||
 |F4||yes|||
-|F5|yes|yes|yes||
+|F5|yes|yes|||
 |F6|yes|yes|||
 |F7|yes|yes|||
 |F8||||yes|
@@ -211,6 +211,18 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The system check that the email is not used by any user yet |
 |  4	 | The user has now an account |
 
+##### Scenario 2 (Exceptions)
+| Scenario 2.1 | Email already in use |
+| ------------- |:-------------:| 
+|  Precondition     | The email is already used by another user |
+|  Post condition     | The account is not created for the user |
+| Step#        | Description  |
+|  1     | The system asks to insert an email, an username and a password for the new account | 
+|  2     | The system check that the email is not used by any user yet |
+|  3	 | The system detects that the email is already in use |
+|  4	 | The system returns an error to the user |
+|  5	 | The account creation fails |
+
 ### Use case Grant access rights
 | Actors Involved        | Administrator |
 | ------------- |:-------------:| 
@@ -254,7 +266,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The account is not created for the user |
 | Step#        | Description  |
 |  1     | The system asks to insert an email, an username and a password for the new account | 
-|  2     | The system check that the email is not used by any user yet |
+|  2     | The system checks that the email is not used by any user yet |
 |  3	 | The system detects that the email is already in use |
 |  4	 | The system returns an error to the user |
 |  5	 | The account creation fails |
@@ -263,7 +275,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | The transaction is created inside the user's account |
+|  Post condition     | The transaction is created into the user's account |
 |  Nominal Scenario     | The user want to create a transaction, the transaction is successfully created|
 |  Variants     | - |
 |  Exceptions     | - |
@@ -272,9 +284,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | The transaction is created inside the user's account |
+|  Post condition     | The transaction is created into the user's account |
 | Step#        | Description  |
-|  1     | The user asks to create a transaction (giving: name, amount, type) |  
+|  1     | The user asks to create a transaction (giving: name, amount, type, date and wallet) |  
 |  2     | The system insert the new transaction inside the database |
 |  3	 | The transaction is created and the user can now see it inside the app |
 

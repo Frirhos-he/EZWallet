@@ -786,8 +786,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system set the corresponding setting of the user to "deny" |
 
 # Glossary
-`TODO`
-
+![Glossary](./media/V2/UML_V2.png)
 # System Design
 `TODO`
 

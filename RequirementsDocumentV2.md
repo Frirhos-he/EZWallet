@@ -265,7 +265,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | All the transactions are shown to the user |
+|  Post condition     | All the transactions indipendently of the wallet are shown to the user |
 |  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
 |  Variants     |  1)All the transactions with their respective category (type and color) are shown to the user. 2)The transactions are filtered with respect to the category. 3) The transactions are filtered with respect to the date |
 |  Exceptions     | - |
@@ -274,7 +274,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | All the transactions are shown to the user |
+|  Post condition     | All the transactions indipendently of the wallet are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions |  
 |  2     | The system retreive all the transactions of the user from the database |

@@ -5,7 +5,6 @@ Version: 1
 
 
 # Estimation approach
-Consider the EZWallet  project in CURRENT version (as received by the teachers), assume that you are going to develop the project INDEPENDENT of the deadlines of the course
 # Estimate by size
 ### 
 |             | Estimate                        |             
@@ -44,9 +43,6 @@ Consider the EZWallet  project in CURRENT version (as received by the teachers),
 <div style="text-align:center"><img src="./media/V1/grantt.png"  width="800" height="400"/></div>
 
 # Summary
-
-Report here the results of the three estimation approaches. The  estimates may differ. Discuss here the possible reasons for the difference
-
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
 | estimate by size |20.8ph|<1 weeks

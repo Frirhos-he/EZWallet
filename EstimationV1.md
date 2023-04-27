@@ -1,7 +1,7 @@
 # Project Estimation - CURRENT
 Date: 21/04/2023
 
-Version: 0.1
+Version: 1
 
 
 # Estimation approach
@@ -50,14 +50,13 @@ Report here the results of the three estimation approaches. The  estimates may d
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
 | estimate by size |20.8ph|<1 weeks
-| estimate by product decomposition | 52ph|1.3 weeks
-| estimate by activity decomposition |70ph|1.75 weeks
+| estimate by product decomposition | 52ph| <1 weeks
+| estimate by activity decomposition |70ph|1.2 weeks
 
 
 
-The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionality, which outlines its structure.\
-The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.\
-Ultimately, this technique considers the current functionality offered by the web application thus is reasonable to be considered. 
+The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionalities, which outlines its structure.\
+The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.
 
 The estimation based on product decomposition is based on the evaluation of the ideas as well as the complexity of the application and the technology used. Notice how it is higher than the previous estimation due to the consideration of the aforementioned factors.
 

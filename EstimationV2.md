@@ -13,7 +13,7 @@ Version: 2
 | S = Estimated size of project, in LOC (= NC * A) |560  |
 | E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |       56 person hours                               |   
 | C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 1680€ | 
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |    0.35 weeks = < 1 weeks              |             
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |    0.35 weeks               |             
 
 # Estimate by product decomposition
 ### 
@@ -43,11 +43,11 @@ Insert here Gantt chart with above activities
 # Summary
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
-| estimate by size |56ph|0.35<1 weeks
-| estimate by product decomposition |115ph|2.9 weeks
-| estimate by activity decomposition |140ph|3.5 weeks
+| estimate by size |56ph|0.35 < 1 week
+| estimate by product decomposition |115ph|0.72 < 1 week
+| estimate by activity decomposition |140ph|2 weeks
 
-
+The estimated duration of size and product decomposition doesn't account for eventual delays nor the impossibility to always work in parallel. Those factors are instead considered in the estimated duration of activity decomposition.
 
 The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionality, which outlines its structure.\
 The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.

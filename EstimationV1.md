@@ -40,7 +40,7 @@ Version: 1
 ###
 
 
-<div style="text-align:center"><img src="./media/V1/grantt.png"  width="800" height="400"/></div>
+<div style="text-align:center"><img src="./media/V1/gantt.png"  width="800" height="400"/></div>
 
 # Summary
 |             | Estimated effort                        |   Estimated duration |          

@@ -1,7 +1,7 @@
 # Project Estimation - CURRENT
 Date: 21/04/2023
 
-Version: 0.1
+Version: 1
 
 
 # Estimation approach
@@ -50,8 +50,8 @@ Report here the results of the three estimation approaches. The  estimates may d
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
 | estimate by size |20.8ph|<1 weeks
-| estimate by product decomposition | 52ph|1.3 weeks
-| estimate by activity decomposition |70ph|1.75 weeks
+| estimate by product decomposition | 52ph| <1 weeks
+| estimate by activity decomposition |70ph|1.2 weeks
 
 
 

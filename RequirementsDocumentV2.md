@@ -81,7 +81,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  <ul> <li> FR1: <ul> <li> FR1.1</li><li> FR1.2</li><li>FR1.3</li></ul> </ul> | <ul> <li> Access management : <ul> <li> Sign up</li><li> Log In</li><li>Log Out</li></ul> </ul> |
 | <ul><li>FR2:<ul><li>FR2.1</li><li>FR2.2</li><li>FR2.3</li></ul></ul> | <ul><li>Handle categories</li><ul><li>Create category</li><li>Delete category</li><li>View list of categories</li></ul></ul> |
 |  <ul><li>FR3:<ul><li>FR3.1</li><li>FR3.2</li><li>FR3.3</li><li>FR3.4</li><li>FR3.5</li><li>FR3.6</li><li>FR3.7</li></ul></ul>   | <ul><li>Handle transactions</li><ul><li>Create transaction</li><li>Delete transaction</li><li>View list of transactions</li><li>Show list of labeled transactions </li><li>Filter transaction by category</li><li>Filter transactions by time window</li><li>Filter transactions by wallet</li></ul></ul> |
-| <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li><li>FR4.3</li><li>FR4.4</li></ul></ul> | <ul><li>Manage users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li><li>Grant access rights</li><li>Revoke access rights</li></ul></ul> |
+| <ul><li>FR4:<ul><li>FR4.1</li><li>FR4.2</li></ul></ul> | <ul><li>Manage users</li><ul><li> View list of users' accounts</li><li> View info on a specific user</li></ul></ul> |
 | <ul><li>FR5:<ul><li>FR5.1</li><li>FR5.2</li><li>FR5.3</li><li>FR5.4</li></ul></ul> | <ul><li>Transaction analytics</li><ul><li>Show total amount of income/outcome</li><li>Pie chart of transaction divided by category</li><li>Hystogram of transactions divided by time windows</li><li>Export analytics in excel</li></ul></ul> |
 | <ul><li>FR6:<ul><li>FR6.1</li><li>FR6.2</li><li>FR6.3</li></ul></ul> | <ul><li>Handle wallets</li><ul><li>Create wallet</li><li>Delete wallet</li><li>Show list of wallets</li></ul></ul> |
 | <ul><li>FR7:<ul><li>FR7.1</li><li>FR7.2</li><li>FR7.3</li><li>FR7.4</li><li>FR7.5</li><li>FR7.5</li><li>FR7.6</li><li>FR7.7</li></ul></ul> | <ul><li>Handle friends section</li><ul><li>Send a friend request</li><li>Respond to a friend request</li><li>Show list of friend requests pending</li><li>Delete friend</li><li>Show list of friends</li><li>Send a share transaction request to a friend</li><li>Responde to share a transaction with a friend</li><li>Show list of share transaction requests pending</li></ul></ul> |
@@ -223,55 +223,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The system detects that the email is already in use |
 |  4	 | The system returns an error: "you are already registered" to the user |
 |  5	 | The account creation fails |
-
-### Use case Grant access rights
-| Actors Involved        | Administrator |
-| ------------- |:-------------:| 
-|  Precondition     | The user on which the administrator wants to give aministrator rights exists  |
-|  Post condition     | The user chosen by the administrator will have administrator rights |
-|  Nominal Scenario     | The administrator wants to give to an user admin rigths. The administrator rights are given to the user|
-|  Variants     | - |
-|  Exceptions     | - |
-
-##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | Nominal Scenario |
-| ------------- |:-------------:| 
-|  Precondition     | The user on which the administrator wants to give aministrator rights exists  |
-|  Post condition     | The user chosen by the administrator will have administrator rights |
-| Step#        | Description  |
-|  1     | The administrator tells to the system the user who he wants to grant administrator rights |  
-|  2     | The system gives administrator rights to the user |
-
-### Use case Revoke access rights
-| Actors Involved        | Administrator |
-| ------------- |:-------------:| 
-|  Precondition     | The user on which the administrator wants to revoke aministrator rights exists  |
-|  Post condition     | The user chosen by the administrator won't have administrator rights anymore |
-|  Nominal Scenario     | The administrator wants to revoke from an user admin rigths. The administrator rights are revoked from the user|
-|  Variants     | - |
-|  Exceptions     | - |
-
-##### Scenario 1 (Nominal Scenario)
-| Scenario 1.1 | Nominal Scenario |
-| ------------- |:-------------:| 
-|  Precondition     | The user on which the administrator wants to revoke aministrator rights exists  |
-|  Post condition     | The user chosen by the administrator won't have administrator rights anymore |
-| Step#        | Description  |
-|  1     | The administrator tells to the system the user who he wants to revoke administrator rights from |  
-|  2     | The system revokes administrator rights from the user |
-
-##### Scenario 2 (Exceptions)
-| Scenario 2.1 | Email already in use |
-| ------------- |:-------------:| 
-|  Precondition     | The email is already used by another user |
-|  Post condition     | The account is not created for the user |
-| Step#        | Description  |
-|  1     | The system asks to inserts an email, an username and a password for the new account | 
-|  2     | The system checks that the email is not used by any user yet |
-|  3	 | The system detects that the email is already in use |
-|  4	 | The system returns an error to the user |
-|  5	 | The account creation fails |
-
 ### Use case Create Transaction
 | Actors Involved        | User |
 | ------------- |:-------------:| 
@@ -781,7 +732,4 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 # System Design
 ![System Design](./media/V2/SystemDesignV2.png)
 # Deployment Diagram 
-![Deployment Diagram](./media/V2/Deployment_-_Third_Company.png)
-
-
-
+![Deployment Diagram](./media/V2/DeploymentDiagramV2.png)

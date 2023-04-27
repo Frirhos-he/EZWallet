@@ -47,6 +47,7 @@ Version:
 <div style="text-align:center"><img src="./media/V1/Dashboard - Toggled Colors.png"  width="400" height="400"/></div>
 
 ### Use case: Create Category
+##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V1/Dashboard-add_Category.png"  width="400" height="400"/></div>
 
 

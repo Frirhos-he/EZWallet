@@ -6,17 +6,17 @@ Date:
 
 Version:
 ## Use case diagram
-### Use case Log In
+### Use case: Log In
 ##### Scenario 1 (Nominal Scenario)
-<div style="text-align:center"><img src="./media/V2/Log_in.png"  width="250" height="250"/>
-<img src="./media/V2/Log_in_successfully_logged.png"  width="250" height="250"/></div>
+<div style="text-align:center"><img src="./media/V2/Log in.png"  width="250" height="250"/>
+<img src="./media/V2/Log in - successfully_logged.png"  width="250" height="250"/></div>
 
 ##### Scenario 3 (Exception)
 ###### 3.1 Password is wrong
-<div style="text-align:center"><img src="./media/V2/Log_in_wrong_credentials.png"  width="400" height="400"/></div>
+<div style="text-align:center"><img src="./media/V2/Log in - wrong_credentials.png"  width="400" height="400"/></div>
 
 ###### 3.2 Email doesn't exist
-<div style="text-align:center"><img src="./media/V2/Log_in_Need_to_register.png"  width="400" height="400"/></div>
+<div style="text-align:center"><img src="./media/V2/Log in - Need_to_register.png"  width="400" height="400"/></div>
 
 
 ### Use case: Log out

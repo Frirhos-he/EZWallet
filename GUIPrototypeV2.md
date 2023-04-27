@@ -42,7 +42,9 @@ Version:
 
 ### Use case: View Transactions / View Categories / Allow third party companies to use user's personal data / View Analytics / Export Analytics
 ##### Scenario 1 (Nominal Scenario)
-<div style="text-align:center"><img src="./media/V2/Dashboard.png"  width="400" height="400"/></div>
+<div style="text-align:center"><img src="./media/V2/Dashboard.png"  width="250" height="250"/>
+<img src="./media/V2/Dashboard - Variant Administrator.png"  width="250" height="250"/></div>
+
 
 ##### Scenario 2 (Variant Transactions filtered by category)
 <div style="text-align:center"><img src="./media/V2/Dashboard - filterByCategory.png"  width="400" height="400"/></div>

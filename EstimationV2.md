@@ -33,8 +33,8 @@ Version: 2
 ### 
 |         Activity name    | Estimated effort (person hours)   |             
 | ----------- | :-------------------------------: | 
-| <ul> <li> Requirement Gathering: <ul> <li> Identify user requirements</li><li> Identify structural requirements</li><li>Perform workflow analysis</li><li>Perform Estimation documentation</li><li>Plan the software specifications</li><li>Software specifications review</li></ul></ul>| 40 |
-|<ul> <li>Design</li><ul><li>Perform system design</li><li>Perform functional design</li><li>Select the working environment</li><li>Design the Website Wireframe sketch (GUI)</li></ul> </ul>| 25 |
+| <ul> <li> Requirement Gathering: <ul> <li> Identify user requirements</li><li> Identify structural requirements</li><li>Perform workflow analysis</li><li>Perform Estimation documentation</li><li>Plan the software specifications</li><li>Software specifications review</li></ul></ul>| 33 |
+|<ul> <li>Design</li><ul><li>Perform system design</li><li>Perform functional design</li><li>Select the working environment</li><li>Design the Website Wireframe sketch (GUI)</li></ul> </ul>| 32 |
 | <ul><li>Developing</li><ul><li>Docker + npm configuration</li><li>Backend:</li><ul><li>Database connection</li> <li>Api generation</li><li>Security system</li></ul></ul> |50|
 | <ul><li>Testing and production</li><ul><li>User acceptance testing</li><li>Usability testing</li><li>Deployment</li></ul> |25 |
 ###

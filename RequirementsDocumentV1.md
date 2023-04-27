@@ -56,7 +56,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Persona       | Story  |
 | ------------- |:-------------:|
 |  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
-|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his wallet. |
+|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his EZwallet. |
 |  student (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes gets the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
 
 # Functional and non functional requirements
@@ -107,7 +107,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The user inserts the credentials |
 |  3	 | The system validates the credentials |
 |  4	 | The system sends an access token and a refresh token |
-|  5	 | The user's browser stores the token for furthere use |
+|  5	 | The user's browser stores the token for further use |
 |  6	 | The user is authorized|
 
 ##### Scenario 2 (User with token)

@@ -38,13 +38,14 @@ Version: 2
 | <ul><li>Developing</li><ul><li>Docker + npm configuration</li><li>Backend:</li><ul><li>Database connection</li> <li>Api generation</li><li>Security system</li></ul></ul> |50|
 | <ul><li>Testing and production</li><ul><li>User acceptance testing</li><li>Usability testing</li><li>Deployment</li></ul> |25 |
 ###
-Insert here Gantt chart with above activities
+
+<div style="text-align:center"><img src="./media/V2/GanttV2.png"  width="800" height="400"/></div>
 
 # Summary
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
-| estimate by size |56ph|0.35 < 1 week
-| estimate by product decomposition |115ph|0.72 < 1 week
+| estimate by size |56ph|0.35 < 1 weeks
+| estimate by product decomposition |115ph|0.72 < 1 weeks
 | estimate by activity decomposition |140ph|2 weeks
 
 The estimated duration of size and product decomposition doesn't account for eventual delays nor the impossibility to always work in parallel. Those factors are instead considered in the estimated duration of activity decomposition.

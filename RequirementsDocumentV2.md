@@ -65,7 +65,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Third Party Company    | Retrive our data and analytics from our database (API:https://ezwallet.com/api/doc) | Internet |
 
 # Stories and personas
-`TODO: add new personas and stories that use new features`
 | Persona       | Story  |
 | ------------- |:-------------:|
 |  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
@@ -778,9 +777,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The system set the corresponding setting of the user to "deny" |
 
 # Glossary
-![Glossary](./media/V2/UML_V2.png)
+![Glossary](./media/V2/GlossaryV2.png)
 # System Design
-![System Design](./media/V2/System_Design_-_analytics.png)
+![System Design](./media/V2/SystemDesignV2.png)
 # Deployment Diagram 
 ![Deployment Diagram](./media/V2/Deployment_-_Third_Company.png)
 

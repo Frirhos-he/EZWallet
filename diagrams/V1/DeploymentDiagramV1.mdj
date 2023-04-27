@@ -262,9 +262,9 @@
 											"font": "Arial;13;1",
 											"left": 557,
 											"top": 417,
-											"width": 96.103515625,
+											"width": 154.12744140625,
 											"height": 13,
-											"text": "Server Machine"
+											"text": "EZWallet Server Machine"
 										},
 										{
 											"_type": "LabelView",
@@ -297,7 +297,7 @@
 									"font": "Arial;13;0",
 									"left": 552,
 									"top": 410,
-									"width": 106.103515625,
+									"width": 164.12744140625,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGHqci5WAkcfj0="
@@ -381,7 +381,7 @@
 							"containerChangeable": true,
 							"left": 552,
 							"top": 400,
-							"width": 116.103515625,
+							"width": 174.12744140625,
 							"height": 45,
 							"nameCompartment": {
 								"$ref": "AAAAAAGHqci5VwkbQlQ="
@@ -444,7 +444,7 @@
 											"top": 417,
 											"width": 92.94873046875,
 											"height": 13,
-											"text": "Browser"
+											"text": "PC"
 										},
 										{
 											"_type": "LabelView",
@@ -1151,8 +1151,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 621,
-									"top": 350,
+									"left": 637,
+									"top": 347,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -1171,8 +1171,8 @@
 										"$ref": "AAAAAAGHqcqg6Q2Pu9Q="
 									},
 									"font": "Arial;13;0",
-									"left": 610,
-									"top": 350,
+									"left": 626,
+									"top": 344,
 									"width": 52.76806640625,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -1194,8 +1194,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 592,
-									"top": 351,
+									"left": 608,
+									"top": 354,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -1213,7 +1213,7 @@
 								"$ref": "AAAAAAGHqciThQjwFRM="
 							},
 							"lineStyle": 1,
-							"points": "606:315;608:399",
+							"points": "614:315;633:399",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAGHqcqg6Q2SCeA="
@@ -1256,7 +1256,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGHqciEjwjp8vY="
 					},
-					"name": "Server Machine"
+					"name": "EZWallet Server Machine"
 				},
 				{
 					"_type": "UMLNode",
@@ -1302,7 +1302,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGHqciEjwjp8vY="
 					},
-					"name": "Browser",
+					"name": "PC",
 					"ownedElements": [
 						{
 							"_type": "UMLCommunicationPath",

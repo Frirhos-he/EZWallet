@@ -3,9 +3,7 @@ Date: 27/04/2023
 
 Version: 2
 
-
 # Estimation approach
-Consider the EZWallet  project in FUTURE version (as proposed by the team), assume that you are going to develop the project INDEPENDENT of the deadlines of the course
 # Estimate by size
 ### 
 |             | Estimate                        |             
@@ -43,9 +41,6 @@ Consider the EZWallet  project in FUTURE version (as proposed by the team), assu
 Insert here Gantt chart with above activities
 
 # Summary
-
-Report here the results of the three estimation approaches. The  estimates may differ. Discuss here the possible reasons for the difference
-
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
 | estimate by size |56ph|0.35<1 weeks
@@ -55,8 +50,7 @@ Report here the results of the three estimation approaches. The  estimates may d
 
 
 The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionality, which outlines its structure.\
-The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.\
-Ultimately, this technique considers the current functionality offered by the web application thus is reasonable to be considered. 
+The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.
 
 The estimation based on product decomposition is based on the evaluation of the ideas as well as the complexity of the application and the technology used. Notice how it is higher than the previous estimation due to the consideration of the aforementioned factors.
 

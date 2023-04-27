@@ -107,7 +107,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  2     | The user inserts the credentials |
 |  3	 | The system validates the credentials |
 |  4	 | The system sends an access token and a refresh token |
-|  5	 | The user's browser stores the token for furthere use |
+|  5	 | The user's browser stores the token for further use |
 |  6	 | The user is authorized|
 
 ##### Scenario 2 (User with token)

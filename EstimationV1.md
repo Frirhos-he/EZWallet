@@ -5,17 +5,16 @@ Version: 1
 
 
 # Estimation approach
-Consider the EZWallet  project in CURRENT version (as received by the teachers), assume that you are going to develop the project INDEPENDENT of the deadlines of the course
 # Estimate by size
 ### 
 |             | Estimate                        |             
 | ----------- | :-------------------------------: |  
 | NC =  Estimated number of classes to be developed   |    13                   |             
-|  A = Estimated average size per class, in LOC       |       (101+71+23+13)/13 = 208/13 = 16                   | 
-| S = Estimated size of project, in LOC (= NC * A) |13 * 16 = 208  |
-| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |       208 / 10 = 20.8 person hours                               |   
-| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 30 * 20.8 = 624€ | 
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |    20.8/(8 * 5 * 4)  = 0.13 weeks = < 1 weeks              |               
+|  A = Estimated average size per class, in LOC       |   16                   | 
+| S = Estimated size of project, in LOC (= NC * A) |208  |
+| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |       20.8 person hours                               |   
+| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 624€ | 
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |   0.13 weeks = < 1 weeks              |               
 
 # Estimate by product decomposition
 ### 
@@ -44,9 +43,6 @@ Consider the EZWallet  project in CURRENT version (as received by the teachers),
 <div style="text-align:center"><img src="./media/V1/grantt.png"  width="800" height="400"/></div>
 
 # Summary
-
-Report here the results of the three estimation approaches. The  estimates may differ. Discuss here the possible reasons for the difference
-
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
 | estimate by size |20.8ph|<1 weeks

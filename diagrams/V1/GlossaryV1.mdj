@@ -1027,7 +1027,7 @@
 										"$ref": "AAAAAAGHsslFVCYk+vE="
 									},
 									"edgePosition": 1,
-									"text": "+manages"
+									"text": "+handles"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -1301,7 +1301,7 @@
 										"$ref": "AAAAAAGHssoiQiz8Eos="
 									},
 									"edgePosition": 1,
-									"text": "+manages"
+									"text": "+handles"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -1579,11 +1579,11 @@
 								"$ref": "AAAAAAFF+qBtyKM79qY="
 							},
 							"font": "Arial;13;0",
-							"left": 848,
-							"top": 448,
-							"width": 83.5908203125,
+							"left": 856,
+							"top": 480,
+							"width": 90.82080078125,
 							"height": 64,
-							"text": "Describes the type of a transaction"
+							"text": "Describes the genre of a transaction"
 						},
 						{
 							"_type": "UMLNoteLinkView",
@@ -1599,7 +1599,7 @@
 								"$ref": "AAAAAAGHssNEgR6VNrs="
 							},
 							"lineStyle": 1,
-							"points": "793:488;847:483"
+							"points": "793:497;855:505"
 						},
 						{
 							"_type": "UMLNoteView",
@@ -1612,7 +1612,7 @@
 							"top": 112,
 							"width": 70,
 							"height": 64,
-							"text": "User that have an account"
+							"text": "Person that has an account"
 						},
 						{
 							"_type": "UMLNoteLinkView",
@@ -1713,9 +1713,9 @@
 										"$ref": "AAAAAAGHstVxqlDfX9c="
 									},
 									"font": "Arial;13;0",
-									"left": 463,
+									"left": 459,
 									"top": 176,
-									"width": 33.59814453125,
+									"width": 40.09814453125,
 									"height": 13,
 									"alpha": -4.843976975156904,
 									"distance": 137.18600511714013,
@@ -1723,7 +1723,7 @@
 										"$ref": "AAAAAAGHstVxqlDiTqo="
 									},
 									"edgePosition": 2,
-									"text": "+view"
+									"text": "+views"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -1977,7 +1977,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssLNYx5NbwM="
 							},
-							"name": "Name"
+							"name": "Name",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1985,7 +1986,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssLNYx5NbwM="
 							},
-							"name": "Type"
+							"name": "Type",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -1993,7 +1995,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssLNYx5NbwM="
 							},
-							"name": "Amount"
+							"name": "Amount",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -2001,7 +2004,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssLNYx5NbwM="
 							},
-							"name": "Date"
+							"name": "Date",
+							"type": ""
 						}
 					]
 				},
@@ -2019,7 +2023,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssNEgR6Tok0="
 							},
-							"name": "Type"
+							"name": "Type",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -2027,7 +2032,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHssNEgR6Tok0="
 							},
-							"name": "Color"
+							"name": "Color",
+							"type": ""
 						}
 					]
 				},
@@ -2045,7 +2051,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHsshVqiQTS28="
 							},
-							"name": "manages",
+							"name": "handles",
 							"end1": {
 								"_type": "UMLAssociationEnd",
 								"_id": "AAAAAAGHsslFUyYhKXM=",
@@ -2101,7 +2107,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHsshVqiQTS28="
 							},
-							"name": "manages",
+							"name": "handles",
 							"end1": {
 								"_type": "UMLAssociationEnd",
 								"_id": "AAAAAAGHssoiQSz5vUU=",
@@ -2163,7 +2169,7 @@
 								"_parent": {
 									"$ref": "AAAAAAGHstVxqlDeB8A="
 								},
-								"name": "view",
+								"name": "views",
 								"reference": {
 									"$ref": "AAAAAAGHsshVqiQTS28="
 								}
@@ -2187,7 +2193,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHsshVqiQTS28="
 							},
-							"name": "username"
+							"name": "username",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -2195,7 +2202,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHsshVqiQTS28="
 							},
-							"name": "email"
+							"name": "email",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -2203,7 +2211,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGHsshVqiQTS28="
 							},
-							"name": "password"
+							"name": "password",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",

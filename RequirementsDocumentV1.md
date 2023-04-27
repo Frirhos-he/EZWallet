@@ -7,7 +7,7 @@ Version: V1 - description of EZWallet in CURRENT form (as received by teachers)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v1 | Start from scratch of the project | 
+| v1 | Added following standard functionalities: <ul><li>Handle Categories transactions by category</li><li>Handle Transactions</li><li>View Users</li></ul>Added new roles:<ul><li>User</li></ul> | 
 
 
 # Contents
@@ -50,14 +50,14 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (handle transactions, categories and view users)  | PC |
+|  User    | GUI (handles transactions, categories and views users)  | PC |
 
 # Stories and personas
 | Persona       | Story  |
 | ------------- |:-------------:|
 |  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
 |  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his wallet. |
-|  stuedent (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes get the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
+|  student (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes gets the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
 
 # Functional and non functional requirements
 
@@ -74,10 +74,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| -----|:-----:|
 | NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
 |  <ul><li>NFR2<ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul></ul>  | FR1.2 and FR1.3 |
-|  <ul><li>NFR3<ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul></ul> | All FR |
-|  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
-| NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
-| NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
+| NFR3 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 
 ## Table of Access Rights
 ||User|
@@ -85,7 +82,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |F1|yes|
 |F2|yes|
 |F3|yes|
-|F3|yes|
+|F4|yes|
 
 # Use case diagram and use cases
 ## Use case diagram
@@ -96,9 +93,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account |
 |  Post condition     | The user is authorized to log in |
-|  Nominal Scenario     | The user want to log in (without any token). He/She insert the credentials, the credentials are correct |
+|  Nominal Scenario     | The user wants to log in (without any token). He inserts the credentials, the credentials are correct |
 |  Variants     | The user has already an access token and or a refresh token not yet expired. |
-|  Exceptions     | 1) The user insert a wrong password. 2) The account doesn't exist. |
+|  Exceptions     | 1) The user inserts a wrong password. 2) The email doesn't exist in the database. |
 
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
@@ -107,20 +104,20 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The user is authorized to use the app |
 | Step#        | Description  |
 |  1     | The system asks for the credentials |  
-|  2     | The user insert the credentials |
-|  3	 | The system validate the credentials |
-|  4	 | The system send an access token and a refresh token |
-|  5	 | The user's browser store the token for furthere use |
+|  2     | The user inserts the credentials |
+|  3	 | The system validates the credentials |
+|  4	 | The system sends an access token and a refresh token |
+|  5	 | The user's browser stores the token for furthere use |
 |  6	 | The user is authorized|
 
 ##### Scenario 2 (User with token)
 | Scenario 2.1 | User with token |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an access token and/or a refresh token |
-|  Post condition     | The user is authorized to use the app |
+|  Post condition     | The user is authorized to use the app (he's automatically redirected to the home page) |
 | Step#        | Description  |
 |  1     | The system asks for the access token |  
-|  2     | The user's browser give the access token to the server or OR it requires a new access token with an api call by giving the refresh token to the server |
+|  2     | The user's browser gives the access token to the server or OR it requires a new access token with an api call by giving the refresh token to the server |
 |  3	 | The user is authorized |
 
 ##### Scenario 3 (Exception)
@@ -130,17 +127,17 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The user is not authorized to use the app |
 | Step#        | Description  |
 |  1     | The system asks for the credentials |  
-|  2     | The user insert a wrong password |
-|  3	 | The system send back an error to the user |
+|  2     | The user inserts a wrong password |
+|  3	 | The system sends back an error: "Wrong credentials" to the user |
 
 | Scenario 3.2 | Email doesn't exist |
 | ------------- |:-------------:| 
-|  Precondition     | The account doesn't exist |
+|  Precondition     | The email doesn't exist |
 |  Post condition     | The user is not authorized to use the app |
 | Step#        | Description  |
 |  1     | The system asks for the credentials |  
-|  2     | The user insert a wrong email |
-|  3	 | The system send back an error to the user |
+|  2     | The user inserts a wrong email |
+|  3	 | The system sends back an error: "Please you need to register" to the user |
 
 ### Use case Log Out
 | Actors Involved        | User |
@@ -158,16 +155,16 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The user is logged out (the tokens are removed) |
 | Step#        | Description  |
 |  1     | The user asks to log out |  
-|  2     | The system seek for the refresh token of the user who's making the request |
-|  3	 | The system finds the entry of the user and remove it from the database |
-|  4	 | The user has now complete the log out |
+|  2     | The system seeks for the refresh token of the user who's making the request |
+|  3	 | The system finds the entry of the user and removes it from the database |
+|  4	 | The user has now completed the log out |
 
 ### Use case Sign up
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |
-|  Nominal Scenario     | The user want to create an account. The email is vaild. The user successfully create an account|
+|  Nominal Scenario     | The user wants to create an account. The email is vaild. The user successfully creates an account|
 |  Variants     | - |
 |  Exceptions     | 1) The email is already used by another user |
 
@@ -178,8 +175,8 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The user has an account |
 | Step#        | Description  |
 |  1     | The system asks to insert an email, an username and a password for the new account |  
-|  2     | The user isnert the data requested by the system |
-|  3	 | The system check that the email is not used by any user yet |
+|  2     | The user inserts the data requested by the system |
+|  3	 | The system checks that the email is not used by any user yet |
 |  4	 | The user has now an account |
 
 ##### Scenario 2 (Exceptions)
@@ -189,9 +186,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The account is not created for the user |
 | Step#        | Description  |
 |  1     | The system asks to insert an email, an username and a password for the new account | 
-|  2     | The system check that the email is not used by any user yet |
+|  2     | The system checks that the email is not used by any user yet |
 |  3	 | The system detects that the email is already in use |
-|  4	 | The system returns an error to the user |
+|  4	 | The system returns an error: "you are already registered" to the user |
 |  5	 | The account creation fails |
 
 ### Use case Create Transaction
@@ -199,7 +196,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The transaction is created inside the user's account |
-|  Nominal Scenario     | The user want to create a transaction, the transaction is successfully created|
+|  Nominal Scenario     | The user wants to create a transaction, the transaction is successfully created|
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -210,7 +207,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The transaction is created inside the user's account |
 | Step#        | Description  |
 |  1     | The user asks to create a transaction (giving: name, amount, type) |  
-|  2     | The system insert the new transaction inside the database |
+|  2     | The system inserts the new transaction inside the database |
 |  3	 | The transaction is created and the user can now see it inside the app |
 
 ### Use case Delete Transaction
@@ -218,7 +215,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has a transaction inside his account |
 |  Post condition     | The transaction is deleted |
-|  Nominal Scenario     | The user want to delete a transaction, the transaction is deleted |
+|  Nominal Scenario     | The user wants to delete a transaction, the transaction is deleted |
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -229,7 +226,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The transaction is deleted |
 | Step#        | Description  |
 |  1     | The user asks to delete a transaction |  
-|  2     | The system delete the transaction from the database |
+|  2     | The system deletes the transaction from the database |
 |  3	 | The transaction is deleted and the user cannot see it anymore in the app |
 
 ### Use case View Transactions
@@ -237,7 +234,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
-|  Nominal Scenario     | The user want to view all his transactions, all the transactions are shown |
+|  Nominal Scenario     | The user wants to view all his transactions, all the transactions are shown |
 |  Variants     |  All the transactions with their respective category (type and color) are shown to the user |
 |  Exceptions     | - |
 
@@ -248,7 +245,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | All the transactions are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions |  
-|  2     | The system retreive all the transactions of the user from the database |
+|  2     | The system retreives all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
 ##### Scenario 2 (Variant Labeled Transactions)
@@ -258,7 +255,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
-|  2     | The system retreive all the transactions and the categories from the database |
+|  2     | The system retreives all the transactions and the categories from the database |
 |  3	 | The list of transactions joined with the respective categories description is sent to the user |
 
 ### Use case Create Category
@@ -266,7 +263,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
-|  Nominal Scenario     | The user want to create a category, the category is created|
+|  Nominal Scenario     | The user wants to create a category, the category is created|
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -276,7 +273,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The new category is created |
 |  1     | The user asks to create a category (giving: type, color) |  
-|  2     | The system create a new cateogry |
+|  2     | The system creates a new category |
 |  3	 | The category is now available to the user |
 
 ### Use case View Categories
@@ -284,7 +281,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the categories are shown to the user |
-|  Nominal Scenario     | The user want to view all his categories, all the categories are shown |
+|  Nominal Scenario     | The user wants to view all his categories, all the categories are shown |
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -295,7 +292,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | All the categories are shown to the user |
 | Step#        | Description  |
 |  1     | The user asks to view all his categories |  
-|  2     | The system retreive all the categories of the user from the database |
+|  2     | The system retreives all the categories of the user from the database |
 |  3	 | The list of categories is sent to the user |
 
 ### Use case View Accounts
@@ -303,8 +300,8 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in  |
 |  Post condition     | All the users are shown |
-|  Nominal Scenario     | The user want to view all users inside the database, all the users are shown |
-|  Variants     | The user want to search for a specific user |
+|  Nominal Scenario     | The user wants to view all users inside the database, all the users are shown |
+|  Variants     | The user wants to search for a specific user |
 |  Exceptions     | 1) When filtering by username the username and the refresh token don't match |
 
 ##### Scenario 1 (Nominal Scenario)
@@ -314,7 +311,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | All the users are shown |
 | Step#        | Description  |
 |  1     | The user asks to search all users|  
-|  2     | The system retreive all users inside the database |
+|  2     | The system retreives all users inside the database |
 |  3	 | The list of users is sent back |
 
 ##### Scenario 2 (Filter by username)
@@ -324,7 +321,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Post condition     | The specific user is shown |
 | Step#        | Description  |
 |  1     | The user asks information about a specific user |  
-|  2     | The system retreive the user inside the database |
+|  2     | The system retreives the user inside the database |
 |  3	 | The user's data is sent back |
 
 | Scenario 2.2 | Filter by username - exception |
@@ -334,7 +331,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The user asks information about a specific user |  
 |  2     | The given username and refresh token don't match |
-|  3	 | The system send to the user an error |
+|  3	 | The system sends to the user an error |
 
 # Glossary
 

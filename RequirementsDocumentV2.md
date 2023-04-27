@@ -69,9 +69,11 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Persona       | Story  |
 | ------------- |:-------------:|
 |  average salary, female, married, with children, 45 yo     | Laura thinks she is not properly controlling her finance thus she needs to use EZWallet to get an overview and understand the reasons behind so many expenses. |
-|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his wallet. |
-|  stuedent (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes get the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
+|  low salary, male, 27 yo     | Giuseppe wants to keep track of his expenses, he also would like to subdivide them into categories so that he can handle better his payments and look after the major incomes and outcomes of his EZwallet. |
+|  student (no income), male, 22 yo     | Andrea lives in an apartment with two other guys, he sometimes get the groceries for all his roomates but sometimes it's hard to remeber everything he spended for them. He would like to have an app that can track down for him the list of payments shared among the apartment.  |
 | high salary, male, 35 yo | Marco just started a new job and is planning a trip for his future holidays thus want to manage his savings and understand whether invest or not.  |
+| DoubleCredit Company, 20+ years in the field of Finance| DoubleCredit wants to understand the customer's needs by collecting user data and expenses tendencies. Using the exported excels it boots the analysis of the company driving the correct future decision expenses   |
+| Pierluigi, 35 years, Analyst | He struggles retriving informations from the application to make predictions and current stats and needs a proper GUI to help his work.   |
 
 # Functional and non functional requirements
 ## Functional Requirements

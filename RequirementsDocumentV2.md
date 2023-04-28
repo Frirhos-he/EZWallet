@@ -224,12 +224,12 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  4	 | The user has now an account that doesn't share data with thirds |
 
 ##### Scenario 3 (Exceptions)
-| Scenario 2.1 | Email already in use |
+| Scenario 3.1 | Email already in use |
 | ------------- |:-------------:| 
 |  Precondition     | The email is already used by another user |
 |  Post condition     | The account is not created for the user |
 | Step#        | Description  |
-|  1     | The system asks to inserts an email, an username and a password for the new account | 
+|  1     | The system asks to inserts an email, username, name, surname, phone number and a password for the new account | 
 |  2     | The system checks that the email is not used by any user yet |
 |  3	 | The system detects that the email is already in use |
 |  4	 | The system returns an error: "you are already registered" to the user |
@@ -239,12 +239,21 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The transaction is created into the user's account |
-|  Nominal Scenario     | The user want to create a transaction, the transaction is successfully created|
+|  Nominal Scenario     | The user wants to create a transaction, the transaction is successfully created|
 |  Variants     | - |
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user has an account and he's logged in |
+|  Post condition     | The transaction is created into the user's account |
+| Step#        | Description  |
+|  1     | The user asks to create a transaction (giving: name, amount, type, date) |  
+|  2     | The system inserts the new transaction inside the database |
+|  3	 | The transaction is created and the user can now see it inside the app |
+##### Scenario 2 (Variant Wallet)
+| Scenario 2.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The transaction is created into the user's account |
@@ -282,7 +291,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Exceptions     | - |
 
 ##### Scenario 1 (Nominal Scenario)
-| Scenario 2.1 | Labeled Transactions |
+| Scenario 1.1 | Labeled Transactions |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
@@ -292,7 +301,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The list of transactions joined with the respective categories description is sent to the user |
 
 ##### Scenario 2 (Variant Transactions filtered by category)
-| Scenario 3.1 | Nominal Scenario |
+| Scenario 2.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions that match the categories selected by the user are shown |
@@ -302,7 +311,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The list of transactions of the chosen categories is sent back |
 
 ##### Scenario 3 (Variant Transaction filtered by date)
-| Scenario 4.1 | Nominal Scenario |
+| Scenario 3.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions that match the selected time window by the user are shown |
@@ -312,7 +321,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The list of transactions of the chosen time window is sent back |
 
 ##### Scenario 4 (Variant Transaction filtered by wallet)
-| Scenario 5.1 | Nominal Scenario |
+| Scenario 4.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions that match the selected wallet by the user are shown |
@@ -378,7 +387,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The category is deleted and the user cannot see it anymore in the app |
 
 ##### Scenario 2 (Exceptions)
-| Scenario 1.1 | Nominal Scenario |
+| Scenario 2.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has a category inside his account |
 |  Post condition     | The category is not deleted |
@@ -541,7 +550,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  3	 | The friend request is sent |
 
 ##### Scenario 2 (Exceptions)
-| Scenario 1.2 | The username of the reciever doesn't exist |
+| Scenario 2.1 | The username of the reciever doesn't exist |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | The friend request is not sent to the specific user |

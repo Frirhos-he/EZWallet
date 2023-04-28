@@ -28,12 +28,18 @@ Version:
 <div style="text-align:center"><img src="./media/V2/Sign up.png"  width="250" height="250"/>
 <img src="./media/V2/Sign up - Successfully_registered.png"  width="250" height="250"/></div>
 
-##### Scenario 2 (Exceptions)
+##### Scenario 2 (Variant Deny Third Party Companies)
+<div style="text-align:center"><img src="./media/V2/Sign up - Unselected.png"  width="400" height="400"/></div>
+
+##### Scenario 3 (Exceptions)
 <div style="text-align:center"><img src="./media/V2/Sign up - Already_registered.png"  width="400" height="400"/></div>
 
 ### Use case: Create Transaction
 ##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V2/Dashboard-add_Transaction.png"  width="400" height="400"/></div>
+
+##### Scenario 2 (Variant Wallet)
+<div style="text-align:center"><img src="./media/V2/Wallet_addTransaction_ByWallet.png"  width="400" height="400"/></div>
 
 ### Use case: Delete Transaction
 ##### Scenario 1 (Nominal Scenario)
@@ -42,8 +48,7 @@ Version:
 
 ### Use case: View Transactions / View Categories / Allow third party companies to use user's personal data / View Analytics / Export Analytics
 ##### Scenario 1 (Nominal Scenario)
-<div style="text-align:center"><img src="./media/V2/Dashboard.png"  width="250" height="250"/>
-<img src="./media/V2/Dashboard - Variant Administrator.png"  width="250" height="250"/></div>
+<div style="text-align:center"><img src="./media/V2/Dashboard.png"  width="250" height="250"/></div>
 
 
 ##### Scenario 2 (Variant Transactions filtered by category)
@@ -53,9 +58,16 @@ Version:
 ##### Scenario 3 (Variant Transaction filtered by date)
 <div style="text-align:center"><img src="./media/V2/Dashboard - filterByTime.png"  width="400" height="400"/></div>
 
-### Use case Create Category
+### Use case: Create Category
 ##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V2/Dashboard-add_Category.png"  width="400" height="400"/></div>
+
+### Use case: Delete Category
+##### Scenario 1 (Nominal Scenario)
+<div style="text-align:center"><img src="./media/V2/Dashboard-delete_Category.png"  width="400" height="400"/></div>
+
+##### Scenario 2 (Exceptions)
+<div style="text-align:center"><img src="./media/V2/Dashboard-delete_Category - Exception.png"  width="400" height="400"/></div>
 
 ### Use case: View Accounts
 ##### Scenario 1 (Nominal Scenario)
@@ -68,24 +80,19 @@ Version:
 ###### Scenario 2.2  Exception
 <div style="text-align:center"><img src="./media/V2/Administrator - specific_user - error.png"  width="400" height="400"/></div>
 
-### Use case Create Wallet
+### Use case: Create Wallet
 ##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V2/Wallet_AddWallet.png"  width="400" height="400"/></div>
 
-### Use case Delete Wallet
+### Use case: Delete Wallet
 ##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V2/Wallet_RemoveWallet.png"  width="400" height="400"/></div>
 
-### Use case View Wallets / View Transactions inside a wallet / Use case Delete some transactions inside a wallet / Variant Transaction filtered by date
+### Use case: View Wallets / View Transactions inside a wallet / Use case Delete some transactions inside a wallet / Variant Transaction filtered by date
 ##### Scenario 1 (Nominal Scenario) / 
 <div style="text-align:center"><img src="./media/V2/Wallet_Dashboard.png"  width="400" height="400"/></div>
 
-### Use case Insert some transactions inside a wallet
-##### Scenario 1 (Nominal Scenario)
-<div style="text-align:center"><img src="./media/V2/Wallet_addTransaction_ByWallet.png"  width="400" height="400"/></div>
-
-
-### Use case Send friend request / Respond friend request / View list of pending friend requests
+### Use case: Send friend request / Respond friend request / View list of pending friend requests
 ##### Scenario 1 (Nominal Scenario)
 <div style="text-align:center"><img src="./media/V2/User.png"  width="400" height="400"/></div>
 

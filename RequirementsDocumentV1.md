@@ -195,7 +195,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Actors Involved        | User |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | The transaction is created inside the user's account |
+|  Post condition     | The transaction is created inside the database|
 |  Nominal Scenario     | The user wants to create a transaction, the transaction is successfully created|
 |  Variants     | - |
 |  Exceptions     | - |
@@ -204,7 +204,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
-|  Post condition     | The transaction is created inside the user's account |
+|  Post condition     | The transaction is created inside the database |
 | Step#        | Description  |
 |  1     | The user asks to create a transaction (giving: name, amount, type) |  
 |  2     | The system inserts the new transaction inside the database |
@@ -213,7 +213,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ### Use case Delete Transaction
 | Actors Involved        | User |
 | ------------- |:-------------:| 
-|  Precondition     | The user has a transaction inside his account |
+|  Precondition     | The user has a transaction inside the database |
 |  Post condition     | The transaction is deleted |
 |  Nominal Scenario     | The user wants to delete a transaction, the transaction is deleted |
 |  Variants     | - |
@@ -222,7 +222,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ##### Scenario 1 (Nominal Scenario)
 | Scenario 1.1 | Nominal Scenario |
 | ------------- |:-------------:| 
-|  Precondition     | The user has a transaction inside his account |
+|  Precondition     | The user has a transaction inside the database |
 |  Post condition     | The transaction is deleted |
 | Step#        | Description  |
 |  1     | The user asks to delete a transaction |  
@@ -234,7 +234,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
-|  Nominal Scenario     | The user wants to view all his transactions, all the transactions are shown |
+|  Nominal Scenario     | The user wants to view all transactions, all the transactions are shown |
 |  Variants     |  All the transactions with their respective category (type and color) are shown to the user |
 |  Exceptions     | - |
 
@@ -244,7 +244,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions are shown to the user |
 | Step#        | Description  |
-|  1     | The user asks to view all his transactions |  
+|  1     | The user asks to view all transactions |  
 |  2     | The system retreives all the transactions of the user from the database |
 |  3	 | The list of transactions is sent to the user |
 
@@ -254,7 +254,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the transactions with their respective category (type and color) are shown to the user |
 | Step#        | Description  |
-|  1     | The user asks to view all his transactions along with the details regarding their category type and color |  
+|  1     | The user asks to view all transactions along with the details regarding their category type and color |  
 |  2     | The system retreives all the transactions and the categories from the database |
 |  3	 | The list of transactions joined with the respective categories description is sent to the user |
 
@@ -281,7 +281,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the categories are shown to the user |
-|  Nominal Scenario     | The user wants to view all his categories, all the categories are shown |
+|  Nominal Scenario     | The user wants to view all categories, all the categories are shown |
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -291,8 +291,8 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user has an account and he's logged in |
 |  Post condition     | All the categories are shown to the user |
 | Step#        | Description  |
-|  1     | The user asks to view all his categories |  
-|  2     | The system retreives all the categories of the user from the database |
+|  1     | The user asks to view all categories |  
+|  2     | The system retreives all the categories from the database |
 |  3	 | The list of categories is sent to the user |
 
 ### Use case View Accounts
@@ -348,4 +348,6 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |:------:|:-----------:|
 | Admin missing | Some functionalities (i.e. FR4-View Users should be reserved to an administrator and it should be forbidden to the users) |
 | Date field not properly used | When inserting a transaction the user should be able to set a chosen date (he is not able now) | 
+| Transactions and categories are shared among users | When inserting a transaction or category any user is able to see other's insertions | 
+
 

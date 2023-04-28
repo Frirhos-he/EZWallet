@@ -631,7 +631,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user is logged in, he has at least a friend and a transaction |
 |  Post condition     | The share transaction request is sent to all friends that the user chose |
-|  Nominal Scenario     | The user wants to share a transaction with a list of friends |
+|  Nominal Scenario     | The user wants to share a transaction with a list of friends, on which the system will spil evenly the amount of the specific transaction |
 |  Variants     | - |
 |  Exceptions     | - |
 
@@ -661,7 +661,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The user sends to the server the response to the corresponding share transaction request |  
 |  2     | The system write the result of the share transaction request inside the database  |
-|  3	 | The share transaction request is responded |
+|  3	 | The share transaction request is responded and the new amount that each person has to pay is updated |
 
 ### Use case View list of share transaction request pending
 | Actors Involved        | User |

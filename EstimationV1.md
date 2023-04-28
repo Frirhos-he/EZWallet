@@ -14,7 +14,7 @@ Version: 1
 | S = Estimated size of project, in LOC (= NC * A) |208  |
 | E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |       20.8 person hours                               |   
 | C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 624€ | 
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |   0.13 weeks = < 1 weeks              |               
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |   0.13 weeks < 1 weeks              |               
 
 # Estimate by product decomposition
 ### 
@@ -39,17 +39,16 @@ Version: 1
 | <ul><li>Testing and production</li><ul><li>User acceptance testing</li><li>Usability testing</li><li>Deployment</li></ul> |15 |
 ###
 
-
-<div style="text-align:center"><img src="./media/V1/grantt.png"  width="800" height="400"/></div>
+<div style="text-align:center"><img src="./media/V1/GanttV1.png"  width="800" height="400"/></div>
 
 # Summary
 |             | Estimated effort                        |   Estimated duration |          
 | ----------- | :-------------------------------: | :---------------:|
-| estimate by size |20.8ph|<1 weeks
-| estimate by product decomposition | 52ph| <1 weeks
+| estimate by size |20.8ph|0.13 < 1 weeks
+| estimate by product decomposition | 52ph| 0.325 < 1 weeks
 | estimate by activity decomposition |70ph|1.2 weeks
 
-
+The estimated duration of size and product decomposition doesn't account for eventual delays nor the impossibility to always work in parallel. Those factors are instead considered in the estimated duration of activity decomposition.
 
 The estimation by size is determined by counting the number of js functions in the web application as classes. This includes the files containing the application's functionalities, which outlines its structure.\
 The lines of code (LOC) counted exclude comments and blank spaces in those aforementioned functions. It also excludes all the code used for testing the product, which reduces the overall estimated duration.

@@ -1,10 +1,9 @@
 # Graphical User Interface Prototype  - CURRENT
 
-Authors:
 
-Date:
+Date: 28/04/2023
 
-Version:
+Version: 2
 ## Use case diagram
 ### Use case: Log In
 ##### Scenario 1 (Nominal Scenario)

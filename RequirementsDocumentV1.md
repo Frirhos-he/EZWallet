@@ -7,7 +7,7 @@ Version: V1 - description of EZWallet in CURRENT form (as received by teachers)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v1 | Added following standard functionalities: <ul><li>Handle Categories transactions by category</li><li>Handle Transactions</li><li>View Users</li></ul>Added new roles:<ul><li>User</li></ul> | 
+| v1 | Added following standard functionalities: <ul><li>Handle labeled transactions</li><li>Handle categories</li><li>Handle Transactions</li><li>View Users</li></ul>Added new actors:<ul><li>User</li></ul> | 
 
 
 # Contents
@@ -37,7 +37,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-|  Developers      | Programmers involved in the production of the system   |
+|  Developer      | Programmer involved in the production of the system   |
 
 # Context Diagram and interfaces
 
@@ -137,7 +137,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The system asks for the credentials |  
 |  2     | The user inserts a wrong email |
-|  3	 | The system sends back an error: "Please you need to register" to the user |
+|  3	 | The system sends back  to the user an error: "Please you need to register" |
 
 ### Use case Log Out
 | Actors Involved        | User |

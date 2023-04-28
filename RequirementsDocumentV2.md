@@ -639,7 +639,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user is logged in, he has at least a friend and a transaction |
 |  Post condition     | The share transaction request is sent to all friends that the user chose |
-|  Nominal Scenario     | The user wants to share a transaction with a list of friends, on which the system will spil evenly the amount of the specific transaction |
+|  Nominal Scenario     | The user wants to share a transaction with a list of friends, on which the system will split evenly the amount of the specific transaction |
 |  Variants     | - |
 |  Exceptions     | - |
 

@@ -213,7 +213,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  4	 | The user has now an account that shares data with thirds|
 
 ##### Scenario 2 (Variant Deny Third Party Companies)
-| Scenario 2.1 | Nominal Scenario |
+| Scenario 2.1 | Variant Deny Third Party Companies |
 | ------------- |:-------------:| 
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |

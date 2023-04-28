@@ -95,7 +95,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | NFR1 | Security | The system uses an hash function to encrypt the passwords inside the database | FR1.1 | 
 |  <ul><li>NFR2:<ul><li>NFR2.1</li><li>NFR2.2</ul></ul>    | Security | <ul><li>The system uses two tokens for the authorization to the app:</li><ul><li>Access token: expires in 1 hour</li><li>Refresh token: expires in 7 days</ul>  | FR1.2 and FR1.3 |
 |  <ul><li>NFR3:<ul><li>NFR3.1</li><li>NFR3.2</li><li>NFR3.3</li><li>NFR3.4</li><li>NFR3.5</li></ul></ul>     | Portability | <ul><li>Support on the major browsers: </li><ul><li>Support from Chrome v108.0</li><li>Support from Firefox v100.3</li><li>Support from Safari v15.6.1</li><li>Support from Opera v8</li><li>Support from Edge v107.0 </li></ul> | All FR |
-|  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%), 1536×864	(8.52%), 1440×900	(6.97%), 1280×720	(4.81%), 1600×900	(4.1%), 1280×800	(2.95%), 1280×1024 (2.65%) | All FR |
+|  NFR4     | Portability | The application will guarantee the correct functioning on these screen sizes: 1366×768	(22.6%), 1920×1080	(20.87%) | All FR |
 | NFR5 | Usability | All functions can be used by users that have at least 6 months experience with a smartphones/tablets or PCs (on browser) | All FR | 
 | NFR6 | Mantainability | The maintenence of all the functional requirements should not take more than 1 week per functionality  | All FR | 
 | NFR7 | Reliability | The failure rate should be under 1 failure per hundred hours | All FR | 
@@ -197,8 +197,8 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | ------------- |:-------------:| 
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |
-|  Nominal Scenario     | The user wants to create an account. The email is vaild. The user successfully creates an account|
-|  Variants     | - |
+|  Nominal Scenario     | The user wants to create an account. The email is vaild. The user chooses to allow sharing personal data to third party companies |
+|  Variants     | 1) The user deny sharing data to third party companies |
 |  Exceptions     | 1) The email is already used by another user |
 
 ##### Scenario 1 (Nominal Scenario)
@@ -207,12 +207,23 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |
 | Step#        | Description  |
-|  1     | The system asks to inserts an email, an username and a password for the new account |  
-|  2     | The user inserts the data requested by the system |
+|  1     | The system asks to inserts email, username, name, surname, phone number and a password for the new account |  
+|  2     | The user inserts the data requested by the system and leave the option of "allow sharing personal data to third party companies" to true |
 |  3	 | The system checks that the email is not used by any user yet |
-|  4	 | The user has now an account |
+|  4	 | The user has now an account that shares data with thirds|
 
-##### Scenario 2 (Exceptions)
+##### Scenario 2 (Variant Deny Third Party Companies)
+| Scenario 2.1 | Nominal Scenario |
+| ------------- |:-------------:| 
+|  Precondition     | The user hasn't an account |
+|  Post condition     | The user has an account |
+| Step#        | Description  |
+|  1     | The system asks to inserts email, username, name, surname, phone number and a password for the new account |  
+|  2     | The user inserts the data requested by the system and leave the option of "allow sharing personal data to third party companies" to true |
+|  3	 | The system checks that the email is not used by any user yet |
+|  4	 | The user has now an account that doesn't share data with thirds |
+
+##### Scenario 3 (Exceptions)
 | Scenario 2.1 | Email already in use |
 | ------------- |:-------------:| 
 |  Precondition     | The email is already used by another user |

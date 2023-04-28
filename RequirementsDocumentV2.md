@@ -7,7 +7,7 @@ Version: V2 - description of EZWallet in FUTURE form (as proposed by the team)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Filter transactions by wallet</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li><li>Privacy and security settings</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li></ul>Added new roles:<ul><li>Administrator</li><li>Data analyst</li><li>Third party company</li></ul>  | 
+| v2 | Added following standard functionalities: <ul><li>Filter transactions by category</li><li>Filter transactions by time window</li><li>Filter transactions by wallet</li><li>Category-wise pie chart</li><li>Time-wise Histogram</li><li>Visualization of total incomes/outcomes</li><li>Export into excel</li><li>Creation of wallets (folders)</li><li>Add friends</li><li>Share a transaction with a friend</li><li>Visualization of ads</li><li>Privacy and security settings</li></ul>Added analyst functionalities: <ul><li>Average income and outcome per year/month/week/day</li><li>Average income and outcome per similar categories</li><li>Rank of years/months/week with most money flow</li><li>Total number of users</li><li>Total number of transactions per category</li></ul>Added non functional requirements: <ul><li>Reliability</li><li>Efficiency</li><li>Portability</li></ul>Added new actors:<ul><li>Administrator</li><li>Data analyst</li><li>Third party company</li><li>Google Ads</li></ul>  | 
 
 
 # Contents
@@ -37,11 +37,11 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 |   User     | The entity that uses the system         | 
-| 	Administator       | Priviledged entity            |
+| 	Administator       | Priviledged entity priorly created              |
 |   Google Ads     |  System to visualize advertisement           |
-|  Developer      | Programmers involved in the production of the system            |
-|  Data Analyst      | Perform analytics on the data            |
-|  Third party company      | Buys data and analytics from our database            |
+|  Developer      | Programmer involved in the production of the system            |
+|  Data Analyst      | Perform analytics on the data working on company           |
+|  Third party company      | Buys data and analytics from system database            |
 
 # Context Diagram and interfaces
 
@@ -58,11 +58,11 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 ## Interfaces
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| :-----:|
-|  User    | GUI (handle transactions, categories. View simple analytics avout his profile)  | Smartphone/Tablet/PC |
+|  User    | GUI (handle transactions, categories. View simple analytics about his account)  | Smartphone/Tablet/PC |
 |  Administrator   | GUI(handle users data with a privileged role)  | PC  |
 |  Google Ads    | API:https://developers.google.com/google-ads/api/docs/start| Internet |
 |  Data Analyst    | GUI(compute analytics on all the users data) | PC |
-|  Third Party Company    | Retrive our data and analytics from our database (API:https://ezwallet.com/api/doc) | Internet |
+|  Third Party Company    | Retrive our data and analytics from system database (API:https://ezwallet.com/api/doc) | Internet |
 
 # Stories and personas
 | Persona       | Story  |
@@ -102,10 +102,9 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | NFR8 | Efficiency | All functionalities should take less than 0.5 sec, given the full correct functioning of the servers | All FR | 
 
 ## Table of Access Rights
-||User|Administartor|Data analyst|Ads|
+||User|Administrator|Data analyst|Ads|
 |-----|:------:|:------:|:------:|:------:|
-|F1.1-3|yes|yes|||
-|F1.4||yes|||
+|F1|yes|yes|||
 |F2|yes|yes|||
 |F3|yes|yes|||
 |F4||yes|||
@@ -161,7 +160,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 | Step#        | Description  |
 |  1     | The system asks for the credentials |  
 |  2     | The user inserts a wrong password |
-|  3	 | The system sends back an error: "Wrong credentials" to the user |
+|  3	 | The system sends back to the user an error: "Wrong credentials" |
 
 | Scenario 3.2 | Email doesn't exist |
 | ------------- |:-------------:| 
@@ -198,7 +197,7 @@ EZWallet (read EaSy Wallet) is a software application designed to help individua
 |  Precondition     | The user hasn't an account |
 |  Post condition     | The user has an account |
 |  Nominal Scenario     | The user wants to create an account. The email is vaild. The user chooses to allow sharing personal data to third party companies |
-|  Variants     | 1) The user deny sharing data to third party companies |
+|  Variants     | 1) The user denies sharing data to third party companies |
 |  Exceptions     | 1) The email is already used by another user |
 
 ##### Scenario 1 (Nominal Scenario)

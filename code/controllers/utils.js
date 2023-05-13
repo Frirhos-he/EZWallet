@@ -9,6 +9,29 @@ import jwt from 'jsonwebtoken'
  * @throws an error if the query parameters include `date` together with at least one of `from` or `upTo`
  */
 export const handleDateFilterParams = (req) => {
+        const { date, from, upTo } = req.query;
+      
+        if (date && (from || upTo)) {
+          throw new Error('Cannot use both "date" and "from" or "upTo" parameters together');
+        }
+      
+        if (date) {
+          return { date: { $eq: date } };
+        }
+      
+        if (from && upTo) {
+          return { date: { $gte: from, $lte: upTo } };
+        }
+      
+        if (from) {
+          return { date: { $gte: from } };
+        }
+      
+        if (upTo) {
+          return { date: { $lte: upTo } };
+        }
+      
+        return {};
 }
 
 /**
@@ -94,4 +117,19 @@ export const verifyAuth = (req, res, info) => {
  *  Example: {amount: {$gte: 100}} returns all transactions whose `amount` parameter is greater or equal than 100
  */
 export const handleAmountFilterParams = (req) => {
+        const { min, max } = req.query;
+      
+        if (min && max) {
+          return { amount: { $gte: parseFloat(min), $lte: parseFloat(max) } };
+        }
+      
+        if (min) {
+          return { amount: { $gte: parseFloat(min) } };
+        }
+      
+        if (max) {
+          return { amount: { $lte: parseFloat(max) } };
+        }
+      
+        return {};
 }

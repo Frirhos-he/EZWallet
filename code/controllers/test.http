@@ -1,0 +1,23 @@
+POST http://localhost:3000/api/groups HTTP/1.1
+Content-Type: application/json
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZpZ2ltb2RpQGdtYWlsLmNvbSIsImlkIjoiNjQyODAxMmZjNjFhOTRiNTJkOTI4MjZhIiwidXNlcm5hbWUiOiJGaWxpcHBvIEdyZWNvIiwicm9sZSI6IlJlZ3VsYXIiLCJpYXQiOjE2ODQyNDI4ODAsImV4cCI6MTY4NDI0NjQ4MH0.mP2eRJ2XSVQNx0XeC06ProqvbTLLfXJo33pnkcZ40LQ
+
+{
+    "name": "secondGroup",
+    "memberEmails": ["giacomo.ga@polito.it", "figimodi@gmail.com", "asdrubale@hotmail.it"]
+}
+
+###
+
+GET http://localhost:3000/api/categories HTTP/1.1
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZpZ2ltb2RpQGdtYWlsLmNvbSIsImlkIjoiNjQyODAxMmZjNjFhOTRiNTJkOTI4MjZhIiwidXNlcm5hbWUiOiJGaWxpcHBvIEdyZWNvIiwicm9sZSI6IlJlZ3VsYXIiLCJpYXQiOjE2ODQyNDI4ODAsImV4cCI6MTY4NDI0NjQ4MH0.mP2eRJ2XSVQNx0XeC06ProqvbTLLfXJo33pnkcZ40LQ
+
+###
+
+POST http://localhost:3000/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "figimodi@gmail.com",
+    "password": "1234"
+}

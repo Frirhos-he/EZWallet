@@ -7,6 +7,7 @@
   "scripts": {
     "start": "npx nodemon server.js",
     "test": "jest",
+    "dev": "concurrently \"cd data && mongod --dbpath . >nul\" \"nodemon server.js\"",
     "test:coverage": "jest --coverage --colors",
     "test:unit": "npx jest --coverage --coverageDirectory=coverage/coverage_unit --colors auth.unit.test.js controller.unit.test.js users.unit.test.js utils.unit.test.js",
     "test:integration": "npx jest --coverage --coverageDirectory=coverage/coverage_integration --colors auth.integration.test.js controller.integration.test.js users.integration.test.js utils.integration.test.js"
@@ -16,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "concurrently": "^8.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",

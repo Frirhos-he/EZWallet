@@ -54,7 +54,45 @@ export const getUser = async (req, res) => {
  */
 export const createGroup = async (req, res) => {
     try {
-      
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+        const { name, memberEmails } = req.body
+        
+        // Check if the goroup already exist
+        const group = await Group.findOne({ name: name });
+        if (group)
+          return res.status(401).json({ message: 'There is already an existing gruop with the same name' })
+
+        // Retrieve the list of users with their id from memberEmails
+        let memberUsers = await User.find({ email: { $in: memberEmails } })
+        memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
+
+        // Retrieve the list of all users
+        let allUsers = await User.find({})
+        allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
+
+        // Select not existing members
+        const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
+
+        // Select already in a group members
+        let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
+        alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
+        alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+
+        // Select members of the group
+        const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
+
+        if (members.length == 0) 
+          return res.status(401).json({ message: 'All the member emails don\'t exist or are already inside anothre group' })
+
+        // Creating a new group
+        const newGroup = new Group({ name, members })
+        newGroup.save()
+          .then(() => res.status(200).json({group: {name: name, members: members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound}))
+          .catch(err => { throw err })
+
     } catch (err) {
         res.status(500).json(err.message)
     }

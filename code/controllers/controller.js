@@ -119,7 +119,7 @@ export const getAllTransactions = async (req, res) => {
         transactions.aggregate([
             {
                 $lookup: {
-                    from: "categories",
+                    from: "categories", 
                     localField: "type",
                     foreignField: "type",
                     as: "categories_info"
@@ -148,13 +148,47 @@ export const getTransactionsByUser = async (req, res) => {
     try {
         //Distinction between route accessed by Admins or Regular users for functions that can be called by both
         //and different behaviors and access rights
-        if (req.url.indexOf("/transactions/users/") >= 0) {
-        } else {
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-}
+        if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
+            try {
+                const cookie = req.cookies
+                if (!cookie.accessToken) {
+                    return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+                }
+              
+                const username = req.params.username;
+                const matchedUser = await User.findOne({ username: username });
+                if(!matchedUser) {
+                    throw new Error("the user does not exist");
+                }
+                const matchedUsername = matchedUser.username;
+                transactions.aggregate([
+                    { $match: { username: matchedUsername }},
+                    {
+                        $lookup: {
+                            from: "categories",
+                            localField: "type",
+                            foreignField: "type",
+                            as: "categories_info"
+                        }
+                    },
+                    { $unwind: "$categories_info" }
+                ]).then((result) => {
+                    let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color,  }))
+                    res.json(data);
+                }).catch(error => { throw (error) })
+            } catch (error) {
+                if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
+                else res.status(400).json({ error: error.message })
+            }
+        }  else {   //user
+
+
+        //TO COMPLETE
+
+
+        }} catch (error) {
+        res.status(400).json({ error: error.message })}
+}          
 
 /**
  * Return all transactions made by a specific user filtered by a specific category
@@ -166,8 +200,43 @@ export const getTransactionsByUser = async (req, res) => {
  */
 export const getTransactionsByUserByCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+      
+        //Search user
+        const username = req.params.username;
+        const matchedUserid = await User.findOne({username: username });
+        if(!matchedUserid) {
+            throw new Error("the user does not exist");
+        }
+        //Search category
+        const category = req.params.category;
+        const matchedCategory = await categories.findOne({ category: category });
+        if(!matchedCategory) {
+            throw new Error("the category does not exist");
+        }
+
+
+        transactions.aggregate([
+            { $match: { username: username, type: category }},
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
+            res.json(data);
+        }).catch(error => { throw (error) })
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if(error.message == "the user does not exist" || error.message == "the category does not exist") res.status(401).json({ error: error.message });
+        else res.status(400).json({ error: error.message });
     }
 }
 
@@ -230,7 +299,23 @@ export const deleteTransaction = async (req, res) => {
  */
 export const deleteTransactions = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+
+        const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
+        // Check if all input IDs have corresponding transactions
+        console.log(matchingDocuments.length);
+        if (matchingDocuments.length !== req.body.array_id.length) {
+            throw new Error('At least one ID does not have a corresponding transaction.');
+        }
+        const result = await transactions.deleteMany({_id: { $in: req.body.array_id}}); 
+        
+        return res.json("deleted");
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if (error.message === 'At least one ID does not have a corresponding transaction.') {
+            res.status(401).json({ error: error.message });
+          } else res.status(400).json({ error: error.message })
     }
 }

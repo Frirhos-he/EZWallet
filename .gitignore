@@ -3,3 +3,5 @@ code/node_modules/
 code/coverage/
 code/data/
 code/.vscode
+
+node_modules

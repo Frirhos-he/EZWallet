@@ -80,12 +80,13 @@ export const createGroup = async (req, res) => {
         let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
         alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+        alreadyInGroup = alreadyInGroup.filter(m => memberEmails.includes(m.email))
 
         // Select members of the group
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
 
         if (members.length == 0) 
-          return res.status(401).json({ message: 'All the member emails don\'t exist or are already inside anothre group' })
+          return res.status(401).json({ message: 'All the members have emails taht don\'t exist or are already inside anothre group' })
 
         // Creating a new group
         const newGroup = new Group({ name, members })
@@ -108,6 +109,13 @@ export const createGroup = async (req, res) => {
  */
 export const getGroups = async (req, res) => {
     try {
+      // TODO ONLY FOR ADMINS
+
+      let groups = await Group.find({})
+      groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
+
+      res.status(200).json({groups})
+
     } catch (err) {
         res.status(500).json(err.message)
     }
@@ -123,6 +131,20 @@ export const getGroups = async (req, res) => {
  */
 export const getGroup = async (req, res) => {
     try {
+      const cookie = req.cookies
+      if (!cookie.accessToken) {
+          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+      }
+
+      const groupName = req.params.name
+      let group = await Group.findOne({name: groupName})
+
+      if (!group)
+        return res.status(401).json({ message: "The group doesn't exist" })
+
+      group = Object.assign({}, { name: group.name, members: group.members })
+
+      res.status(200).json({group})      
     } catch (err) {
         res.status(500).json(err.message)
     }
@@ -141,6 +163,52 @@ export const getGroup = async (req, res) => {
  */
 export const addToGroup = async (req, res) => {
     try {
+      const cookie = req.cookies
+      if (!cookie.accessToken) {
+          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+      }
+
+      const groupName = req.params.name
+      let group = await Group.findOne({name: groupName})
+
+      if (!group)
+        return res.status(401).json({ message: "The group doesn't exist" })
+
+      const memberEmails = req.body.members
+
+      // Retrieve the list of users with their id from memberEmails
+      let memberUsers = await User.find({ email: { $in: memberEmails } })
+      memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
+
+      // Retrieve the list of all users
+      let allUsers = await User.find({})
+      allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
+
+      // Select not existing members
+      const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
+
+      // Select already in a group members
+      let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
+      alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
+      alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+      alreadyInGroup = alreadyInGroup.filter(m => memberEmails.includes(m.email))
+
+      // Select members to add to the group
+      const newMembers = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
+      if (newMembers.length == 0) 
+        return res.status(401).json({ message: 'All the members have emails that don\'t exist or are already inside anothre group' })
+
+      // Add to the group the new users
+      let updatedGroup = await Group.findOneAndUpdate(
+        { name: groupName },
+        { $push: { members: { $each: newMembers } } },
+        { new: true }
+      )
+
+      updatedGroup = Object.assign({}, { name: updatedGroup.email, members: updatedGroup.members })
+
+      res.status(200).json({group: {name: groupName, members:updatedGroup.members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound})
+
     } catch (err) {
         res.status(500).json(err.message)
     }

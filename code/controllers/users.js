@@ -277,8 +277,24 @@ export const removeFromGroup = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
     try {
-    } catch (err) {
-        res.status(500).json(err.message)
+        if(verifyAuth(req, res, {authType: "User"})){
+
+        }else if(verifyAuth(req, res, {authType: "Admin"})){
+            const { email } = req.body;
+            const user = await User.findOne({ email });
+            if (!user) return res.status(401).json({ message: "User not found" });
+
+            await User.deleteOne({ email });
+
+            res.status(200).json({ message: "User deleted successfully" });
+        }
+        const cookie = req.cookies
+        if (!cookie.accessToken || !cookie.refreshToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+    } catch (error) {
+        res.status(500).json(error.message)
+    }
     }
 }
 

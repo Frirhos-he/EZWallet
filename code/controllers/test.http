@@ -32,8 +32,25 @@ Content-Type: application/json
 Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZpZ2ltb2RpQGdtYWlsLmNvbSIsImlkIjoiNjQyODAxMmZjNjFhOTRiNTJkOTI4MjZhIiwidXNlcm5hbWUiOiJGaWxpcHBvIEdyZWNvIiwicm9sZSI6IlJlZ3VsYXIiLCJpYXQiOjE2ODQyNDI4ODAsImV4cCI6MTY4NDI0NjQ4MH0.mP2eRJ2XSVQNx0XeC06ProqvbTLLfXJo33pnkcZ40LQ
 
 {
-    "name": "firstGroup",
     "members": ["newuser@gmail.com", "figimodi@gmail.com", "asdrubale@gmail.com"]
+}
+
+###
+
+DELETE http://localhost:3000/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "figimodi@gmail.com"
+}
+
+###
+
+DELETE http://localhost:3000/api/groups HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "firstGroup"
 }
 
 ###
@@ -55,7 +72,7 @@ POST http://localhost:3000/api/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "newuser",
-    "email": "newuser@gmail.com",
+    "username": "quinto",
+    "email": "quinto@gmail.com",
     "password": "1234"
 }

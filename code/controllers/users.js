@@ -344,11 +344,42 @@ export const removeFromGroup = async (req, res) => {
     - error 401 is returned if the user does not exist 
  */
 export const deleteUser = async (req, res) => {
-    try {
-    } catch (err) {
-        res.status(500).json(err.message)
+  try {
+    const userEmail = req.body.email;
+
+    // Check if the user exists
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      return res.status(401).json({ message: "The user doesn't exist" });
     }
-}
+
+    // Count the number of transactions to be deleted
+    const transactionCount = await transactions.countDocuments({ username: user.username });
+
+    // Delete the user's transactions
+    await transactions.deleteMany({ username: user.username });
+
+    // Delete the user
+    await User.deleteOne({ email: userEmail });
+
+    // Delete user from group
+    const deletedFromGroup = await Group.updateOne(
+      { members: { $elemMatch: { email: userEmail } } },
+      { $pull: { members: { email: userEmail } } }
+    );
+
+    console.log(deletedFromGroup)
+
+    res.status(200).json({
+      data: {
+        deletedTransactions: transactionCount,
+        deletedFromGroup: deletedFromGroup.modifiedCount > 0,
+      },
+    });
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+};
 
 /**
  * Delete a group
@@ -358,8 +389,20 @@ export const deleteUser = async (req, res) => {
     - error 401 is returned if the group does not exist
  */
 export const deleteGroup = async (req, res) => {
-    try {
-    } catch (err) {
-        res.status(500).json(err.message)
+  try {
+    const name = req.body.name;
+
+    // Check if the group exists
+    const group = await Group.findOne({ name: name });
+    if (!group) {
+      return res.status(401).json({ message: "The group doesn't exist" });
     }
-}
+
+    // Delete the group
+    await Group.deleteOne({ name: name });
+
+    res.status(200).json({ message: "Group deleted successfully" });
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+};

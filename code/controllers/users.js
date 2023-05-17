@@ -60,7 +60,7 @@ export const createGroup = async (req, res) => {
         }
         const { name, memberEmails } = req.body
         
-        // Check if the goroup already exist
+        // Check if the group already exist
         const group = await Group.findOne({ name: name });
         if (group)
           return res.status(401).json({ message: 'There is already an existing gruop with the same name' })
@@ -225,10 +225,56 @@ export const addToGroup = async (req, res) => {
     - error 401 is returned if all the `memberEmails` either do not exist or are not in the group
  */
 export const removeFromGroup = async (req, res) => {
-    try {
-    } catch (err) {
-        res.status(500).json(err.message)
+  try {
+    const cookie = req.cookies
+    if (!cookie.accessToken) {
+        return res.status(401).json({ message: "Unauthorized" }) // unauthorized
     }
+
+    const groupName = req.params.name
+
+    let group = await Group.findOne({name: groupName})
+
+    if (!group)
+      return res.status(401).json({ message: "The group doesn't exist" })
+
+    const memberEmails = req.body.members
+
+    // Retrieve the list of all users
+    let allUsers = await User.find({})
+    allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
+
+    // Select not existing members
+    const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
+
+    // Select members already in the group that will be deleted
+    let deleteMembers = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+    deleteMembers = deleteMembers.members.map(u => u.email);
+    deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))
+
+    if (deleteMembers.length == 0) 
+      return res.status(401).json({ message: 'All the members have emails that don\'t exist or are not in the group' })
+
+    //Select emails on group
+    let membersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 1})
+
+    // Select the memberEmails email that are not in the group already
+    let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
+ 
+    membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
+
+    //Update modification on member array
+    const updatedGroup = await membersInGroup.save();
+
+    //Select the users left in the group
+    let newMembersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+        newMembersInGroup = newMembersInGroup.members.map(u => u.email);
+
+    res.status(200).json({group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound})
+
+  } catch (err) {
+      res.status(500).json(err.message)
+  }
 }
 
 /**

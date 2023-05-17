@@ -33,7 +33,35 @@ export const createCategory = (req, res) => {
  */
 export const updateCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
 
+        const { type, color } = req.body;
+        //Check if parameters are valid
+        if (!type||!color) {
+            return res.status(401).json({ message: "Invalid new parameters" });
+        }
+
+        //Check if there is a category of the specified type
+        const foundCategory = await categories.findOne({ type: req.params.type });
+        if(!foundCategory){
+            return res.status(401).json({ message: "Category for type " + req.params.type + " not found" });
+        }
+
+        //Updating category
+        const updateCategories =  await categories.updateOne(
+            { type: req.params.type },
+            { $set: { type: type,  color: color } }
+        );
+        
+        //Updating transactions
+        const updateTransactions = await transactions.updateMany(
+            { type: req.params.type },
+            { $set: { type: type } }
+        );
+        return res.json({ message: "Categories successfully updated", count: updateTransactions.modifiedCount });
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -48,7 +76,31 @@ export const updateCategory = async (req, res) => {
  */
 export const deleteCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+        const typeList = req.body;
+        const typeListLength = typeList.length;
 
+        //Check if there is at least one category for every category type in request body
+        for(let i=0 ; i<typeListLength ; i++){
+            const foundCategory = await categories.findOne({ type: typeList[i] });
+            if(!foundCategory){
+                return res.status(401).json({ message: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
+            }
+        }
+
+        //Updating affected transactions
+        const updateResult =  await transactions.updateMany(
+            { type: { $in: typeList } },
+            { $set: { type: 'investment' } }
+        );
+
+        //Deletion
+        const deleteResult = await categories.deleteMany({ type: { $in: typeList } });
+
+        return res.json({message: "Categories successfully deleted", count: updateResult.modifiedCount});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -303,7 +355,7 @@ export const deleteTransactions = async (req, res) => {
         if (!cookie.accessToken) {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
         }
-
+        
         const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
         // Check if all input IDs have corresponding transactions
         console.log(matchingDocuments.length);

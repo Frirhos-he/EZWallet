@@ -6,9 +6,8 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
  * Create a new category
   - Request Body Content: An object having attributes `type` and `color`
   - Response `data` Content: An object having attributes `type` and `color`
- */
-export const createCategory = (req, res) => {
-    try {
+ */export const createCategory = (req, res) => {
+    try {  //current behaviour is that the app crash "needs to change file before starting"--> dunque in group lascio la stessa cosa?
         const cookie = req.cookies
         if (!cookie.accessToken) {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
@@ -22,6 +21,7 @@ export const createCategory = (req, res) => {
         res.status(400).json({ error: error.message })
     }
 }
+
 
 /**
  * Edit a category's type or color
@@ -154,13 +154,21 @@ export const getTransactionsByUser = async (req, res) => {
                 if (!cookie.accessToken) {
                     return res.status(401).json({ message: "Unauthorized" }) // unauthorized
                 }
-              
+
+                //Check if the user is admin NOT WORKING
+              //*  if(req.params.role != "admin"){
+               //         return res.status()
+               // }
+                
+                //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
                 const matchedUser = await User.findOne({ username: username });
                 if(!matchedUser) {
                     throw new Error("the user does not exist");
                 }
                 const matchedUsername = matchedUser.username;
+                
+                //Query the MONGODB Transactions
                 transactions.aggregate([
                     { $match: { username: matchedUsername }},
                     {
@@ -181,7 +189,6 @@ export const getTransactionsByUser = async (req, res) => {
                 else res.status(400).json({ error: error.message })
             }
         }  else {   //user
-
 
         //TO COMPLETE
 
@@ -205,13 +212,13 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
         }
       
-        //Search user
+        //Search requested user
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
         if(!matchedUserid) {
             throw new Error("the user does not exist");
         }
-        //Search category
+        //Search requested category
         const category = req.params.category;
         const matchedCategory = await categories.findOne({ category: category });
         if(!matchedCategory) {
@@ -250,8 +257,41 @@ export const getTransactionsByUserByCategory = async (req, res) => {
  */
 export const getTransactionsByGroup = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+      
+        //Search requested Group
+        const group = req.params.name;
+        const matchedGroup = await Group.findOne({group: group });
+        if(!matchedGroup) {
+            throw new Error("the group does not exist");
+        }
+
+        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersByUsername = await User.find({_id: {$in: usersById}}).select('username');
+
+        transactions.aggregate([
+            { $match: { username: { $in: usersByUsername } } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
+            res.json(data);
+        }).catch(error => { throw (error) })
+
+        
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if(error.message == "the group does not exist") res.status(401).json({ error: error.message });
+        else res.status(400).json({ error: error.message });    
     }
 }
 

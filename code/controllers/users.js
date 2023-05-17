@@ -60,7 +60,7 @@ export const createGroup = async (req, res) => {
         }
         const { name, memberEmails } = req.body
         
-        // Check if the goroup already exist
+        // Check if the group already exist
         const group = await Group.findOne({ name: name });
         if (group)
           return res.status(401).json({ message: 'There is already an existing gruop with the same name' })

@@ -270,7 +270,7 @@ export const removeFromGroup = async (req, res) => {
   }
 }
 
-/*
+/* FATTA DA FILIPPO MENTRE NON AVEVA PULLATO QUELLA FATTA DA BRUNO
 export const removeFromGroup = async (req, res) => {
     try {
       // TODO ADD AUTH

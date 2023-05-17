@@ -270,10 +270,11 @@ export const getTransactionsByGroup = async (req, res) => {
         }
 
         const usersById = matchedGroup.members.map((member) => member.user);
-        const usersByUsername = await User.find({_id: {$in: usersById}}).select('username');
-
+        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
+        
         transactions.aggregate([
-            { $match: { username: { $in: usersByUsername } } },
+            { $match: { username: { $in: usernames } } },
             {
                 $lookup: {
                     from: "categories",
@@ -305,8 +306,53 @@ export const getTransactionsByGroup = async (req, res) => {
  */
 export const getTransactionsByGroupByCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+      
+        //Search requested Group
+        const group = req.params.name;
+        const matchedGroup = await Group.findOne({group: group });
+        if(!matchedGroup) {
+            throw new Error("the group does not exist");
+        }
+
+        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
+        
+        //Search requested category
+        const type = req.params.category;
+        const matchedCategory = await categories.findOne({type: type});
+        if(!matchedCategory) {
+            throw new Error("the category does not exist");
+        }
+
+        console.log(type);
+        console.log(matchedCategory);
+
+        transactions.aggregate([
+            { $match: { username: { $in: usernames}, type: type } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
+            console.log(result);
+            res.json(data);
+        }).catch(error => { throw (error) })
+
+        
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if(error.message == "the group does not exist" || error.message == "the category does not exist") res.status(401).json({ error: error.message });
+        else res.status(400).json({ error: error.message });    
     }
 }
 

@@ -54,10 +54,9 @@ export const getUser = async (req, res) => {
  */
 export const createGroup = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        // TODO ADD AUTH  
+
+
         const { name, memberEmails } = req.body
         
         // Check if the goroup already exist
@@ -131,10 +130,7 @@ export const getGroups = async (req, res) => {
  */
 export const getGroup = async (req, res) => {
     try {
-      const cookie = req.cookies
-      if (!cookie.accessToken) {
-          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-      }
+      // TODO ADD AUTH
 
       const groupName = req.params.name
       let group = await Group.findOne({name: groupName})
@@ -163,10 +159,7 @@ export const getGroup = async (req, res) => {
  */
 export const addToGroup = async (req, res) => {
     try {
-      const cookie = req.cookies
-      if (!cookie.accessToken) {
-          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-      }
+      // TODO ADD AUTH
 
       const groupName = req.params.name
       let group = await Group.findOne({name: groupName})
@@ -205,7 +198,7 @@ export const addToGroup = async (req, res) => {
         { new: true }
       )
 
-      updatedGroup = Object.assign({}, { name: updatedGroup.email, members: updatedGroup.members })
+      updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members })
 
       res.status(200).json({group: {name: groupName, members:updatedGroup.members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound})
 
@@ -216,7 +209,7 @@ export const addToGroup = async (req, res) => {
 
 /**
  * Remove members from a group
-  - Request Body Content: An object having an attribute `group` (this object must have a string attribute for the `name` of the
+  - Response 'data' content: An object having an attribute `group` (this object must have a string attribute for the `name` of the
     created group and an array for the `members` of the group, this array must include only the remaining members),
     an array that lists the `notInGroup` members (members whose email is not in the group) and an array that lists 
     the `membersNotFound` (members whose email does not appear in the system)
@@ -226,11 +219,66 @@ export const addToGroup = async (req, res) => {
  */
 export const removeFromGroup = async (req, res) => {
     try {
+      // TODO ADD AUTH
+  
+      const groupName = req.params.name;
+      let group = await Group.findOne({ name: groupName });
+  
+      if (!group)
+        return res.status(401).json({ message: "The group doesn't exist" });
+  
+      const memberEmails = req.body.members;
+  
+      // Retrieve the list of users with their id from memberEmails
+      let memberUsers = await User.find({ email: { $in: memberEmails } });
+      memberUsers = memberUsers.map((v) =>
+        Object.assign({}, { email: v.email, user: v._id })
+      );
+  
+      // Retrieve the list of all users
+      let allUsers = await User.find({});
+      allUsers = allUsers.map((v) =>
+        Object.assign({}, { email: v.email, user: v._id })
+      );
+  
+      // Select not existing members
+      const membersNotFound = memberEmails.filter(
+        (e) => !allUsers.map((u) => u.email).includes(e)
+      );
+  
+      // Select members not in the group
+      const notInGroup = memberUsers.filter(
+        (m) =>
+          !group.members.map((u) => u.email).includes(m.email) &&
+          !membersNotFound.includes(m.email)
+      );
+  
+      if (notInGroup.length + membersNotFound === memberEmails.length)
+        return res
+          .status(401)
+          .json({ message: "All the members either don't exist or are not in the group" });
+  
+      // Remove the specified users from the group
+      let updatedGroup = await Group.findOneAndUpdate(
+        { name: groupName },
+        { $pull: { members: { email: { $in: memberEmails } } } },
+        { new: true }
+      );
+  
+      updatedGroup = Object.assign(
+        {},
+        { name: updatedGroup.name, members: updatedGroup.members }
+      );
+  
+      res.status(200).json({
+        group: { name: groupName, members: updatedGroup.members },
+        notInGroup: notInGroup,
+        membersNotFound: membersNotFound,
+      });
     } catch (err) {
-        res.status(500).json(err.message)
+      res.status(500).json(err.message);
     }
-}
-
+};
 /**
  * Delete a user
   - Request Parameters: None

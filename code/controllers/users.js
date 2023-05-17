@@ -120,7 +120,38 @@ export const getGroups = async (req, res) => {
         res.status(500).json(err.message)
     }
 }
- // The form for user and admin: 
+ 
+ 
+/**
+ * Return information of a specific group
+  - Request Body Content: None
+  - Response `data` Content: An object having a string attribute for the `name` of the group and an array for the 
+    `members` of the group
+  - Optional behavior:
+    - error 401 is returned if the group does not exist
+ */
+export const getGroup = async (req, res) => {
+    try {
+      const cookie = req.cookies
+      if (!cookie.accessToken) {
+          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+      }
+
+      const groupName = req.params.name
+      let group = await Group.findOne({name: groupName})
+
+      if (!group)
+        return res.status(401).json({ message: "The group doesn't exist" })
+
+      group = Object.assign({}, { name: group.name, members: group.members })
+
+      res.status(200).json({group})      
+    } catch (err) {
+        res.status(500).json(err.message)
+    }
+}
+
+// The form for user and admin: 
  export const getGroup = async (req, res) => {
   try {
     if (verifyAuth(req, res, { authType: "User" })) {
@@ -154,36 +185,6 @@ export const getGroups = async (req, res) => {
     res.status(500).json(error.message);
   }
 };
- 
-/**
- * Return information of a specific group
-  - Request Body Content: None
-  - Response `data` Content: An object having a string attribute for the `name` of the group and an array for the 
-    `members` of the group
-  - Optional behavior:
-    - error 401 is returned if the group does not exist
- */
-export const getGroup = async (req, res) => {
-    try {
-      const cookie = req.cookies
-      if (!cookie.accessToken) {
-          return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-      }
-
-      const groupName = req.params.name
-      let group = await Group.findOne({name: groupName})
-
-      if (!group)
-        return res.status(401).json({ message: "The group doesn't exist" })
-
-      group = Object.assign({}, { name: group.name, members: group.members })
-
-      res.status(200).json({group})      
-    } catch (err) {
-        res.status(500).json(err.message)
-    }
-}
-
 /**
  * Add new members to a group
   - Request Body Content: An array of strings containing the emails of the members to add to the group

@@ -120,7 +120,41 @@ export const getGroups = async (req, res) => {
         res.status(500).json(err.message)
     }
 }
+ // The form for user and admin: 
+ export const getGroup = async (req, res) => {
+  try {
+    if (verifyAuth(req, res, { authType: "User" })) {
+      const groupName = req.params.name;
+      const userId = req.user.id; // Assuming the user ID is stored in req.user.id
 
+      const group = await Group.findOne({ name: groupName, userId });
+
+      if (!group) {
+        return res.status(401).json({ message: "Group not found" });
+      }
+
+      res.status(200).json(group);
+    } else if (verifyAuth(req, res, { authType: "Admin" })) {
+      const groupName = req.params.name;
+
+      const group = await Group.findOne({ name: groupName });
+
+      if (!group) {
+        return res.status(401).json({ message: "Group not found" });
+      }
+
+      res.status(200).json(group);
+    }
+
+    const cookie = req.cookies;
+    if (!cookie.accessToken || !cookie.refreshToken) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+ 
 /**
  * Return information of a specific group
   - Request Body Content: None

@@ -6,9 +6,8 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
  * Create a new category
   - Request Body Content: An object having attributes `type` and `color`
   - Response `data` Content: An object having attributes `type` and `color`
- */
-export const createCategory = (req, res) => {
-    try {
+ */export const createCategory = (req, res) => {
+    try {  //current behaviour is that the app crash "needs to change file before starting"--> dunque in group lascio la stessa cosa?
         const cookie = req.cookies
         if (!cookie.accessToken) {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
@@ -23,6 +22,7 @@ export const createCategory = (req, res) => {
     }
 }
 
+
 /**
  * Edit a category's type or color
   - Request Body Content: An object having attributes `type` and `color` equal to the new values to assign to the category
@@ -33,7 +33,35 @@ export const createCategory = (req, res) => {
  */
 export const updateCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
 
+        const { type, color } = req.body;
+        //Check if parameters are valid
+        if (!type||!color) {
+            return res.status(401).json({ message: "Invalid new parameters" });
+        }
+
+        //Check if there is a category of the specified type
+        const foundCategory = await categories.findOne({ type: req.params.type });
+        if(!foundCategory){
+            return res.status(401).json({ message: "Category for type " + req.params.type + " not found" });
+        }
+
+        //Updating category
+        const updateCategories =  await categories.updateOne(
+            { type: req.params.type },
+            { $set: { type: type,  color: color } }
+        );
+        
+        //Updating transactions
+        const updateTransactions = await transactions.updateMany(
+            { type: req.params.type },
+            { $set: { type: type } }
+        );
+        return res.json({ message: "Categories successfully updated", count: updateTransactions.modifiedCount });
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -48,7 +76,31 @@ export const updateCategory = async (req, res) => {
  */
 export const deleteCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+        const typeList = req.body;
+        const typeListLength = typeList.length;
 
+        //Check if there is at least one category for every category type in request body
+        for(let i=0 ; i<typeListLength ; i++){
+            const foundCategory = await categories.findOne({ type: typeList[i] });
+            if(!foundCategory){
+                return res.status(401).json({ message: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
+            }
+        }
+
+        //Updating affected transactions
+        const updateResult =  await transactions.updateMany(
+            { type: { $in: typeList } },
+            { $set: { type: 'investment' } }
+        );
+
+        //Deletion
+        const deleteResult = await categories.deleteMany({ type: { $in: typeList } });
+
+        return res.json({message: "Categories successfully deleted", count: updateResult.modifiedCount});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -154,13 +206,21 @@ export const getTransactionsByUser = async (req, res) => {
                 if (!cookie.accessToken) {
                     return res.status(401).json({ message: "Unauthorized" }) // unauthorized
                 }
-              
+
+                //Check if the user is admin NOT WORKING
+              //*  if(req.params.role != "admin"){
+               //         return res.status()
+               // }
+                
+                //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
                 const matchedUser = await User.findOne({ username: username });
                 if(!matchedUser) {
                     throw new Error("the user does not exist");
                 }
                 const matchedUsername = matchedUser.username;
+                
+                //Query the MONGODB Transactions
                 transactions.aggregate([
                     { $match: { username: matchedUsername }},
                     {
@@ -181,7 +241,6 @@ export const getTransactionsByUser = async (req, res) => {
                 else res.status(400).json({ error: error.message })
             }
         }  else {   //user
-
 
         //TO COMPLETE
 
@@ -205,13 +264,13 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
         }
       
-        //Search user
+        //Search requested user
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
         if(!matchedUserid) {
             throw new Error("the user does not exist");
         }
-        //Search category
+        //Search requested category
         const category = req.params.category;
         const matchedCategory = await categories.findOne({ category: category });
         if(!matchedCategory) {
@@ -250,8 +309,42 @@ export const getTransactionsByUserByCategory = async (req, res) => {
  */
 export const getTransactionsByGroup = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+      
+        //Search requested Group
+        const group = req.params.name;
+        const matchedGroup = await Group.findOne({group: group });
+        if(!matchedGroup) {
+            throw new Error("the group does not exist");
+        }
+
+        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
+        
+        transactions.aggregate([
+            { $match: { username: { $in: usernames } } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
+            res.json(data);
+        }).catch(error => { throw (error) })
+
+        
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if(error.message == "the group does not exist") res.status(401).json({ error: error.message });
+        else res.status(400).json({ error: error.message });    
     }
 }
 
@@ -265,8 +358,53 @@ export const getTransactionsByGroup = async (req, res) => {
  */
 export const getTransactionsByGroupByCategory = async (req, res) => {
     try {
+        const cookie = req.cookies
+        if (!cookie.accessToken) {
+            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        }
+      
+        //Search requested Group
+        const group = req.params.name;
+        const matchedGroup = await Group.findOne({group: group });
+        if(!matchedGroup) {
+            throw new Error("the group does not exist");
+        }
+
+        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
+        
+        //Search requested category
+        const type = req.params.category;
+        const matchedCategory = await categories.findOne({type: type});
+        if(!matchedCategory) {
+            throw new Error("the category does not exist");
+        }
+
+        console.log(type);
+        console.log(matchedCategory);
+
+        transactions.aggregate([
+            { $match: { username: { $in: usernames}, type: type } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
+            console.log(result);
+            res.json(data);
+        }).catch(error => { throw (error) })
+
+        
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        if(error.message == "the group does not exist" || error.message == "the category does not exist") res.status(401).json({ error: error.message });
+        else res.status(400).json({ error: error.message });    
     }
 }
 
@@ -303,7 +441,7 @@ export const deleteTransactions = async (req, res) => {
         if (!cookie.accessToken) {
             return res.status(401).json({ message: "Unauthorized" }) // unauthorized
         }
-
+        
         const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
         // Check if all input IDs have corresponding transactions
         console.log(matchingDocuments.length);

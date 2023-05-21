@@ -62,31 +62,26 @@ export const handleDateFilterParams = (req) => {
 export const verifyAuth = (req, res, info) => {
     const cookie = req.cookies
     if (!cookie.accessToken || !cookie.refreshToken) {
-        res.status(401).json({ message: "Unauthorized" });
-        return false;
+        return res.status(401).json({ message: "Unauthorized" });
     }
     try {
         const decodedAccessToken = jwt.verify(cookie.accessToken, process.env.ACCESS_KEY);
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
         if (!decodedAccessToken.username || !decodedAccessToken.email || !decodedAccessToken.role) {
-            res.status(401).json({ message: "Token is missing information" })
-            return false
+            return res.status(401).json({ message: "Token is missing information" })
         }
         if (!decodedRefreshToken.username || !decodedRefreshToken.email || !decodedRefreshToken.role) {
-            res.status(401).json({ message: "Token is missing information" })
-            return false
+            return res.status(401).json({ message: "Token is missing information" })
         }
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
-            res.status(401).json({ message: "Mismatched users" });
-            return false;
+            return res.status(401).json({ message: "Mismatched users" });
         }
 
         const authType = info.authType;
         const currentTime = Math.floor(Date.now() / 1000);
 
         if(!authType) {
-            res.status(401).json({ message: "Auth type is not defined" });
-            return false;  
+            return res.status(401).json({ message: "Auth type is not defined" });
         }
 
         switch(authType) {
@@ -99,8 +94,8 @@ export const verifyAuth = (req, res, info) => {
                   throw new Error("TokenExpiredError")
               }
               if (username != decodedAccessToken.username || username != decodedRefreshToken.username) {
-                  res.status(401).json({ message: "The username differs from the requested one" });
-                  return false;
+                  return res.status(401).json({ message: "The username differs from the requested one" });
+      
               }
 
               break;
@@ -110,8 +105,8 @@ export const verifyAuth = (req, res, info) => {
                 throw new Error("TokenExpiredError")
               }
               if (role != decodedAccessToken.role || role != decodedRefreshToken.role) {
-                  res.status(401).json({ message: "The role differs from the requested one" });
-                  return false;
+                  return res.status(401).json({ message: "The role differs from the requested one" });
+      
               }
               break;
 
@@ -122,18 +117,17 @@ export const verifyAuth = (req, res, info) => {
               }
               if (!members.includes(decodedAccessToken.email) || !members.includes(decodedRefreshToken.email))
               {
-                  res.status(401).json({ message: "The user is not in the group" });
-                  return false;
+                  return res.status(401).json({ message: "The user is not in the group" });
+      
               }
               break;
 
             default:
-              res.status(401).json({ message: "Auth type is not defined" })
-              return false;
+              return res.status(401).json({ message: "Auth type is not defined" })
+  
         }
 
-        res.status(200).json({ authorized: true })
-        return true
+        return res.status(200).json({ authorized: true })
     } catch (err) {
         if (err.name === "TokenExpiredError") {
             try {

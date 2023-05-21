@@ -80,6 +80,59 @@ export const verifyAuth = (req, res, info) => {
             res.status(401).json({ message: "Mismatched users" });
             return false;
         }
+
+        const authType = info.authType;
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if(!authType) {
+            res.status(401).json({ message: "Auth type is not defined" });
+            return false;  
+        }
+
+        switch(authType) {
+            case "Simple":
+              break;
+
+            case "User":
+              const username = info.username;
+              if (decodedAccessToken.exp < currentTime && username != decodedRefreshToken.username) {
+                  throw new Error("TokenExpiredError")
+              }
+              if (username != decodedAccessToken.username || username != decodedRefreshToken.username) {
+                  res.status(401).json({ message: "The username differs from the requested one" });
+                  return false;
+              }
+
+              break;
+            case "Admin":
+              const role = info.role;
+              if (decodedAccessToken.exp < currentTime && role != decodedRefreshToken.role) {
+                throw new Error("TokenExpiredError")
+              }
+              if (role != decodedAccessToken.role || role != decodedRefreshToken.role) {
+                  res.status(401).json({ message: "The role differs from the requested one" });
+                  return false;
+              }
+              break;
+
+            case "Group":
+              const members = info.members;
+              if (decodedAccessToken.exp < currentTime && !members.includes(decodedRefreshToken.email)) {
+                throw new Error("TokenExpiredError")
+              }
+              if (!members.includes(decodedAccessToken.email) || !members.includes(decodedRefreshToken.email))
+              {
+                  res.status(401).json({ message: "The user is not in the group" });
+                  return false;
+              }
+              break;
+
+            default:
+              res.status(401).json({ message: "Auth type is not defined" })
+              return false;
+        }
+
+        res.status(200).json({ authorized: true })
         return true
     } catch (err) {
         if (err.name === "TokenExpiredError") {

@@ -21,9 +21,9 @@ export const register = async (req, res) => {
             email,
             password: hashedPassword,
         });
-        res.status(200).json('user added succesfully');
+        res.status(200).json({ data: {message:'user added succesfully' }});
     } catch (err) {
-        res.status(400).json(err);
+        res.status(400).json({ error: err.message });
     }
 };
 
@@ -46,9 +46,9 @@ export const registerAdmin = async (req, res) => {
             password: hashedPassword,
             role: "Admin"
         });
-        res.status(200).json('admin added succesfully');
+        res.status(200).json({ data: {message:'admin added succesfully' }});
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({ error: err.message });
     }
 
 }
@@ -112,7 +112,7 @@ export const logout = async (req, res) => {
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         res.cookie('refreshToken', "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         const savedUser = await user.save()
-        res.status(200).json('logged out')
+        res.status(200).json({data: {message:'logged out'}})
     } catch (error) {
         res.status(400).json(error)
     }

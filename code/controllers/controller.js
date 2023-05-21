@@ -8,10 +8,11 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
   - Response `data` Content: An object having attributes `type` and `color`
  */export const createCategory = (req, res) => {
     try {  //current behaviour is that the app crash "needs to change file before starting"--> dunque in group lascio la stessa cosa?
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+
+        if(!adminAuth.authorized)
+            return res.status(401).json({ error: adminAuth.message }) 
+
         const { type, color } = req.body;
         const new_categories = new categories({ type, color });
         new_categories.save()
@@ -33,21 +34,21 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
  */
 export const updateCategory = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+
+        if(!adminAuth.authorized)
+            return res.status(401).json({ error: adminAuth.message }) 
 
         const { type, color } = req.body;
         //Check if parameters are valid
         if (!type||!color) {
-            return res.status(401).json({ message: "Invalid new parameters" });
+            return res.status(401).json({ error: "Invalid new parameters" });
         }
 
         //Check if there is a category of the specified type
         const foundCategory = await categories.findOne({ type: req.params.type });
         if(!foundCategory){
-            return res.status(401).json({ message: "Category for type " + req.params.type + " not found" });
+            return res.status(401).json({ error: "Category for type " + req.params.type + " not found" });
         }
 
         //Updating category
@@ -76,10 +77,11 @@ export const updateCategory = async (req, res) => {
  */
 export const deleteCategory = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+
+        if(!adminAuth.authorized)
+            return res.status(401).json({ error: adminAuth.message }) 
+
         const typeList = req.body;
         const typeListLength = typeList.length;
 
@@ -87,7 +89,7 @@ export const deleteCategory = async (req, res) => {
         for(let i=0 ; i<typeListLength ; i++){
             const foundCategory = await categories.findOne({ type: typeList[i] });
             if(!foundCategory){
-                return res.status(401).json({ message: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
+                return res.status(401).json({ error: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
             }
         }
 
@@ -115,10 +117,11 @@ export const deleteCategory = async (req, res) => {
  */
 export const getCategories = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
+
+        if(!simpleAuth.authorized)
+            return res.status(401).json({ error: simpleAuth.message }) 
+
         let data = await categories.find({})
 
         let filter = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
@@ -138,10 +141,15 @@ export const getCategories = async (req, res) => {
  */
 export const createTransaction = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        const userAuth = verifyAuth(req, res, { authType: "User", username: req.body.username })
+
+        if(!userAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
+        
         const { username, amount, type } = req.body;
         const new_transactions = new transactions({ username, amount, type });
         new_transactions.save()
@@ -161,9 +169,13 @@ export const createTransaction = async (req, res) => {
  */
 export const getAllTransactions = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+
+        if(!userAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
@@ -202,15 +214,14 @@ export const getTransactionsByUser = async (req, res) => {
         //and different behaviors and access rights
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             try {
-                const cookie = req.cookies
-                if (!cookie.accessToken) {
-                    return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-                }
+                const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-                //Check if the user is admin NOT WORKING
-              //*  if(req.params.role != "admin"){
-               //         return res.status()
-               // }
+                if(!userAuth.authorized)
+                {
+                    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+                    if (!adminAuth.authorized)
+                        return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
+                }
                 
                 //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
@@ -259,9 +270,13 @@ export const getTransactionsByUser = async (req, res) => {
  */
 export const getTransactionsByUserByCategory = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+
+        if(!userAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
       
         //Search requested user
@@ -309,16 +324,18 @@ export const getTransactionsByUserByCategory = async (req, res) => {
  */
 export const getTransactionsByGroup = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
-      
-        //Search requested Group
         const group = req.params.name;
         const matchedGroup = await Group.findOne({group: group });
-        if(!matchedGroup) {
-            throw new Error("the group does not exist");
+        if (!matchedGroup)
+          return res.status(401).json({ message: "The group doesn't exist" })
+
+        const groupAuth = verifyAuth(req, res, { authType: "Group", members: matchedGroup.members })
+
+        if(!groupAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "groupAuth: " + groupAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
 
         const usersById = matchedGroup.members.map((member) => member.user);
@@ -358,16 +375,18 @@ export const getTransactionsByGroup = async (req, res) => {
  */
 export const getTransactionsByGroupByCategory = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
-      
-        //Search requested Group
         const group = req.params.name;
         const matchedGroup = await Group.findOne({group: group });
-        if(!matchedGroup) {
-            throw new Error("the group does not exist");
+        if (!matchedGroup)
+          return res.status(401).json({ message: "The group doesn't exist" })
+
+        const groupAuth = verifyAuth(req, res, { authType: "Group", members: matchedGroup.members })
+
+        if(!groupAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "groupAuth: " + groupAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
 
         const usersById = matchedGroup.members.map((member) => member.user);
@@ -417,10 +436,15 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
  */
 export const deleteTransaction = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+
+        if(!userAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
+
         let data = await transactions.deleteOne({ _id: req.body._id });
         return res.json("deleted");
     } catch (error) {
@@ -437,10 +461,10 @@ export const deleteTransaction = async (req, res) => {
  */
 export const deleteTransactions = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
-        }
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+
+        if(!adminAuth.authorized)
+            return res.status(401).json({ error: adminAuth.message }) 
         
         const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
         // Check if all input IDs have corresponding transactions

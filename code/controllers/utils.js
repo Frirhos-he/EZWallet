@@ -100,11 +100,10 @@ export const verifyAuth = (req, res, info) => {
 
               break;
             case "Admin":
-              const role = info.role;
-              if (decodedAccessToken.exp < currentTime && role != decodedRefreshToken.role) {
+              if (decodedAccessToken.exp < currentTime && "Admin" != decodedRefreshToken.role) {
                 throw new Error("TokenExpiredError")
               }
-              if (role != decodedAccessToken.role || role != decodedRefreshToken.role) {
+              if ("Admin" != decodedAccessToken.role || "Admin" != decodedRefreshToken.role) {
                   return res.status(401).json({ message: "The role differs from the requested one" });
       
               }
@@ -126,7 +125,6 @@ export const verifyAuth = (req, res, info) => {
               return res.status(401).json({ message: "Auth type is not defined" })
   
         }
-
         return res.status(200).json({ authorized: true })
     } catch (err) {
         if (err.name === "TokenExpiredError") {

@@ -345,6 +345,9 @@ export const removeFromGroup = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
   try {
+
+    //TODO : DON'T DELETE USER WHEN HE'S THE ONLY ONE REMAINED IN THE GROUP
+
     const userEmail = req.body.email;
 
     // Check if the user exists

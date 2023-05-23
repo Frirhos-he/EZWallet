@@ -14,7 +14,7 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
             return res.status(401).json({ error: adminAuth.message }) 
 
         const { type, color } = req.body;
-        const new_categories = new categories({ type, color });
+        const new_categories = new categories({ data: { type, color }});
         new_categories.save()
             .then(data => res.json(data))
             .catch(err => { throw err })
@@ -62,7 +62,7 @@ export const updateCategory = async (req, res) => {
             { type: req.params.type },
             { $set: { type: type } }
         );
-        return res.json({ message: "Categories successfully updated", count: updateTransactions.modifiedCount });
+        return res.json({ data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount } });
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -102,7 +102,7 @@ export const deleteCategory = async (req, res) => {
         //Deletion
         const deleteResult = await categories.deleteMany({ type: { $in: typeList } });
 
-        return res.json({message: "Categories successfully deleted", count: updateResult.modifiedCount});
+        return res.json({ data: { message: "Categories successfully deleted", count: updateResult.modifiedCount }});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -126,7 +126,7 @@ export const getCategories = async (req, res) => {
 
         let filter = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
 
-        return res.json(filter)
+        return res.json({data: { categories: filter }})
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -153,7 +153,7 @@ export const createTransaction = async (req, res) => {
         const { username, amount, type } = req.body;
         const new_transactions = new transactions({ username, amount, type });
         new_transactions.save()
-            .then(data => res.json(data))
+            .then(data => res.json({ data: { username: data.username, amount: data.amount , type: data.type, date: data.date }}))
             .catch(err => { throw err })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -192,7 +192,7 @@ export const getAllTransactions = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json(data);
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -227,7 +227,7 @@ export const getTransactionsByUser = async (req, res) => {
                 const username = req.params.username;
                 const matchedUser = await User.findOne({ username: username });
                 if(!matchedUser) {
-                    throw new Error("the user does not exist");
+                    return res.status(401).json({ error: "the user does not exist" })
                 }
                 const matchedUsername = matchedUser.username;
                 
@@ -245,7 +245,7 @@ export const getTransactionsByUser = async (req, res) => {
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
                     let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color,  }))
-                    res.json(data);
+                    res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
                 }).catch(error => { throw (error) })
             } catch (error) {
                 if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
@@ -257,7 +257,8 @@ export const getTransactionsByUser = async (req, res) => {
 
 
         }} catch (error) {
-        res.status(400).json({ error: error.message })}
+        res.status(400).json({ error: error.message })
+        }
 }          
 
 /**
@@ -283,13 +284,13 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
         if(!matchedUserid) {
-            throw new Error("the user does not exist");
+            return res.status(401).json({ error :"the user does not exist" });
         }
         //Search requested category
         const category = req.params.category;
         const matchedCategory = await categories.findOne({ category: category });
         if(!matchedCategory) {
-            throw new Error("the category does not exist");
+            return res.status(401).json({ error: "the category does not exist" });
         }
 
 
@@ -306,11 +307,10 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json(data);
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
         }).catch(error => { throw (error) })
     } catch (error) {
-        if(error.message == "the user does not exist" || error.message == "the category does not exist") res.status(401).json({ error: error.message });
-        else res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 }
 
@@ -355,13 +355,12 @@ export const getTransactionsByGroup = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json(data);
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
         }).catch(error => { throw (error) })
 
         
     } catch (error) {
-        if(error.message == "the group does not exist") res.status(401).json({ error: error.message });
-        else res.status(400).json({ error: error.message });    
+        res.status(400).json({ error: error.message });    
     }
 }
 
@@ -397,7 +396,7 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
         const type = req.params.category;
         const matchedCategory = await categories.findOne({type: type});
         if(!matchedCategory) {
-            throw new Error("the category does not exist");
+            return res.status(401).json({ error: "the category does not exist" });
         }
 
         console.log(type);
@@ -416,14 +415,11 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            console.log(result);
-            res.json(data);
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
         }).catch(error => { throw (error) })
 
-        
     } catch (error) {
-        if(error.message == "the group does not exist" || error.message == "the category does not exist") res.status(401).json({ error: error.message });
-        else res.status(400).json({ error: error.message });    
+        res.status(400).json({ error: error.message });    
     }
 }
 
@@ -446,7 +442,7 @@ export const deleteTransaction = async (req, res) => {
         }
 
         let data = await transactions.deleteOne({ _id: req.body._id });
-        return res.json("deleted");
+        return res.json({ data: { message: "deleted" }});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -470,11 +466,11 @@ export const deleteTransactions = async (req, res) => {
         // Check if all input IDs have corresponding transactions
         console.log(matchingDocuments.length);
         if (matchingDocuments.length !== req.body.array_id.length) {
-            throw new Error('At least one ID does not have a corresponding transaction.');
+            return res.status(401).json({ error: 'At least one ID does not have a corresponding transaction.' });
         }
         const result = await transactions.deleteMany({_id: { $in: req.body.array_id}}); 
         
-        return res.json("deleted");
+        return res.json({ data: { message: "deleted" }});
     } catch (error) {
         if (error.message === 'At least one ID does not have a corresponding transaction.') {
             res.status(401).json({ error: error.message });

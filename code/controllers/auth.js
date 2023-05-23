@@ -14,14 +14,14 @@ export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
         const existingUser = await User.findOne({ email: req.body.email });
-        if (existingUser) return res.status(400).json({ message: "you are already registered" });
+        if (existingUser) return res.status(400).json({ error: "you are already registered" });
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
         });
-        res.status(200).json({ data: {message:'user added succesfully' }});
+        res.status(200).json({ data: { message:'user added succesfully' }});
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -38,7 +38,7 @@ export const registerAdmin = async (req, res) => {
     try {
         const { username, email, password } = req.body
         const existingUser = await User.findOne({ email: req.body.email });
-        if (existingUser) return res.status(400).json({ message: "you are already registered" });
+        if (existingUser) return res.status(400).json({ error: "you are already registered" });
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await User.create({
             username,
@@ -46,9 +46,9 @@ export const registerAdmin = async (req, res) => {
             password: hashedPassword,
             role: "Admin"
         });
-        res.status(200).json({ data: {message:'admin added succesfully' }});
+        res.status(200).json({ data: { message:'admin added succesfully' }});
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 
 }
@@ -65,7 +65,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body
     const cookie = req.cookies
     const existingUser = await User.findOne({ email: email })
-    if (!existingUser) return res.status(400).json('please you need to register')
+    if (!existingUser) return res.status(400).json({ error: 'please you need to register' })
     try {
         const match = await bcrypt.compare(password, existingUser.password)
         if (!match) return res.status(400).json('wrong credentials')
@@ -104,7 +104,7 @@ export const login = async (req, res) => {
  */
 export const logout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
-    if (!refreshToken) return res.status(400).json("user not found")
+    if (!refreshToken) return res.status(400).json({ error: "user not found" })
     const user = await User.findOne({ refreshToken: refreshToken })
     if (!user) return res.status(400).json('user not found')
     try {
@@ -112,7 +112,7 @@ export const logout = async (req, res) => {
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         res.cookie('refreshToken', "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         const savedUser = await user.save()
-        res.status(200).json({data: {message:'logged out'}})
+        res.status(200).json({data: { message:'logged out' }})
     } catch (error) {
         res.status(400).json({ error: error.message })
     }

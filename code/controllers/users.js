@@ -14,7 +14,7 @@ export const getUsers = async (req, res) => {
         const users = await User.find();
         res.status(200).json(users);
     } catch (error) {
-        res.status(500).json(error.message);
+        res.status(500).json({ error: error.message });
     }
 }
 
@@ -29,7 +29,7 @@ export const getUser = async (req, res) => {
     try {
         const cookie = req.cookies
         if (!cookie.accessToken || !cookie.refreshToken) {
-            return res.status(401).json({ message: "Unauthorized" }) // unauthorized
+            return res.status(401).json({ error: "Unauthorized" }) // unauthorized
         }
         const username = req.params.username
         const user = await User.findOne({ refreshToken: cookie.refreshToken })

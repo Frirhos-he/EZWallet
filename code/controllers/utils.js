@@ -62,26 +62,26 @@ export const handleDateFilterParams = (req) => {
 export const verifyAuth = (req, res, info) => {
     const cookie = req.cookies
     if (!cookie.accessToken || !cookie.refreshToken) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ authorized: false, message: "Unauthorized" });
     }
     try {
         const decodedAccessToken = jwt.verify(cookie.accessToken, process.env.ACCESS_KEY);
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
         if (!decodedAccessToken.username || !decodedAccessToken.email || !decodedAccessToken.role) {
-            return res.status(401).json({ message: "Token is missing information" })
+            return res.status(401).json({ authorized: false, message: "Token is missing information" })
         }
         if (!decodedRefreshToken.username || !decodedRefreshToken.email || !decodedRefreshToken.role) {
-            return res.status(401).json({ message: "Token is missing information" })
+            return res.status(401).json({ authorized: false, message: "Token is missing information" })
         }
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
-            return res.status(401).json({ message: "Mismatched users" });
+            return res.status(401).json({ authorized: false, message: "Mismatched users" });
         }
 
         const authType = info.authType;
         const currentTime = Math.floor(Date.now() / 1000);
 
         if(!authType) {
-            return res.status(401).json({ message: "Auth type is not defined" });
+            return res.status(401).json({ authorized: false, message: "Auth type is not defined" });
         }
 
         switch(authType) {
@@ -90,39 +90,45 @@ export const verifyAuth = (req, res, info) => {
 
             case "User":
               const username = info.username;
-              if (decodedAccessToken.exp < currentTime && username != decodedRefreshToken.username) {
+              if (username != decodedRefreshToken.username) {
+                return res.status(401).json({ authorized: false, message: "The username differs from the requested one" });
+              }
+              if (decodedAccessToken.exp < currentTime) {
                   throw new Error("TokenExpiredError")
               }
-              if (username != decodedAccessToken.username || username != decodedRefreshToken.username) {
-                  return res.status(401).json({ message: "The username differs from the requested one" });
+              if (username != decodedAccessToken.username) {
+                  return res.status(401).json({ authorized: false, message: "The username differs from the requested one" });
       
               }
 
               break;
             case "Admin":
-              if (decodedAccessToken.exp < currentTime && "Admin" != decodedRefreshToken.role) {
-                throw new Error("TokenExpiredError")
+              if ("Admin" != decodedRefreshToken.role) {
+                  return res.status(401).json({ authorized: false, message: "The role differs from the requested one" });
               }
-              if ("Admin" != decodedAccessToken.role || "Admin" != decodedRefreshToken.role) {
-                  return res.status(401).json({ message: "The role differs from the requested one" });
-      
+              if (decodedAccessToken.exp < currentTime) {
+                  throw new Error("TokenExpiredError")
+              }
+              if ("Admin" != decodedAccessToken.role) {
+                  return res.status(401).json({ authorized: false, message: "The role differs from the requested one" });
               }
               break;
 
             case "Group":
               const members = info.members;
-              if (decodedAccessToken.exp < currentTime && !members.includes(decodedRefreshToken.email)) {
-                throw new Error("TokenExpiredError")
+              if (!members.includes(decodedRefreshToken.email)) {
+                  return res.status(401).json({ authorized: false,  message: "The user is not in the group" });
               }
-              if (!members.includes(decodedAccessToken.email) || !members.includes(decodedRefreshToken.email))
-              {
-                  return res.status(401).json({ message: "The user is not in the group" });
-      
+              if (decodedAccessToken.exp < currentTime) {
+                  throw new Error("TokenExpiredError")
+              }
+              if (!members.includes(decodedAccessToken.email)) {
+                  return res.status(401).json({ authorized: false, message: "The user is not in the group" });
               }
               break;
 
             default:
-              return res.status(401).json({ message: "Auth type is not defined" })
+              return res.status(401).json({ authorized: false, message: "Auth type is not defined" })
   
         }
         return res.status(200).json({ authorized: true })
@@ -138,18 +144,16 @@ export const verifyAuth = (req, res, info) => {
                 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
                 res.cookie('accessToken', newAccessToken, { httpOnly: true, path: '/api', maxAge: 60 * 60 * 1000, sameSite: 'none', secure: true })
                 res.locals.message = 'Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls'
-                return true
+                return
             } catch (err) {
                 if (err.name === "TokenExpiredError") {
-                    res.status(401).json({ message: "Perform login again" });
+                    return res.status(401).json({ authorized: false, message: "Perform login again" });
                 } else {
-                    res.status(401).json({ message: err.name });
+                    return res.status(401).json({ authorized: false, message: err.name });
                 }
-                return false;
             }
         } else {
-            res.status(401).json({ message: err.name });
-            return false;
+            return res.status(401).json({ authorized: false, message: err.name });
         }
     }
 }

@@ -14,9 +14,9 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
             return res.status(401).json({ error: adminAuth.message }) 
 
         const { type, color } = req.body;
-        const new_categories = new categories({ data: { type, color }});
+        const new_categories = new categories({ type, color });
         new_categories.save()
-            .then(data => res.json(data))
+            .then(data => res.json({ data: { type: data.type, color: data.color }, message: res.locals.refreshedToken }))
             .catch(err => { throw err })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -62,7 +62,7 @@ export const updateCategory = async (req, res) => {
             { type: req.params.type },
             { $set: { type: type } }
         );
-        return res.json({ data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount } });
+        return res.json({ data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount }, message: res.locals.refreshedToken });
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -102,7 +102,7 @@ export const deleteCategory = async (req, res) => {
         //Deletion
         const deleteResult = await categories.deleteMany({ type: { $in: typeList } });
 
-        return res.json({ data: { message: "Categories successfully deleted", count: updateResult.modifiedCount }});
+        return res.json({ data: { message: "Categories successfully deleted", count: updateResult.modifiedCount }, message: res.locals.refreshedToken});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -126,7 +126,7 @@ export const getCategories = async (req, res) => {
 
         let filter = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
 
-        return res.json({data: { categories: filter }})
+        return res.json({data: { categories: filter }, message: res.locals.refreshedToken })
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -153,7 +153,7 @@ export const createTransaction = async (req, res) => {
         const { username, amount, type } = req.body;
         const new_transactions = new transactions({ username, amount, type });
         new_transactions.save()
-            .then(data => res.json({ data: { username: data.username, amount: data.amount , type: data.type, date: data.date }}))
+            .then(data => res.json({ data: { username: data.username, amount: data.amount , type: data.type, date: data.date }, message: res.locals.refreshedToken }))
             .catch(err => { throw err })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -192,7 +192,7 @@ export const getAllTransactions = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -245,7 +245,7 @@ export const getTransactionsByUser = async (req, res) => {
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
                     let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color,  }))
-                    res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+                    res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
                 }).catch(error => { throw (error) })
             } catch (error) {
                 if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
@@ -307,7 +307,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -355,7 +355,7 @@ export const getTransactionsByGroup = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
         }).catch(error => { throw (error) })
 
         
@@ -415,7 +415,7 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
         }).catch(error => { throw (error) })
 
     } catch (error) {
@@ -442,7 +442,7 @@ export const deleteTransaction = async (req, res) => {
         }
 
         let data = await transactions.deleteOne({ _id: req.body._id });
-        return res.json({ data: { message: "deleted" }});
+        return res.json({ data: { message: "deleted" }, message: res.locals.refreshedToken});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -470,10 +470,8 @@ export const deleteTransactions = async (req, res) => {
         }
         const result = await transactions.deleteMany({_id: { $in: req.body.array_id}}); 
         
-        return res.json({ data: { message: "deleted" }});
+        return res.json({ data: { message: "deleted" }, message: res.locals.refreshedToken });
     } catch (error) {
-        if (error.message === 'At least one ID does not have a corresponding transaction.') {
-            res.status(401).json({ error: error.message });
-          } else res.status(400).json({ error: error.message })
+        res.status(400).json({ error: error.message })
     }
 }

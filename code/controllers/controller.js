@@ -7,7 +7,7 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
   - Request Body Content: An object having attributes `type` and `color`
   - Response `data` Content: An object having attributes `type` and `color`
  */export const createCategory = (req, res) => {
-    try {  //current behaviour is that the app crash "needs to change file before starting"--> dunque in group lascio la stessa cosa?
+    try {  
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)
@@ -15,8 +15,14 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
 
         const { type, color } = req.body;
         const new_categories = new categories({ type, color });
+
+        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
         new_categories.save()
-            .then(data => res.json({ data: { type: data.type, color: data.color }, message: res.locals.refreshedToken }))
+            .then(data => {
+                res.json({ data:{ type:data.type, color:data.color },
+                           message: res.locals.refreshedTokenMessage
+                            });
+            })
             .catch(err => { throw err })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -62,7 +68,9 @@ export const updateCategory = async (req, res) => {
             { type: req.params.type },
             { $set: { type: type } }
         );
-        return res.json({ data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount }, message: res.locals.refreshedToken });
+        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+        return res.json({ data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount },
+                          message: res.locals.refreshedTokenMessage });
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -84,7 +92,7 @@ export const deleteCategory = async (req, res) => {
 
         const typeList = req.body;
         const typeListLength = typeList.length;
-
+ 
         //Check if there is at least one category for every category type in request body
         for(let i=0 ; i<typeListLength ; i++){
             const foundCategory = await categories.findOne({ type: typeList[i] });
@@ -92,7 +100,15 @@ export const deleteCategory = async (req, res) => {
                 return res.status(401).json({ error: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
             }
         }
-
+        //check if category investment exists otherwise insert it
+        const categoryInvestiment = await categories.findOne({ type: "investment"});
+        if(!categoryInvestiment){
+            const [ type, color ] = ["investment","#fcbe44"];
+            const new_categories = new categories({type,color});
+            new_categories.save()
+                .catch(err => { throw err })
+        }
+        
         //Updating affected transactions
         const updateResult =  await transactions.updateMany(
             { type: { $in: typeList } },
@@ -101,8 +117,9 @@ export const deleteCategory = async (req, res) => {
 
         //Deletion
         const deleteResult = await categories.deleteMany({ type: { $in: typeList } });
-
-        return res.json({ data: { message: "Categories successfully deleted", count: updateResult.modifiedCount }, message: res.locals.refreshedToken});
+        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+        return res.json({ data: { message: "Categories successfully deleted", count: updateResult.modifiedCount },
+                          message: res.locals.refreshedTokenMessage});
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -124,9 +141,9 @@ export const getCategories = async (req, res) => {
 
         let data = await categories.find({})
 
-        let filter = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
-
-        return res.json({data: { categories: filter }, message: res.locals.refreshedToken })
+        let categoriesData = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
+        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+        return res.json({data: categoriesData })  //no need of message since the authtype is simple
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -149,8 +166,17 @@ export const createTransaction = async (req, res) => {
             if (!adminAuth.authorized)
                 return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
-        
         const { username, amount, type } = req.body;
+
+        const matchedUser = await User.findOne({ username: username });
+        if(!matchedUser) {
+            return res.status(401).json({ error: "the user does not exist" })
+        }
+        const matchedCategory = await categories.findOne({ type: type });
+        if(!matchedCategory) {
+            return res.status(401).json({ error: "the category does not exist" })
+        }
+
         const new_transactions = new transactions({ username, amount, type });
         new_transactions.save()
             .then(data => res.json({ data: { username: data.username, amount: data.amount , type: data.type, date: data.date }, message: res.locals.refreshedToken }))
@@ -169,17 +195,14 @@ export const createTransaction = async (req, res) => {
  */
 export const getAllTransactions = async (req, res) => {
     try {
-        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        if(!userAuth.authorized)
-        {
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.authorized)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-        }
+                return res.status(401).json({ error:  " adminAuth: " + adminAuth.message }) 
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
          */
+        
         transactions.aggregate([
             {
                 $lookup: {
@@ -191,8 +214,10 @@ export const getAllTransactions = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
+            let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+            res.json({data: dataResult,
+                      message: res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -214,26 +239,20 @@ export const getTransactionsByUser = async (req, res) => {
         //and different behaviors and access rights
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             try {
-                const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-
-                if(!userAuth.authorized)
-                {
-                    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+                   const adminAuth = verifyAuth(req, res, { authType: "Admin" })
                     if (!adminAuth.authorized)
-                        return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-                }
-                
+                        return res.status(401).json({ error: " adminAuth: " + adminAuth.message }) 
+            
                 //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
                 const matchedUser = await User.findOne({ username: username });
                 if(!matchedUser) {
                     return res.status(401).json({ error: "the user does not exist" })
                 }
-                const matchedUsername = matchedUser.username;
                 
                 //Query the MONGODB Transactions
                 transactions.aggregate([
-                    { $match: { username: matchedUsername }},
+                    { $match: { username: username }},
                     {
                         $lookup: {
                             from: "categories",
@@ -244,18 +263,61 @@ export const getTransactionsByUser = async (req, res) => {
                     },
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
-                    let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color,  }))
-                    res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
+                    let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+                    res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+                    res.json({data:dataResult,
+                              message:res.locals.refreshedTokenMessage});
                 }).catch(error => { throw (error) })
             } catch (error) {
                 if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
                 else res.status(400).json({ error: error.message })
             }
         }  else {   //user
+            try{
+            const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        //TO COMPLETE
+            if(!userAuth.authorized){
+                return res.status(401).json({ error: " user: " + userAuth.message }) 
+            }
+            //see if on db the user requesting the getTransactionsByUser
+            const username = req.params.username;
+            const matchedUser = await User.findOne({ username: username });
+            if(!matchedUser) {
+                return res.status(401).json({ error: "the user does not exist" })
+            }
+            
+            const queryDate   = handleDateFilterParams(req);
+            const queryAmount = handleAmountFilterParams(req);
 
-
+            let matchStage = {username: username};
+            if (Object.keys(queryDate).length !== 0 ){
+                matchStage = { ...matchStage, ...queryDate };
+            }
+            if (Object.keys(queryAmount).length !== 0 ){
+                matchStage = { ...matchStage, ...queryAmount };
+            }
+            //Query the MONGODB Transactions
+            transactions.aggregate([
+                { $match: matchStage},
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "type",
+                        foreignField: "type",
+                        as: "categories_info"
+                    }
+                },
+                { $unwind: "$categories_info" }
+            ]).then((result) => {
+                let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+                res.json({data:dataResult,
+                         message: res.locals.refreshedTokenMessage});
+            }).catch(error => { throw (error) })
+        } catch (error) {
+            if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
+            else res.status(400).json({ error: error.message })
+        }
         }} catch (error) {
         res.status(400).json({ error: error.message })
         }
@@ -271,16 +333,48 @@ export const getTransactionsByUser = async (req, res) => {
  */
 export const getTransactionsByUserByCategory = async (req, res) => {
     try {
-        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-
-        if(!userAuth.authorized)
-        {
-            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-            if (!adminAuth.authorized)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-        }
       
-        //Search requested user
+        if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
+                    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+                    if (!adminAuth.authorized)
+                        return res.status(401).json({ error: " adminAuth: " + adminAuth.message }) 
+                    //Search requested user
+                const username = req.params.username;
+                const matchedUserid = await User.findOne({username: username });
+                if(!matchedUserid) {
+                    return res.status(401).json({ error :"the user does not exist" });
+                }
+                //Search requested category
+                const category = req.params.category;
+                const matchedCategory = await categories.findOne({ type: category });
+                if(!matchedCategory) {
+                    return res.status(401).json({ error: "the category does not exist" });
+                }
+                transactions.aggregate([
+                    { $match: { username: username, type: category }},
+                    {
+                        $lookup: {
+                            from: "categories",
+                            localField: "type",
+                            foreignField: "type",
+                            as: "categories_info"
+                        }
+                    },
+                    { $unwind: "$categories_info" }
+                ]).then((result) => {
+                    let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+                    res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+                    res.json({data:dataResult,
+                              message:res.locals.refreshedTokenMessage});
+                }).catch(error => { throw (error) })
+
+        } else {                       //user
+            const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+            if(!userAuth.authorized)
+            {
+                return res.status(401).json({ error: "userAuth: " + userAuth.message }) 
+            }
+             //Search requested user
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
         if(!matchedUserid) {
@@ -288,11 +382,10 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         }
         //Search requested category
         const category = req.params.category;
-        const matchedCategory = await categories.findOne({ category: category });
+        const matchedCategory = await categories.findOne({ type: category });
         if(!matchedCategory) {
             return res.status(401).json({ error: "the category does not exist" });
         }
-
 
         transactions.aggregate([
             { $match: { username: username, type: category }},
@@ -306,9 +399,12 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
+            let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+            res.json({data:dataResult,
+                      message:res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
+        }
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -354,8 +450,8 @@ export const getTransactionsByGroup = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
 
         
@@ -399,9 +495,6 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             return res.status(401).json({ error: "the category does not exist" });
         }
 
-        console.log(type);
-        console.log(matchedCategory);
-
         transactions.aggregate([
             { $match: { username: { $in: usernames}, type: type } },
             {
@@ -414,8 +507,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }, message: res.locals.refreshedToken });
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
 
     } catch (error) {

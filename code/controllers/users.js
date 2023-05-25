@@ -32,11 +32,14 @@ export const getUsers = async (req, res) => {
  */
 export const getUser = async (req, res) => {
     try {
-        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+      const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        if(!adminAuth.authorized)
-            return res.status(401).json({ error: adminAuth.message }) 
-
+        if(!userAuth.authorized)
+        {
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.authorized)
+                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
+        }
         const username = req.params.username
         const user = await User.findOne({ refreshToken: cookie.refreshToken })
         if (!user) return res.status(401).json({ error: "User not found" })

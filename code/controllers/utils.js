@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken'
  */
 export const handleDateFilterParams = (req) => {
         const { date, from, upTo } = req.query;
-      
+        console.log(Date.now().toString());
         if (date && (from || upTo)) {
           throw new Error('Cannot use both "date" and "from" or "upTo" parameters together');
         }
@@ -61,6 +61,7 @@ export const handleDateFilterParams = (req) => {
  */
 export const verifyAuth = (req, res, info) => {
     const cookie = req.cookies
+  
     if (!cookie.accessToken || !cookie.refreshToken) {
         return res.status(401).json({ authorized: false, message: "Unauthorized" });
     }
@@ -76,7 +77,6 @@ export const verifyAuth = (req, res, info) => {
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
             return res.status(401).json({ authorized: false, message: "Mismatched users" });
         }
-
         const authType = info.authType;
         const currentTime = Math.floor(Date.now() / 1000);
 
@@ -131,7 +131,8 @@ export const verifyAuth = (req, res, info) => {
               return res.status(401).json({ authorized: false, message: "Auth type is not defined" })
   
         }
-        return res.status(200).json({ authorized: true })
+
+        return { authorized: true }
     } catch (err) {
         if (err.name === "TokenExpiredError") {
             try {
@@ -167,7 +168,7 @@ export const verifyAuth = (req, res, info) => {
  */
 export const handleAmountFilterParams = (req) => {
         const { min, max } = req.query;
-      
+        
         if (min && max) {
           return { amount: { $gte: parseFloat(min), $lte: parseFloat(max) } };
         }

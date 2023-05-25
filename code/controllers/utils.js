@@ -61,6 +61,7 @@ export const handleDateFilterParams = (req) => {
  */
 export const verifyAuth = (req, res, info) => {
     const cookie = req.cookies
+
     if (!cookie.accessToken || !cookie.refreshToken) {
         return res.status(401).json({ authorized: false, message: "Unauthorized" });
     }
@@ -131,7 +132,7 @@ export const verifyAuth = (req, res, info) => {
               return res.status(401).json({ authorized: false, message: "Auth type is not defined" })
   
         }
-        return res.status(200).json({ authorized: true })
+        return { authorized: true }
     } catch (err) {
         if (err.name === "TokenExpiredError") {
             try {
@@ -167,7 +168,7 @@ export const verifyAuth = (req, res, info) => {
  */
 export const handleAmountFilterParams = (req) => {
         const { min, max } = req.query;
-      
+        
         if (min && max) {
           return { amount: { $gte: parseFloat(min), $lte: parseFloat(max) } };
         }

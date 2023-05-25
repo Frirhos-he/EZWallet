@@ -27,12 +27,13 @@ export const getUsers = async (req, res) => {
  */
 export const getUser = async (req, res) => {
     try {
-        const cookie = req.cookies
-        if (!cookie.accessToken || !cookie.refreshToken) {
-            return res.status(401).json({ error: "Unauthorized" }) // unauthorized
-        }
+      const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+
+      if(!userAuth.authorized){
+          return res.status(401).json({ error: " user: " + userAuth.message }) 
+      }
         const username = req.params.username
-        const user = await User.findOne({ refreshToken: cookie.refreshToken })
+        const user = await User.findOne({ username: username })
         if (!user) return res.status(401).json({ message: "User not found" })
         if (user.username !== username) return res.status(401).json({ message: "Unauthorized" })
         res.status(200).json(user)

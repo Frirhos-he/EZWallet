@@ -169,14 +169,10 @@ export const createTransaction = async (req, res) => {
  */
 export const getAllTransactions = async (req, res) => {
     try {
-        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        if(!userAuth.authorized)
-        {
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.authorized)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-        }
+                return res.status(401).json({ error:  " adminAuth: " + adminAuth.message }) 
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
          */
@@ -191,8 +187,8 @@ export const getAllTransactions = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -214,26 +210,20 @@ export const getTransactionsByUser = async (req, res) => {
         //and different behaviors and access rights
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             try {
-                const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-
-                if(!userAuth.authorized)
-                {
-                    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+                   const adminAuth = verifyAuth(req, res, { authType: "Admin" })
                     if (!adminAuth.authorized)
-                        return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-                }
-                
+                        return res.status(401).json({ error: " adminAuth: " + adminAuth.message }) 
+            
                 //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
                 const matchedUser = await User.findOne({ username: username });
                 if(!matchedUser) {
                     return res.status(401).json({ error: "the user does not exist" })
                 }
-                const matchedUsername = matchedUser.username;
                 
                 //Query the MONGODB Transactions
                 transactions.aggregate([
-                    { $match: { username: matchedUsername }},
+                    { $match: { username: username }},
                     {
                         $lookup: {
                             from: "categories",
@@ -244,18 +234,47 @@ export const getTransactionsByUser = async (req, res) => {
                     },
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
-                    let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color,  }))
-                    res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+                    let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+                res.json(data);
                 }).catch(error => { throw (error) })
             } catch (error) {
                 if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
                 else res.status(400).json({ error: error.message })
             }
         }  else {   //user
+            try{
+            const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        //TO COMPLETE
-
-
+            if(!userAuth.authorized){
+                return res.status(401).json({ error: " user: " + userAuth.message }) 
+            }
+            //see if on db the user requesting the getTransactionsByUser
+            const username = req.params.username;
+            const matchedUser = await User.findOne({ username: username });
+            if(!matchedUser) {
+                return res.status(401).json({ error: "the user does not exist" })
+            }
+            
+            //Query the MONGODB Transactions
+            transactions.aggregate([
+                { $match: { username: username }},
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "type",
+                        foreignField: "type",
+                        as: "categories_info"
+                    }
+                },
+                { $unwind: "$categories_info" }
+            ]).then((result) => {
+                let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+                res.json(data);
+            }).catch(error => { throw (error) })
+        } catch (error) {
+            if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
+            else res.status(400).json({ error: error.message })
+        }
         }} catch (error) {
         res.status(400).json({ error: error.message })
         }
@@ -306,8 +325,8 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -354,8 +373,8 @@ export const getTransactionsByGroup = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
 
         
@@ -399,9 +418,6 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             return res.status(401).json({ error: "the category does not exist" });
         }
 
-        console.log(type);
-        console.log(matchedCategory);
-
         transactions.aggregate([
             { $match: { username: { $in: usernames}, type: type } },
             {
@@ -414,8 +430,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             },
             { $unwind: "$categories_info" }
         ]).then((result) => {
-            let data = result.map(v => Object.assign({}, { _id: v._id, username: v.username, type: v.type, amount: v.amount,date: v.date, color: v.categories_info.color  }))
-            res.json({ data: { username: data.username, type: data.type, amount: data.amount, date: data.date, color: data.color  }});
+            let data = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.json(data);
         }).catch(error => { throw (error) })
 
     } catch (error) {

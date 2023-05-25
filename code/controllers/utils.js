@@ -61,7 +61,7 @@ export const handleDateFilterParams = (req) => {
  */
 export const verifyAuth = (req, res, info) => {
     const cookie = req.cookies
-
+  
     if (!cookie.accessToken || !cookie.refreshToken) {
         return res.status(401).json({ authorized: false, message: "Unauthorized" });
     }
@@ -77,7 +77,6 @@ export const verifyAuth = (req, res, info) => {
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
             return res.status(401).json({ authorized: false, message: "Mismatched users" });
         }
-
         const authType = info.authType;
         const currentTime = Math.floor(Date.now() / 1000);
 
@@ -132,6 +131,7 @@ export const verifyAuth = (req, res, info) => {
               return res.status(401).json({ authorized: false, message: "Auth type is not defined" })
   
         }
+
         return { authorized: true }
     } catch (err) {
         if (err.name === "TokenExpiredError") {

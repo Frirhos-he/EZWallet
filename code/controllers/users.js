@@ -33,7 +33,7 @@ export const getUser = async (req, res) => {
           return res.status(401).json({ error: " user: " + userAuth.message }) 
       }
         const username = req.params.username
-        const user = await User.findOne({ username: username })
+        const user = await User.findOne({ refreshToken: cookie.refreshToken })
         if (!user) return res.status(401).json({ message: "User not found" })
         if (user.username !== username) return res.status(401).json({ message: "Unauthorized" })
         res.status(200).json(user)

@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken'
  */
 export const handleDateFilterParams = (req) => {
         const { date, from, upTo } = req.query;
-      
+        console.log(Date.now().toString());
         if (date && (from || upTo)) {
           throw new Error('Cannot use both "date" and "from" or "upTo" parameters together');
         }

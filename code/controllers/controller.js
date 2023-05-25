@@ -255,9 +255,19 @@ export const getTransactionsByUser = async (req, res) => {
                 return res.status(401).json({ error: "the user does not exist" })
             }
             
+            const queryDate   = handleDateFilterParams(req);
+            const queryAmount = handleDateFilterParams(req);
+
+            let matchStage = {username: username};
+            if (Object.keys(queryDate).length !== 0 ){
+                matchStage = { ...matchStage, ...queryDate };
+            }
+            if (Object.keys(queryAmount).length !== 0 ){
+                matchStage = { ...matchStage, ...queryAmount };
+            }
             //Query the MONGODB Transactions
             transactions.aggregate([
-                { $match: { username: username }},
+                { $match: matchStage},
                 {
                     $lookup: {
                         from: "categories",

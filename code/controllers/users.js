@@ -1,6 +1,9 @@
+import { decode } from "jsonwebtoken";
 import { Group, User } from "../models/User.js";
 import { transactions } from "../models/model.js";
 import { verifyAuth } from "./utils.js";
+import jwt from 'jsonwebtoken'
+
 
 /**
  * Return all the users
@@ -63,24 +66,39 @@ export const getUser = async (req, res) => {
  */
 export const createGroup = async (req, res) => {
     try {
-        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-
-        if(!userAuth.authorized)
-        {
-            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-            if (!adminAuth.authorized)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-        }
+      //TO DO CHECK NEW SPECIFICATIONS FOR THE USER REQUESTING THE CREATEGROUP
+        const simpleAuth = verifyAuth(req, res, { authType : "Simple" })
+        if(!simpleAuth.authorized) return res.status(401).json({ error: "userAuth: " + userAuth.message })
 
         const { name, memberEmails } = req.body
-        
+        let emailsVect = memberEmails;
         // Check if the group already exist
         const group = await Group.findOne({ name: name });
         if (group)
           return res.status(401).json({ error: 'There is already an existing gruop with the same name' })
 
         // Retrieve the list of users with their id from memberEmails
-        let memberUsers = await User.find({ email: { $in: memberEmails } })
+        let memberUsers = await User.find({ email: { $in: emailsVect } })
+       
+        //must add the user that required to create the group
+        const cookie = req.cookies
+        const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
+        const currentUserEmail = decodedRefreshToken.email;
+        if(!emailsVect.includes(currentUserEmail)){
+          let foundInGroup = await Group.find({}, {members: 1, _id: 0})
+          foundInGroup = foundInGroup.map(v =>  v.members);
+          foundInGroup = [...new Set(foundInGroup.flat())];
+          foundInGroup = foundInGroup.filter(m => m.email == currentUserEmail);
+
+          if(!foundInGroup) {
+            let memberUser = await User.find({ email: currentUserEmail });
+            memberUsers.push(memberUser);
+            emailsVect.push(memberUser.email);
+          }
+        }
+
+
+
         memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
 
         // Retrieve the list of all users
@@ -88,13 +106,13 @@ export const createGroup = async (req, res) => {
         allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
 
         // Select not existing members
-        const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
+        const membersNotFound = emailsVect.filter(e => !allUsers.map(u => u.email).includes(e))
 
         // Select already in a group members
         let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
         alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
-        alreadyInGroup = alreadyInGroup.filter(m => memberEmails.includes(m.email))
+        alreadyInGroup = alreadyInGroup.filter(m => emailsVect.includes(m.email))
 
         // Select members of the group
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))

@@ -630,11 +630,9 @@ export const deleteTransaction = async (req, res) => {
         {   
 
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-            console.log(userAuth);
             if(!userAuth.authorized)
                 return res.status(401).json({ error: "userAuth: " + userAuth.message + " adminAuth: " + adminAuth.message })
             //userAuthenticated
-            console.log()
              //does it belong to the user?
             let doesItBelong = await transactions.findOne({ _id: req.body._id, username: req.params.username });
             console.log(doesItBelong);

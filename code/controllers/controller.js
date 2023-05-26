@@ -635,7 +635,7 @@ export const deleteTransaction = async (req, res) => {
             //userAuthenticated
              //does it belong to the user?
             let doesItBelong = await transactions.findOne({ _id: req.body._id, username: req.params.username });
-            console.log(doesItBelong);
+
             if(doesItBelong) {
                                 let dataResult = await transactions.deleteOne({ _id: req.body._id , username: req.params.username});
                                 return res.json({ data: { message: "deleted" }, message: res.locals.refreshedToken});
@@ -668,7 +668,7 @@ export const deleteTransactions = async (req, res) => {
         
         const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
         // Check if all input IDs have corresponding transactions
-        console.log(matchingDocuments.length);
+
         if (matchingDocuments.length !== req.body.array_id.length) {
             return res.status(401).json({ error: 'At least one ID does not have a corresponding transaction.' });
         }

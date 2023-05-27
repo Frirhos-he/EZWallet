@@ -14,6 +14,15 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
             return res.status(401).json({ error: adminAuth.cause }) 
 
         const { type, color } = req.body;
+        //Check for missing parameters (all falsey values)
+        if (!type||!color) {
+            return res.status(400).json({ error: "Missing parameters" });
+        }
+        //Check for all whitespaces string parameters by trimming
+        if (type.trim() === "" || color.trim() === "") {
+            return res.status(400).json({ error: "Empty string parameters" });
+        }
+
         const new_categories = new categories({ type, color });
 
         res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck

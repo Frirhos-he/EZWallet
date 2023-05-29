@@ -208,7 +208,7 @@ export const checkMissingOrEmptyParams = (parameters, res) => {
     //Check if missing parameter (all falsy values)
     for (i=0 ; i<nParams ; i++){
         if (!parameters[i]){
-          res.status(400).json({ error: "Missing parameters" });
+          res.status(400).json({ error: "Missing parameters" });  //TODO: choose if update here or in API
           return true;
         }
     }
@@ -216,7 +216,7 @@ export const checkMissingOrEmptyParams = (parameters, res) => {
     //Check for all whitespaces string parameters by trimming
     for (i=0 ; i<nParams ; i++){
         if (parameters[i].trim() === ""){
-          res.status(400).json({ error: "Empty string parameters" });
+          res.status(400).json({ error: "Empty string parameters" }); //TODO: choose if update here or in API
           return true;
         }
     }

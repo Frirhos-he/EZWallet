@@ -4,8 +4,13 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
 
 /**
  * Create a new category
+  - Request Parameters: None
   - Request Body Content: An object having attributes `type` and `color`
   - Response `data` Content: An object having attributes `type` and `color`
+  - Returns a 400 error if the request body does not contain all the necessary attributes 
+  - Returns a 400 error if at least one of the parameters in the request body is an empty string 
+  - Returns a 400 error if the type of category passed in the request body represents an already existing category in the database 
+  - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin) 
  */export const createCategory = (req, res) => {
     try {  
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
@@ -36,11 +41,14 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
 
 /**
  * Edit a category's type or color
+  - Request Parameters: A string equal to the type of the category that must be edited
   - Request Body Content: An object having attributes `type` and `color` equal to the new values to assign to the category
   - Response `data` Content: An object with parameter `message` that confirms successful editing and a parameter `count` that is equal to the count of transactions whose category was changed with the new type
-  - Optional behavior:
-    - error 401 returned if the specified category does not exist
-    - error 401 is returned if new parameters have invalid values
+  - Returns a 400 error if the request body does not contain all the necessary attributes 
+  - Returns a 400 error if at least one of the parameters in the request body is an empty string 
+  - Returns a 400 error if the type of category passed as a route parameter does not represent a category in the database 
+  - Returns a 400 error if the type of category passed in the request body as the new type represents an already existing category in the database 
+  - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin) 
  */
 export const updateCategory = async (req, res) => {
     try {
@@ -61,8 +69,9 @@ export const updateCategory = async (req, res) => {
         }
         
         //Check if there is already a category with the same type as the new one
+        //Additionally, check if new type is equal to current type, in order to allow updating only the color
         const foundConflictingCategory = await categories.findOne({ type: type });
-        if(foundConflictingCategory){
+        if((req.params.type !== type) && foundConflictingCategory){
             return res.status(400).json({ error: "Category of type '" + type + "' already exists" });
         }
 
@@ -87,10 +96,15 @@ export const updateCategory = async (req, res) => {
 
 /**
  * Delete a category
+  - Request Parameters: None
   - Request Body Content: An array of strings that lists the `types` of the categories to be deleted
   - Response `data` Content: An object with parameter `message` that confirms successful deletion and a parameter `count` that is equal to the count of affected transactions (deleting a category sets all transactions with that category to have `investment` as their new category)
-  - Optional behavior:
-    - error 401 is returned if the specified category does not exist
+  - In case any of the following errors apply then no category is deleted
+  - Returns a 400 error if the request body does not contain all the necessary attributes
+  - Returns a 400 error if called when there is only one category in the database
+  - Returns a 400 error if at least one of the types in the array is an empty string
+  - Returns a 400 error if at least one of the types in the array does not represent a category in the database
+  - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin)
  */
 export const deleteCategory = async (req, res) => {
     try {
@@ -117,13 +131,13 @@ export const deleteCategory = async (req, res) => {
 
         //count the tot number of categories
         const totNumberCategories = (await categories.find({})).length;
-        //Only one category in db
+        //Only one category in db, no deletion done
         if(totNumberCategories == 1)
             return res.status(400).json({ error: "Only one category remaining in database" });
+
         let updateResult;
         //Deletion
         if(totNumberCategories == typeListLength){ // would be necessary to leave the firstOne
-
             const firstCategory = await categories.findOne({});   //take the first
             //Updating affected transactions
                 updateResult =  await transactions.updateMany(
@@ -133,7 +147,6 @@ export const deleteCategory = async (req, res) => {
             typeList.pop(firstCategory.type);  // so that the firstCategory will be left unchanged
             const deleteResult = await categories.deleteMany({ type: { $in: typeList }  });
         } else {
-
             const firstCategory = await categories.findOne({type: { $nin:typeList}});   //take the first
             //Updating affected transactions
                 updateResult =  await transactions.updateMany(

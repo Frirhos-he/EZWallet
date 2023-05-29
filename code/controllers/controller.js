@@ -1,6 +1,6 @@
 import { categories, transactions } from "../models/model.js";
 import { Group, User } from "../models/User.js";
-import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./utils.js";
+import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMissingOrEmptyParams} from "./utils.js";
 
 /**
  * Create a new category
@@ -14,15 +14,13 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth } from "./
             return res.status(401).json({ error: adminAuth.cause }) 
 
         const { type, color } = req.body;
-        //Check for missing parameters (all falsey values)
-        if (!type||!color) {
+        //Check for missing parameters (all falsy values)
+        if (!type||!color)
             return res.status(400).json({ error: "Missing parameters" });
-        }
         //Check for all whitespaces string parameters by trimming
-        if (type.trim() === "" || color.trim() === "") {
+        if (type.trim() === "" || color.trim() === "")
             return res.status(400).json({ error: "Empty string parameters" });
-        }
-
+        
         const new_categories = new categories({ type, color });
 
         res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
@@ -55,17 +53,19 @@ export const updateCategory = async (req, res) => {
             return res.status(401).json({ error: adminAuth.cause }) 
 
         const { type, color } = req.body;
-        //Check if parameters are valid
-        if (!type||!color) {
-            return res.status(401).json({ error: "Invalid new parameters" });
-        }
-
+        //Check for missing parameters (all falsey values)
+        if (!type||!color)
+            return res.status(400).json({ error: "Missing parameters" });
+        //Check for all whitespaces string parameters by trimming
+        if (type.trim() === "" || color.trim() === "")
+            return res.status(400).json({ error: "Empty string parameters" });
+        
         //Check if there is a category of the specified type
         const foundCategory = await categories.findOne({ type: req.params.type });
         if(!foundCategory){
-            return res.status(401).json({ error: "Category for type " + req.params.type + " not found" });
+            return res.status(400).json({ error: "Category of type '" + req.params.type + "' not found" });
         }
-
+        
         //Updating category
         const updateCategories =  await categories.updateOne(
             { type: req.params.type },

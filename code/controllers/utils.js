@@ -187,3 +187,35 @@ export const handleAmountFilterParams = (req) => {
       
         return {};
 }
+
+/**
+ * Check parameters of APIs that foresee the following errors:
+ * - 400 error if the request body does not contain all the necessary attributes X
+ * - 400 error if at least one of the parameters in the request body is an empty string X
+ * @param parameters an array of strings that represents the request body parameters
+ * @param res the response object from API which is updated if an error is detected
+ * @returns a boolean value that is:
+ * -false if no errors
+ * -true if there is a missing parameter(falsy value) or if a parameter is empty after a trim
+ */
+export const checkMissingOrEmptyParams = (parameters, res) => {
+    let i = 0;
+
+    //Check if missing parameter (all falsy values)
+    for (i=0 ; i<parameters.length ; i++){
+        if (!parameters[i]){
+          res.status(400).json({ error: "Missing parameters" });
+          return true;
+        }
+    }
+    
+    //Check for all whitespaces string parameters by trimming
+    for (i=0 ; i<parameters.length ; i++){
+        if (parameters[i].trim() === ""){
+          res.status(400).json({ error: "Empty string parameters" });
+          return true;
+        }
+    }
+
+    return false;
+}

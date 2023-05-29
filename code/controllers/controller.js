@@ -158,7 +158,7 @@ export const getCategories = async (req, res) => {
         const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
 
         if(!simpleAuth.authorized){
-            return res.status(401).json({ error: simpleAuth.message }) 
+            return res.status(401).json({ error: simpleAuth.cause }) 
         }
 
         let data = await categories.find({})
@@ -184,7 +184,7 @@ export const createTransaction = async (req, res) => {
 
         if(!userAuth.authorized)
         {
-                return res.status(401).json({ error: "user: " + userAuth.message }) 
+            return res.status(401).json({ error: "user: " + userAuth.cause }) 
         }
         const { username, amount, type } = req.body;
 
@@ -216,9 +216,9 @@ export const createTransaction = async (req, res) => {
 export const getAllTransactions = async (req, res) => {
     try {
 
-            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-            if (!adminAuth.authorized)
-                return res.status(401).json({ error:  " adminAuth: " + adminAuth.cause }) 
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+        if (!adminAuth.authorized)
+            return res.status(401).json({ error:  " admin: " + adminAuth.cause }) 
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
          */
@@ -259,9 +259,9 @@ export const getTransactionsByUser = async (req, res) => {
         //and different behaviors and access rights
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             try {
-                   const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-                    if (!adminAuth.authorized)
-                        return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
+                const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+                if (!adminAuth.authorized)
+                    return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
             
                 //see if on db the user requesting the getTransactionsByUser
                 const username = req.params.username;
@@ -357,7 +357,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
                     const adminAuth = verifyAuth(req, res, { authType: "Admin" })
                     if (!adminAuth.authorized)
-                        return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
+                        return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
                     //Search requested user
                 const username = req.params.username;
                 const matchedUserid = await User.findOne({username: username });
@@ -392,7 +392,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
             if(!userAuth.authorized)
             {
-                return res.status(401).json({ error: "userAuth: " + userAuth.cause }) 
+                return res.status(401).json({ error: "user: " + userAuth.cause }) 
             }
              //Search requested user
         const username = req.params.username;
@@ -444,7 +444,7 @@ export const getTransactionsByGroup = async (req, res) => {
             
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.authorized)
-                        return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
+                        return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
             const group = req.params.name;
                 //AS an ADMIN, He can get access all groups,I only check the group exist
       /*      const matchedGroup = await Group.findOne({name: group });
@@ -492,7 +492,7 @@ export const getTransactionsByGroup = async (req, res) => {
 
             if(!groupAuth.authorized)
             {
-                return res.status(401).json({ error: "groupAuth: " + groupAuth.cause }) 
+                return res.status(401).json({ error: "group: " + groupAuth.cause }) 
             }
         
             const usersById = matchedGroup.members.map((member) => member.user);
@@ -539,7 +539,7 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.authorized)
-                        return res.status(401).json({ error: " adminAuth: " + adminAuth.cause })    
+                return res.status(401).json({ error: " admin: " + adminAuth.cause })    
             const group = req.params.name;
             const matchedGroup = await Group.findOne({name: group });
             if (!matchedGroup)
@@ -584,7 +584,7 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
 
             if(!groupAuth.authorized)
             {
-                return res.status(401).json({ error: "groupAuth: " + groupAuth.message  }) 
+                return res.status(401).json({ error: "group: " + groupAuth.cause  }) 
             }
             //Search requested category
             const type = req.params.category;
@@ -640,7 +640,7 @@ export const deleteTransaction = async (req, res) => {
 
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
             if(!userAuth.authorized)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + " adminAuth: " + adminAuth.message })
+                return res.status(401).json({ error: "user: " + userAuth.cause + " admin: " + adminAuth.cause })
             //userAuthenticated
              //does it belong to the user?
             let doesItBelong = await transactions.findOne({ _id: req.body._id, username: req.params.username });
@@ -673,7 +673,7 @@ export const deleteTransactions = async (req, res) => {
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)
-            return res.status(401).json({ error: adminAuth.cause }) 
+            return res.status(401).json({ error: "admin: " + adminAuth.cause }) 
         
         const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
         // Check if all input IDs have corresponding transactions

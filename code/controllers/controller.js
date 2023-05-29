@@ -14,12 +14,9 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
             return res.status(401).json({ error: adminAuth.cause }) 
 
         const { type, color } = req.body;
-        //Check for missing parameters (all falsy values)
-        if (!type||!color)
-            return res.status(400).json({ error: "Missing parameters" });
-        //Check for all whitespaces string parameters by trimming
-        if (type.trim() === "" || color.trim() === "")
-            return res.status(400).json({ error: "Empty string parameters" });
+        //Check for missing or empty string parameter
+        if(checkMissingOrEmptyParams([type, color], res))
+            return res;
         
         const new_categories = new categories({ type, color });
 
@@ -53,19 +50,22 @@ export const updateCategory = async (req, res) => {
             return res.status(401).json({ error: adminAuth.cause }) 
 
         const { type, color } = req.body;
-        //Check for missing parameters (all falsey values)
-        if (!type||!color)
-            return res.status(400).json({ error: "Missing parameters" });
-        //Check for all whitespaces string parameters by trimming
-        if (type.trim() === "" || color.trim() === "")
-            return res.status(400).json({ error: "Empty string parameters" });
+        //Check for missing or empty string parameter
+        if(checkMissingOrEmptyParams([type, color], res))
+            return res;
         
-        //Check if there is a category of the specified type
+        //Check if there is the specified category to be modified
         const foundCategory = await categories.findOne({ type: req.params.type });
         if(!foundCategory){
             return res.status(400).json({ error: "Category of type '" + req.params.type + "' not found" });
         }
         
+        //Check if there is already a category with the same type as the new one
+        const foundConflictingCategory = await categories.findOne({ type: type });
+        if(foundConflictingCategory){
+            return res.status(400).json({ error: "Category of type '" + type + "' already exists" });
+        }
+
         //Updating category
         const updateCategories =  await categories.updateOne(
             { type: req.params.type },
@@ -102,18 +102,24 @@ export const deleteCategory = async (req, res) => {
         let typeList = req.body;
             typeList = [...new Set(typeList)];   //to elimate
         const typeListLength = typeList.length;
- 
-  
+        
+        //Check for missing or empty string parameter
+        if(checkMissingOrEmptyParams(typeList, res))
+            return res;
+        
         //Check if there is at least one category for every category type in request body
         for(let i=0 ; i<typeListLength ; i++){
             const foundCategory = await categories.findOne({ type: typeList[i] });
             if(!foundCategory){
-                return res.status(401).json({ error: "Category for type " + typeList[i] + " not found" }); //Category with specified type not found
+                return res.status(401).json({ error: "Category for type '" + typeList[i] + "' not found" }); //Category with specified type not found
             }
         }
 
         //count the tot number of categories
         const totNumberCategories = (await categories.find({})).length;
+        //Only one category in db
+        if(totNumberCategories == 1)
+            return res.status(400).json({ error: "Only one category remaining in database" });
         let updateResult;
         //Deletion
         if(totNumberCategories == typeListLength){ // would be necessary to leave the firstOne

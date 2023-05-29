@@ -200,9 +200,10 @@ export const handleAmountFilterParams = (req) => {
  */
 export const checkMissingOrEmptyParams = (parameters, res) => {
     let i = 0;
+    const nParams = parameters.length;
 
     //Check if missing parameter (all falsy values)
-    for (i=0 ; i<parameters.length ; i++){
+    for (i=0 ; i<nParams ; i++){
         if (!parameters[i]){
           res.status(400).json({ error: "Missing parameters" });
           return true;
@@ -210,7 +211,7 @@ export const checkMissingOrEmptyParams = (parameters, res) => {
     }
     
     //Check for all whitespaces string parameters by trimming
-    for (i=0 ; i<parameters.length ; i++){
+    for (i=0 ; i<nParams ; i++){
         if (parameters[i].trim() === ""){
           res.status(400).json({ error: "Empty string parameters" });
           return true;

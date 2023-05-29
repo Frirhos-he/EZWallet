@@ -103,6 +103,9 @@ export const login = async (req, res) => {
     - error 400 is returned if the user does not exist
  */
 export const logout = async (req, res) => {
+
+    // TODO: authSimple
+
     const refreshToken = req.cookies.refreshToken
     if (!refreshToken) return res.status(400).json({ error: "user not found" })
     const user = await User.findOne({ refreshToken: refreshToken })

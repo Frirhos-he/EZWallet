@@ -16,7 +16,7 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
         const { type, color } = req.body;
         //Check for missing or empty string parameter
         if(checkMissingOrEmptyParams([type, color], res))
-            return res;
+            return res.status(400).json({ error: "missing parameters" });
         
         const new_categories = new categories({ type, color });
 
@@ -52,7 +52,7 @@ export const updateCategory = async (req, res) => {
         const { type, color } = req.body;
         //Check for missing or empty string parameter
         if(checkMissingOrEmptyParams([type, color], res))
-            return res;
+            return res.status(400).json({ error: "missing parameters" });
         
         //Check if there is the specified category to be modified
         const foundCategory = await categories.findOne({ type: req.params.type });
@@ -105,7 +105,7 @@ export const deleteCategory = async (req, res) => {
         
         //Check for missing or empty string parameter
         if(checkMissingOrEmptyParams(typeList, res))
-            return res;
+            return res.status(400).json({ error: "missing parameters" });
         
         //Check if there is at least one category for every category type in request body
         for(let i=0 ; i<typeListLength ; i++){
@@ -186,6 +186,9 @@ export const getCategories = async (req, res) => {
  */
 export const createTransaction = async (req, res) => {
     try {
+
+        //TODO: check params with weili function
+
         const userAuth = verifyAuth(req, res, { authType: "Simple"});
 
         if(!userAuth.authorized)
@@ -640,6 +643,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
 export const deleteTransaction = async (req, res) => {
     try {
 
+        //TODO: check params with weili function
+
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if (!adminAuth.authorized)
         {   
@@ -676,6 +681,9 @@ export const deleteTransaction = async (req, res) => {
  */
 export const deleteTransactions = async (req, res) => {
     try {
+
+        //TODO: check params with weili function
+
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)

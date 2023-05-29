@@ -9,6 +9,9 @@ import jwt from 'jsonwebtoken'
  * @throws an error if the query parameters include `date` together with at least one of `from` or `upTo`
  */
 export const handleDateFilterParams = (req) => {
+
+        //TODO: check that from is < than upTo
+
         const { date, from, upTo } = req.query;
         console.log(Date.now().toString());
         if (date && (from || upTo)) {
@@ -220,3 +223,6 @@ export const checkMissingOrEmptyParams = (parameters, res) => {
 
     return false;
 }
+
+// TODO: function that checks RGB code color for labels
+// TODO: function that checks email correctness

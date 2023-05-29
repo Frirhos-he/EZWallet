@@ -271,6 +271,9 @@ export const addToGroup = async (req, res) => {
  */
 export const removeFromGroup = async (req, res) => {
   try {
+
+    // TODO: don't remove last user inside the group
+
     const groupName = req.params.name;
     const group = await Group.findOne({ group: groupName });
     if (!group)

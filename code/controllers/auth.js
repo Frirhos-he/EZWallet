@@ -13,8 +13,10 @@ import { verifyAuth,checkMissingOrEmptyParams } from './utils.js';
 export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        if(checkMissingOrEmptyParams([username,email, password], res))
-        return res.status(400).json({ error: "missing parameters" });
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([username,email, password], messageObj))
+            return res.status(400).json({ error: messageObj.message });
+
           // Check if the email is in a valid email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -50,8 +52,9 @@ export const register = async (req, res) => {
 export const registerAdmin = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        if(checkMissingOrEmptyParams([username,email, password], res))
-            return res.status(400).json({ error: "missing parameters" });
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([username,email, password], messageObj))
+            return res.status(400).json({ error: messageObj.message });
 
           // Check if the email is in a valid email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,9 +94,10 @@ export const registerAdmin = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body
         //Check for missing or empty string parameter
-        if(checkMissingOrEmptyParams([email, password], res))
-            return res.status(400).json({ error: "missing parameters" });
-
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([email, password], messageObj))
+            return res.status(400).json({ error: messageObj.message });
+        
             
       // Check if the email is in a valid email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

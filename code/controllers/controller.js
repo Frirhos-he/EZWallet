@@ -11,7 +11,9 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
   - Returns a 400 error if at least one of the parameters in the request body is an empty string 
   - Returns a 400 error if the type of category passed in the request body represents an already existing category in the database 
   - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin) 
- */export const createCategory = (req, res) => {
+
+  //CHANGED SIGNATURE BASED ON SLACK REQUEST
+ */export const createCategory = async (req, res) => {
     try {  
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
@@ -20,9 +22,13 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
 
         const { type, color } = req.body;
         //Check for missing or empty string parameter
-        if(checkMissingOrEmptyParams([type, color], res))
-            return res.status(400).json({ error: "missing parameters" });
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([type, color], messageObj))
+            return res.status(400).json({ error: messageObj.message });
         
+        // Check if the username or email already exists
+        const existingCategory = await categories.findOne({ type: type });
+        if (existingCategory) return res.status(400).json({ error: "Category already exists" });
         const new_categories = new categories({ type, color });
 
         res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
@@ -59,9 +65,9 @@ export const updateCategory = async (req, res) => {
 
         const { type, color } = req.body;
         //Check for missing or empty string parameter
-        if(checkMissingOrEmptyParams([type, color], res))
-            return res.status(400).json({ error: "missing parameters" });
-        
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([type, color], messageObj))
+            return res.status(400).json({ error: messageObj.message });
         //Check if there is the specified category to be modified
         const foundCategory = await categories.findOne({ type: req.params.type });
         if(!foundCategory){
@@ -108,24 +114,34 @@ export const updateCategory = async (req, res) => {
  */
 export const deleteCategory = async (req, res) => {
     try {
+
+        //TO DO CHECK PARAMS
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)
             return res.status(401).json({ error: adminAuth.cause }) 
 
-        let typeList = req.body;
-            typeList = [...new Set(typeList)];   //to elimate
-        const typeListLength = typeList.length;
+        let {types} = req.body;
+        if(types === undefined){
+            return res.status(400).json({ error: "types object not inserted" }); 
+        }
+            types = [...new Set(types)];   //to elimate
+        const typeListLength = types.length;
         
-        //Check for missing or empty string parameter
-        if(checkMissingOrEmptyParams(typeList, res))
-            return res.status(400).json({ error: "missing parameters" });
-        
+
+        //TODO: CHECK IF MUST BE CONSIDERED
+        //if(types == []){
+        //    return res.status(400).json({ error: "categories object not inserted" }); 
+        //}
+        if (types.some((element) => element.trim() === "")) 
+            return res.status(400).json({ error: "at least one of the types in the array is an empty string" }); 
+        if (types.some)
+
         //Check if there is at least one category for every category type in request body
         for(let i=0 ; i<typeListLength ; i++){
-            const foundCategory = await categories.findOne({ type: typeList[i] });
+            const foundCategory = await categories.findOne({ type: types[i] });
             if(!foundCategory){
-                return res.status(401).json({ error: "Category for type '" + typeList[i] + "' not found" }); //Category with specified type not found
+                return res.status(400).json({ error: "Category for type '" + types[i] + "' not found" }); //Category with specified type not found
             }
         }
 
@@ -141,19 +157,19 @@ export const deleteCategory = async (req, res) => {
             const firstCategory = await categories.findOne({});   //take the first
             //Updating affected transactions
                 updateResult =  await transactions.updateMany(
-                { type: { $in: typeList } },
+                { type: { $in: types } },
                 { $set: { type: firstCategory.type } }
             );
-            typeList.pop(firstCategory.type);  // so that the firstCategory will be left unchanged
-            const deleteResult = await categories.deleteMany({ type: { $in: typeList }  });
+            types.pop(firstCategory.type);  // so that the firstCategory will be left unchanged
+            const deleteResult = await categories.deleteMany({ type: { $in: types }  });
         } else {
-            const firstCategory = await categories.findOne({type: { $nin:typeList}});   //take the first
+            const firstCategory = await categories.findOne({type: { $nin:types}});   //take the first
             //Updating affected transactions
                 updateResult =  await transactions.updateMany(
-                { type: { $in: typeList } },
+                { type: { $in: types } },
                 { $set: { type: firstCategory.type } }
             );
-            const deleteResult = await categories.deleteMany({ type: { $in: typeList }  });
+            const deleteResult = await categories.deleteMany({ type: { $in: types }  });
         }
         
 

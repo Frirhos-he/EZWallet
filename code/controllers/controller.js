@@ -119,8 +119,6 @@ export const updateCategory = async (req, res) => {
  */
 export const deleteCategory = async (req, res) => {
     try {
-
-
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)
@@ -130,7 +128,8 @@ export const deleteCategory = async (req, res) => {
         if(types === undefined){
             return res.status(400).json({ error: "types object not inserted" }); 
         }
-            types = [...new Set(types)];   //to elimate duplicates
+        
+        types = [...new Set(types)];   //to elimate duplicates
         const typeListLength = types.length;
         
         //Check if one of the categories is empty string
@@ -228,11 +227,7 @@ export const createTransaction = async (req, res) => {
         const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
         if(!userAuth.authorized)
-        {
-            const adminAuth = verifyAuth(req, res, { authType: "Admin"});
-            if (!adminAuth.authorized)
-                return res.status(401).json({ error: userAuth.cause }) 
-        }
+            return res.status(401).json({ error: userAuth.cause }) 
 
         const { username, amount, type } = req.body;
 
@@ -584,20 +579,32 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
 export const deleteTransaction = async (req, res) => {
     try {
 
-        //TODO: check params with weili function
-
         const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
         if(!userAuth.authorized)
-        {
-            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-            if (!adminAuth.authorized)
-            return res.status(401).json({ error: "user: " + userAuth.cause + " admin: " + adminAuth.cause })
+            return res.status(401).json({ error: userAuth.cause})
+
+        //Check for missing or empty string parameter
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([req.body._id], messageObj))
+            return res.status(400).json({ error: messageObj.message });
+
+        //Search requested user
+        const username = req.params.username;
+        const matchedUserid = await User.findOne({username: username });
+        if(!matchedUserid) {
+            return res.status(400).json({ error : "The user does not exist" });
         }
 
-        
-        let data = await transactions.deleteOne({ _id: req.body._id });
+        //Search requested transaction
+        const transactionId = req.body._id;
+        const matchedTransaction = await transactions.findOne({ _id: transactionId });
+        if(!matchedTransaction) {
+            return res.status(400).json({ error : "The transaction does not exist" });
+        }
+
+        let data = await transactions.deleteOne({ _id: transactionId });
         return res.json({ 
-            data: { message: "deleted" }, 
+            data: { message: "Transaction deleted" }, 
             refreshedTokenMessage: res.locals.refreshedToken
         });
 
@@ -619,23 +626,31 @@ export const deleteTransaction = async (req, res) => {
  */
 export const deleteTransactions = async (req, res) => {
     try {
-
-        //TODO: check params with weili function
-
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if(!adminAuth.authorized)
             return res.status(401).json({ error: "admin: " + adminAuth.cause }) 
         
-        const matchingDocuments = await transactions.find({ _id: { $in: req.body.array_id } });
+        const transactionsToDelete = req.body._ids;
+
+        //Check for missing or empty string parameter
+        let messageObj ={message:""};
+        if(checkMissingOrEmptyParams([transactionsToDelete], messageObj))
+            return res.status(400).json({ error: messageObj.message });
+
+        //Check if one of the categories is empty string
+        if (transactionsToDelete.some((element) => element.trim() === "")) 
+            return res.status(400).json({ error: "at least one of the ids in the array is an empty string" }); 
+
+        const matchingDocuments = await transactions.find({ _id: { $in: transactionsToDelete } });
         // Check if all input IDs have corresponding transactions
 
-        if (matchingDocuments.length !== req.body.array_id.length) {
+        if (matchingDocuments.length !== transactionsToDelete.length) {
             return res.status(401).json({ error: 'At least one ID does not have a corresponding transaction.' });
         }
-        const result = await transactions.deleteMany({_id: { $in: req.body.array_id}}); 
+        const result = await transactions.deleteMany({_id: { $in: transactionsToDelete }}); 
         
         return res.json({ 
-            data: { message: "deleted" }, 
+            data: { message: "Transactions deleted" }, 
             refreshedTokenMessage: res.locals.refreshedToken 
         });
     } catch (error) {

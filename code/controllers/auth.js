@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import jwt from 'jsonwebtoken';
-import { verifyAuth } from './utils.js';
+import { verifyAuth,checkMissingOrEmptyParams } from './utils.js';
 
 /**
  * Register a new user in the system

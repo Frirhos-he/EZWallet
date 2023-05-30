@@ -32,7 +32,6 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
         if (existingCategory) return res.status(400).json({ error: "Category already exists" });
         const new_categories = new categories({ type, color });
 
-        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
         new_categories.save()
             .then(data => {
                 res.json({ 
@@ -95,7 +94,7 @@ export const updateCategory = async (req, res) => {
             { type: req.params.type },
             { $set: { type: type } }
         );
-        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
+
         return res.json({ 
             data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount },
             refreshedTokenMessage: res.locals.refreshedTokenMessage 
@@ -169,7 +168,6 @@ export const deleteCategory = async (req, res) => {
 
         const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 
-        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
         return res.json({ 
             data: { message: "Categories deleted", count: (updateResult ? updateResult.modifiedCount : 0 ) },
             refreshedTokenMessage: res.locals.refreshedTokenMessage
@@ -198,7 +196,6 @@ export const getCategories = async (req, res) => {
         let data = await categories.find({})  
 
         let categoriesData = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
-        res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
         return res.json({
             data: categoriesData,
             refreshedTokenMessage:res.locals.refreshedTokenMessage
@@ -263,7 +260,7 @@ export const createTransaction = async (req, res) => {
         new_transactions.save()
             .then(data => res.json({ 
                 data: { username: data.username, amount: data.amount , type: data.type, date: data.date }, 
-                refreshedTokenMessage: res.locals.refreshedToken 
+                refreshedTokenMessage: res.locals.refreshedTokenMessage
             }))
             .catch(err => { throw err })
     } catch (error) {
@@ -301,7 +298,6 @@ export const getAllTransactions = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
             res.json({
                 data: dataResult,
                 refreshedTokenMessage: res.locals.refreshedTokenMessage
@@ -356,9 +352,8 @@ export const getTransactionsByUser = async (req, res) => {
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
                     let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                    res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
                     res.json({data:dataResult,
-                              message:res.locals.refreshedTokenMessage});
+                              refreshedTokenMessage:res.locals.refreshedTokenMessage});
                 }).catch(error => { throw (error) })
             } catch (error) {
                 if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
@@ -401,9 +396,8 @@ export const getTransactionsByUser = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
                 res.json({data:dataResult,
-                         message: res.locals.refreshedTokenMessage});
+                         refreshedTokenMessage: res.locals.refreshedTokenMessage});
             }).catch(error => { throw (error) })
         }
     } catch (error) {
@@ -455,9 +449,8 @@ export const getTransactionsByUserByCategory = async (req, res) => {
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
                     let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                    res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
                     res.json({data:dataResult,
-                              message:res.locals.refreshedTokenMessage});
+                              refreshedTokenMessage:res.locals.refreshedTokenMessage});
                 }).catch(error => { throw (error) })
 
         } else {                       //user
@@ -492,9 +485,8 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
             res.json({data:dataResult,
-                      message:res.locals.refreshedTokenMessage});
+                      refreshedTokenMessage:res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
     }} catch (error) {
         res.status(400).json({ error: error.message });
@@ -554,8 +546,10 @@ export const getTransactionsByGroup = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
-                res.json({data: dataResult, message: res.locals.refreshedTokenMessage});
+                res.json({
+                    data: dataResult,
+                    refreshedTokenMessage: res.locals.refreshedTokenMessage
+                });
             }).catch(error => { throw (error) })
         }else{                               //user
             const group = req.params.name;
@@ -586,8 +580,10 @@ export const getTransactionsByGroup = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
-                res.json({data: dataResult, message: res.locals.refreshedTokenMessage});
+                res.json({
+                    data: dataResult, 
+                    refreshedTokenMessage: res.locals.refreshedTokenMessage
+                });
             }).catch(error => { throw (error) })
 
         }
@@ -649,8 +645,10 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
-                res.json({data: dataResult, message: res.locals.refreshedTokenMessage});
+                res.json({
+                    data: dataResult,
+                    refreshedTokenMessage: res.locals.refreshedTokenMessage
+                });
             }).catch(error => { throw (error) })
 
         } else {                    ///user
@@ -687,8 +685,10 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
-                res.json({data: dataResult, message: res.locals.refreshedTokenMessage});
+                res.json({
+                    data: dataResult,
+                    refreshedTokenMessage: res.locals.refreshedTokenMessage
+                });
             }).catch(error => { throw (error) })
 
         }
@@ -737,7 +737,7 @@ export const deleteTransaction = async (req, res) => {
         let data = await transactions.deleteOne({ _id: transactionId });
         return res.json({ 
             data: { message: "Transaction deleted" }, 
-            refreshedTokenMessage: res.locals.refreshedToken
+            refreshedTokenMessage: res.locals.refreshedTokenMessage
         });
 
     } catch (error) {
@@ -784,7 +784,7 @@ export const deleteTransactions = async (req, res) => {
         
         return res.json({ 
             data: { message: "Transactions deleted" }, 
-            refreshedTokenMessage: res.locals.refreshedToken 
+            refreshedTokenMessage: res.locals.refreshedTokenMessage
         });
     } catch (error) {
         res.status(400).json({ error: error.message })

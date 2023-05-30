@@ -12,16 +12,34 @@ import { verifyAuth } from './utils.js';
  */
 export const register = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        const existingUser = await User.findOne({ email: req.body.email });
-        if (existingUser) return res.status(400).json({ error: "you are already registered" });
+        const { username, email, password } = req.body
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: "Missing required attributes" });
+          }
+          // Check if any parameter in the request body is an empty string
+        if (Object.values(req.body).some((param) => param === "")) {
+                return res.status(400).json({ error: "Empty parameter found" });
+        }
+          // Check if the email is in a valid email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Invalid email format" });
+        }
+          // Check if the username or email already exists
+        const existingUserEmail = await User.findOne({ email: req.body.email });
+        if (existingUserEmail) return res.status(400).json({ error: "Email is already registered" });
+        const existingUserUsername = await User.findOne({ username: req.body.username });
+        if (existingUserUsername) return res.status(400).json({ error: "Username is already registered" });
+
+
+        
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
         });
-        res.status(200).json({ data: { message:'user added succesfully' }});
+        res.status(200).json({ data: { message:'User added successfully' }});
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -37,8 +55,26 @@ export const register = async (req, res) => {
 export const registerAdmin = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        const existingUser = await User.findOne({ email: req.body.email });
-        if (existingUser) return res.status(400).json({ error: "you are already registered" });
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: "Missing required attributes" });
+          }
+          // Check if any parameter in the request body is an empty string
+        if (Object.values(req.body).some((param) => param === "")) {
+                return res.status(400).json({ error: "Empty parameter found" });
+        }
+          // Check if the email is in a valid email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Invalid email format" });
+        }
+          // Check if the username or email already exists
+        const existingUserEmail = await User.findOne({ email: req.body.email });
+        if (existingUserEmail) return res.status(400).json({ error: "Email is already registered" });
+        const existingUserUsername = await User.findOne({ username: req.body.username });
+        if (existingUserUsername) return res.status(400).json({ error: "Username is already registered" });
+
+
+
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await User.create({
             username,

@@ -99,9 +99,22 @@ export const registerAdmin = async (req, res) => {
  */
 export const login = async (req, res) => {
     const { email, password } = req.body
-    const cookie = req.cookies
+    if ( !email || !password) {
+        return res.status(400).json({ error: "Missing required attributes" });
+      }
+      // Check if any parameter in the request body is an empty string
+    if (Object.values(req.body).some((param) => param === "")) {
+            return res.status(400).json({ error: "Empty parameter found" });
+    }
+      // Check if the email is in a valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
     const existingUser = await User.findOne({ email: email })
     if (!existingUser) return res.status(400).json({ error: 'please you need to register' })
+    const cookie = req.cookies
+
     try {
         const match = await bcrypt.compare(password, existingUser.password)
         if (!match) return res.status(400).json('wrong credentials')

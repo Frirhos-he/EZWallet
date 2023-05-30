@@ -8,30 +8,60 @@ import jwt from 'jsonwebtoken'
  *  Example: {date: {$gte: "2023-04-30T00:00:00.000Z"}} returns all transactions whose `date` parameter indicates a date from 30/04/2023 (included) onwards
  * @throws an error if the query parameters include `date` together with at least one of `from` or `upTo`
  */
+
+//TODO check that it works after modifications //see format
 export const handleDateFilterParams = (req) => {
 
         //TODO: check that from is < than upTo
+        const isValidDateFormat = (dateString) => {
+          const regex = /^\d{4}-\d{2}-\d{2}$/;
+          return regex.test(dateString);
+        };
 
         const { date, from, upTo } = req.query;
-        console.log(Date.now().toString());
+
+
         if (date && (from || upTo)) {
           throw new Error('Cannot use both "date" and "from" or "upTo" parameters together');
         }
       
         if (date) {
-          return { date: { $eq: date } };
+          if(!isValidDateFormat(date)){
+              throw new Error("Date format is invalid");
+          }
+          const dateStartFormatted = new Date(`${date}T00:00:00.000Z`)
+          const dateEndFormatted = new Date(`${date}T23:59:59.000Z`)
+          return { date: { $lte: dateEndFormatted,  $gte: dateStartFormatted  } };
         }
       
         if (from && upTo) {
-          return { date: { $gte: from, $lte: upTo } };
+          if(!isValidDateFormat(from)){
+            throw new Error("from format is invalid");
+        }
+          if(!isValidDateFormat(upTo)){
+            throw new Error("upTo format is invalid");
+        }
+        const fromFormatted = new Date(`${from}T00:00:00.000Z`)
+        const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
+
+          return { date: { $gte: fromFormatted, $lte: upToFormatted } };
         }
       
         if (from) {
-          return { date: { $gte: from } };
+          if(!isValidDateFormat(from)){
+            throw new Error("upTo format is invalid");
+        }
+        const fromFormatted = new Date(`${from}T00:00:00.000Z`)
+          return { date: { $gte: fromFormatted } };
         }
       
         if (upTo) {
-          return { date: { $lte: upTo } };
+          if(!isValidDateFormat(upTo)){
+            throw new Error("upTo format is invalid");
+        }
+
+        const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
+          return { date: { $lte: upToFormatted } };
         }
       
         return {};
@@ -66,22 +96,22 @@ export const verifyAuth = (req, res, info) => {
 
     const cookie = req.cookies
     if (!cookie.accessToken || !cookie.refreshToken) {
-        return { authorized: false, cause: "Unauthorized" };
+        return { flag: false, cause: "Unauthorized" };
     }
     try {
         const decodedAccessToken = jwt.verify(cookie.accessToken, process.env.ACCESS_KEY);
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
 
         if (!decodedAccessToken.username || !decodedAccessToken.email || !decodedAccessToken.role) {
-            return { authorized: false, cause: "Token is missing information" }
+            return { flag: false, cause: "Token is missing information" }
         }
  
         if (!decodedRefreshToken.username || !decodedRefreshToken.email || !decodedRefreshToken.role) {
-            return { authorized: false, cause: "Token is missing information" }
+            return { flag: false, cause: "Token is missing information" }
         }
 
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
-            return { authorized: false, cause: "Mismatched users" };
+            return { flag: false, cause: "Mismatched users" };
         }
 
         const authType = info.authType;
@@ -98,48 +128,48 @@ export const verifyAuth = (req, res, info) => {
 
               const username = info.username;
               if (username != decodedRefreshToken.username) {
-                return { authorized: false, cause: "Mismatched users" };
+                return { flag: false, cause: "Mismatched users" };
               }
               if (decodedAccessToken.exp < currentTime) {
                   throw new Error("TokenExpiredError")
               }
               if (username != decodedAccessToken.username) {
-                  return { authorized: false, cause: "Mismatched users" };
+                  return { flag: false, cause: "Mismatched users" };
       
               }
 
               break;
             case "Admin":
               if ("Admin" != decodedRefreshToken.role) {
-                return { authorized: false, cause: "Mismatch role" };
+                return { flag: false, cause: "Mismatch role" };
               }
               if (decodedAccessToken.exp < currentTime) {
                   throw new Error("TokenExpiredError")
               }
               if ("Admin" != decodedAccessToken.role) {
-                return { authorized: false, cause: "Mismatch role" };
+                return { flag: false, cause: "Mismatch role" };
               }
               break;
 
             case "Group":
               const members = info.members;
               if (!members.includes(decodedRefreshToken.email)) {
-                 return { authorized: false, cause: "User is not in the group" };
+                 return { flag: false, cause: "User is not in the group" };
               }
               if (decodedAccessToken.exp < currentTime) {
                   throw new Error("TokenExpiredError")
               }
               if (!members.includes(decodedAccessToken.email)) {
-                return { authorized: false, cause: "User is not in the group" };
+                return { flag: false, cause: "User is not in the group" };
               }
               break;
 
             default:
-              return { authorized: false, cause: "Auth type is not defined" };
+              return { flag: false, cause: "Auth type is not defined" };
   
         }
 
-        return { authorized: true, cause: "Authorized" };
+        return { flag: true, cause: "Authorized" };
       } catch (err) {
         if (err.name === "TokenExpiredError") {
             try {
@@ -152,16 +182,16 @@ export const verifyAuth = (req, res, info) => {
                 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
                 res.cookie('accessToken', newAccessToken, { httpOnly: true, path: '/api', maxAge: 60 * 60 * 1000, sameSite: 'none', secure: true })
                 res.locals.refreshedTokenMessage= 'Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls'
-                return { authorized: true, cause: "Authorized" }
+                return { flag: true, cause: "Authorized" }
             } catch (err) {
                 if (err.name === "TokenExpiredError") {
-                    return { authorized: false, cause: "Perform login again" }
+                    return { flag: false, cause: "Perform login again" }
                 } else {
-                    return { authorized: false, cause: err.name }
+                    return { flag: false, cause: err.name }
                 }
             }
         } else {
-            return { authorized: false, cause: err.name };
+            return { flag: false, cause: err.name };
         }
     }
 }
@@ -173,19 +203,46 @@ export const verifyAuth = (req, res, info) => {
  *  The returned object must handle all possible combination of amount filtering parameters, including the case where none are present.
  *  Example: {amount: {$gte: 100}} returns all transactions whose `amount` parameter is greater or equal than 100
  */
+
+//TODO check if it worksw
 export const handleAmountFilterParams = (req) => {
         const { min, max } = req.query;
-        
+      
+        const isNumeric = (value) => {
+          return !isNaN(parseInt(value)) && isFinite(value);
+        };
+
         if (min && max) {
-          return { amount: { $gte: parseFloat(min), $lte: parseFloat(max) } };
+          const minInt = parseInt(min);
+          const maxInt = parseInt(max);
+          
+          if (!isNumeric(minInt) || !isNumeric(maxInt)) {
+            throw new Error("Cannot be parsed"); //TODO: what about error 400?
+
+          }
+          if (minInt > maxInt) return {};
+
+          return { amount: { $gte: minInt, $lte: maxInt } };
         }
       
         if (min) {
-          return { amount: { $gte: parseFloat(min) } };
+          const minInt = parseInt(min);
+          if (!isNumeric(minInt)) {
+            const error = new Error("Cannot be parsed");
+            error.status = 400;
+            throw error;
+          }
+          return { amount: { $gte: minInt } };
         }
       
         if (max) {
-          return { amount: { $lte: parseFloat(max) } };
+          const maxInt = parseInt(max);
+          if (!isNumeric(maxInt)) {
+            const error = new Error("Cannot be parsed");  //TODO: cannot return res.json  I can only throw from here thus 2 following calls will never work
+            error.status = 400;
+            throw error;
+          }
+          return { amount: { $lte: maxInt } };
         }
       
         return {};

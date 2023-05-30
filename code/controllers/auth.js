@@ -146,10 +146,13 @@ export const login = async (req, res) => {
  */
 export const logout = async (req, res) => {
 
-    // TODO: authSimple
+    const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
+
+    if(!simpleAuth.authorized)
+        return res.status(401).json({ error: simpleAuth.cause }) 
 
     const refreshToken = req.cookies.refreshToken
-    if (!refreshToken) return res.status(400).json({ error: "user not found" })
+    if (!refreshToken) return res.status(400).json({ error: "refresh token missing" })
     const user = await User.findOne({ refreshToken: refreshToken })
     if (!user) return res.status(400).json('user not found')
     try {
@@ -157,7 +160,7 @@ export const logout = async (req, res) => {
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         res.cookie('refreshToken', "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         const savedUser = await user.save()
-        res.status(200).json({data: { message:'logged out' }})
+        res.status(200).json({data: { message:'User logged out' }})
     } catch (error) {
         res.status(400).json({ error: error.message })
     }

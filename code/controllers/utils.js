@@ -285,6 +285,3 @@ export const checkMissingOrEmptyParams = (parameters, messageObj) => {
 
     return false;
 }
-
-// TODO: function that checks RGB code color for labels
-// TODO: function that checks email correctness

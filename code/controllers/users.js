@@ -403,7 +403,6 @@ export const removeFromGroup = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
 
-    //TODO : DON'T DELETE USER WHEN HE'S THE ONLY ONE REMAINED IN THE GROUP
 
     const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
@@ -417,6 +416,29 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({ error: "The user doesn't exist" });
     }
+
+    // SLACK: Check if the user doesn't have admin privileges
+    if(user.role === "Admin"){
+      return res.status(401).json({ error: "User is an ADMIN!"});
+    }
+
+    // Check if inside a group
+
+    const groups = await Group.find();
+    const groupsWithOneMember = groups.filter(group => group.members.length === 1);
+    console.log(groupsWithOneMember);
+    const userInGroupWithOneMember = groupsWithOneMember.some(group => {
+      const memberEmail = group.members[0].email;
+      return memberEmail === userEmail;
+    });
+    console.log(userInGroupWithOneMember);
+
+    //if at least one found then we cannot delete the user
+    if(userInGroupWithOneMember){
+      return res.status(401).json({ error: "user is the last of a group, cannot delete" }) 
+    }
+    
+
 
     // Count the number of transactions to be deleted
     const transactionCount = await transactions.countDocuments({ username: user.username });

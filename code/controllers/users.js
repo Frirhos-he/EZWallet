@@ -386,6 +386,9 @@ export const removeFromGroup = async (req, res) => {
 
         res.status(200).json({ data: {group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound }, message: res.locals.refreshedToken})
       } else {    //user of the group
+            const group = await Group.findOne({ group: groupName });
+            if (!group)
+              return res.status(401).json({ message: "The group doesn't exist" })
 
             const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
             if(!groupAuth.authorized)
@@ -393,9 +396,6 @@ export const removeFromGroup = async (req, res) => {
                     return res.status(401).json({ error: "groupAuth: " + groupAuth.message }) 
             }
             const groupName = req.params.name;
-            const group = await Group.findOne({ group: groupName });
-            if (!group)
-              return res.status(401).json({ message: "The group doesn't exist" })
 
             const memberEmails = req.body.members
 
@@ -522,7 +522,6 @@ export const removeFromGroup = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
   try {
-
 
     const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 

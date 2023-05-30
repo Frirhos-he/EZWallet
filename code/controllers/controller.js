@@ -406,14 +406,11 @@ export const getTransactionsByUser = async (req, res) => {
                 res.json({data:dataResult,
                          message: res.locals.refreshedTokenMessage});
             }).catch(error => { throw (error) })
-        } catch (error) {
-            if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
-            else res.status(400).json({ error: error.message })
         }
-        }} catch (error) {
+    } catch (error) {
         res.status(400).json({ error: error.message })
-        }
-}          
+   }  
+}    
 
 /**
  * Return all transactions made by a specific user filtered by a specific category
@@ -500,7 +497,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             res.json({data:dataResult,
                       message:res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
-    } catch (error) {
+    }} catch (error) {
         res.status(400).json({ error: error.message });
     }
 }

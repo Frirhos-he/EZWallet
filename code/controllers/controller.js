@@ -115,7 +115,7 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
     try {
 
-        //TO DO CHECK PARAMS
+
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.authorized)
@@ -125,14 +125,10 @@ export const deleteCategory = async (req, res) => {
         if(types === undefined){
             return res.status(400).json({ error: "types object not inserted" }); 
         }
-            types = [...new Set(types)];   //to elimate
+            types = [...new Set(types)];   //to elimate duplicates
         const typeListLength = types.length;
         
-
-        //TODO: CHECK IF MUST BE CONSIDERED
-        //if(types == []){
-        //    return res.status(400).json({ error: "categories object not inserted" }); 
-        //}
+        //Check if one of the categories is empty string
         if (types.some((element) => element.trim() === "")) 
             return res.status(400).json({ error: "at least one of the types in the array is an empty string" }); 
         if (types.some)
@@ -145,33 +141,30 @@ export const deleteCategory = async (req, res) => {
             }
         }
 
+        let updateResult;
+
+        const allCategories = await categories.find({});
         //count the tot number of categories
-        const totNumberCategories = (await categories.find({})).length;
+         const totNumberCategories = allCategories.length;
         //Only one category in db, no deletion done
         if(totNumberCategories == 1)
-            return res.status(400).json({ error: "Only one category remaining in database" });
+                return res.status(400).json({ error: "Only one category remaining in database" });
 
-        let updateResult;
-        //Deletion
-        if(totNumberCategories == typeListLength){ // would be necessary to leave the firstOne
-            const firstCategory = await categories.findOne({});   //take the first
-            //Updating affected transactions
-                updateResult =  await transactions.updateMany(
-                { type: { $in: types } },
-                { $set: { type: firstCategory.type } }
-            );
-            types.pop(firstCategory.type);  // so that the firstCategory will be left unchanged
-            const deleteResult = await categories.deleteMany({ type: { $in: types }  });
-        } else {
-            const firstCategory = await categories.findOne({type: { $nin:types}});   //take the first
-            //Updating affected transactions
-                updateResult =  await transactions.updateMany(
-                { type: { $in: types } },
-                { $set: { type: firstCategory.type } }
-            );
-            const deleteResult = await categories.deleteMany({ type: { $in: types }  });
+        //TODO: Profs says that createAt is automatically created, it is not
+        // NEEDS TO ADD createAt or find it..
+        //sort based on the oldest one
+        allCategories.sort((a, b) => b.createdAt - a.createdAt);
+        const oldestCategory = allCategories[0];
+        //Updating affected transactions
+            updateResult =  await transactions.updateMany(
+            { type: { $in: types } },
+            { $set: { type: oldestCategory.type } }
+        );
+        if(totNumberCategories == typeListLength){ // would be necessary to leave the lastCreatedOne
+            types.pop(oldestCategory.type);  // so that the oldestCategory will be left unchanged   
         }
-        
+
+        const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 
         res.locals.refreshedTokenMessage = "Access token has been refreshed. Remember to copy the new one in the headers of subsequent calls;" //tocheck
         return res.json({ data: { message: "Categories successfully deleted", count: (updateResult ? updateResult.modifiedCount : 0 ) },

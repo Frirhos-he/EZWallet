@@ -13,13 +13,8 @@ import { verifyAuth } from './utils.js';
 export const register = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: "Missing required attributes" });
-          }
-          // Check if any parameter in the request body is an empty string
-        if (Object.values(req.body).some((param) => param === "")) {
-                return res.status(400).json({ error: "Empty parameter found" });
-        }
+        if(checkMissingOrEmptyParams([username,email, password], res))
+        return res.status(400).json({ error: "missing parameters" });
           // Check if the email is in a valid email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -55,13 +50,9 @@ export const register = async (req, res) => {
 export const registerAdmin = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: "Missing required attributes" });
-          }
-          // Check if any parameter in the request body is an empty string
-        if (Object.values(req.body).some((param) => param === "")) {
-                return res.status(400).json({ error: "Empty parameter found" });
-        }
+        if(checkMissingOrEmptyParams([username,email, password], res))
+            return res.status(400).json({ error: "missing parameters" });
+
           // Check if the email is in a valid email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -99,13 +90,11 @@ export const registerAdmin = async (req, res) => {
  */
 export const login = async (req, res) => {
     const { email, password } = req.body
-    if ( !email || !password) {
-        return res.status(400).json({ error: "Missing required attributes" });
-      }
-      // Check if any parameter in the request body is an empty string
-    if (Object.values(req.body).some((param) => param === "")) {
-            return res.status(400).json({ error: "Empty parameter found" });
-    }
+        //Check for missing or empty string parameter
+        if(checkMissingOrEmptyParams([email, password], res))
+            return res.status(400).json({ error: "missing parameters" });
+
+            
       // Check if the email is in a valid email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {

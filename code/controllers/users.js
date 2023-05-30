@@ -313,7 +313,7 @@ export const removeFromGroup = async (req, res) => {
         if(deleteMembers.length === membersInGroup.members.length ){
               if(deleteMembers.length == 1){
                 //SLACK COMMENTS
-                return res.status(400).json({ error: 'if the group only has one member then the function must return a 400 error' })
+                return res.status(400).json({ error: ' group only has one member' })
               }
               const firstUser = deleteMembers.shift();        // to delete the first member of the group
             }
@@ -321,7 +321,13 @@ export const removeFromGroup = async (req, res) => {
 
         // Select the memberEmails email that are not in the group already
         let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
-    
+        // Excluding the ones that doesn't even exists on db
+        console.log(NotInGroup);
+        NotInGroup = NotInGroup.filter(m => !membersNotFound.includes(m));
+        console.log(NotInGroup);
+
+
+
         membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
 
         //Update modification on member array
@@ -375,7 +381,7 @@ export const removeFromGroup = async (req, res) => {
 
             // Select the memberEmails email that are not in the group already
             let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
-        
+            
             membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
 
             //Update modification on member array

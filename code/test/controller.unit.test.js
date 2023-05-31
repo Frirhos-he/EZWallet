@@ -78,6 +78,26 @@ describe("createCategory", () => {
     expect(categories.findOne).not.toHaveBeenCalled();
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
+
+  test('should return an error if category already exists', async () => {
+    // Mock input data with existing category
+    const reqBody = {
+      type: 'existingtype',
+      color: 'testcolor',
+    };
+
+    // Mock categories.findOne method to return existing category
+    categories.findOne.mockResolvedValue({ type: reqBody.type });
+
+    // Make the request to create a new category
+    const response = await request(app).post('/create-category').send(reqBody);
+
+    // Check the response
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Category already exists' });
+    expect(categories.findOne).toHaveBeenCalledWith({ type: reqBody.type });
+    expect(categories.prototype.save).not.toHaveBeenCalled();
+  });
   ---------------------------------------------------------------------------------------------
 
 describe("updateCategory", () => { 

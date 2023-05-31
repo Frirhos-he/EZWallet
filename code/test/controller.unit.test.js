@@ -12,13 +12,13 @@ beforeEach(() => {
   transactions.aggregate.mockClear();
   transactions.prototype.save.mockClear();
 });
-
+---------------------------------------------------------------
 describe("createCategory", () => { 
     test('Dummy test, change it', () => {
         expect(true).toBe(true);
     });
-})
----------------------------------------------------------------------------
+}) 
+
 import request from 'supertest';
 import { app } from '../app';
 import { categories } from '../models/model';
@@ -91,13 +91,52 @@ describe("deleteCategory", () => {
         expect(true).toBe(true);
     });
 })
-
+--------------------------------------------------------------
 describe("getCategories", () => { 
     test('Dummy test, change it', () => {
         expect(true).toBe(true);
     });
 })
 
+import request from 'supertest';
+import { app } from '../app';
+import { categories, transactions } from '../models/model';
+
+jest.mock('../models/model');
+
+beforeEach(() => {
+  categories.find.mockClear();
+}); 
+
+describe("getCategories", () => {
+  test('should return categories data for simple authenticated user', async () => {
+    // Mock simple authentication
+    const simpleAuthMock = {
+      flag: true,
+    };
+    jest.mock('../auth', () => ({
+      verifyAuth: jest.fn(() => simpleAuthMock),
+    }));
+
+    // Mock categories.find method to return categories data
+    const categoriesData = [
+      { type: 'category1', color: 'color1' },
+      { type: 'category2', color: 'color2' },
+    ];
+    categories.find.mockResolvedValue(categoriesData);
+
+    // Make the request to get categories
+    const response = await request(app).get('/categories');
+
+    // Check the response
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      data: categoriesData,
+      refreshedTokenMessage: undefined,
+    });
+    expect(categories.find).toHaveBeenCalled();
+  });
+--------------------------------------------------------------
 describe("createTransaction", () => { 
     test('Dummy test, change it', () => {
         expect(true).toBe(true);

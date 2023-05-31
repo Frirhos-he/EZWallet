@@ -156,6 +156,48 @@ describe("getCategories", () => {
     });
     expect(categories.find).toHaveBeenCalled();
   });
+
+  test('should return an error if not authenticated as simple user', async () => {
+    // Mock simple authentication failure
+    const simpleAuthMock = {
+      flag: false,
+      cause: 'Unauthorized',
+    };
+    jest.mock('../auth', () => ({
+      verifyAuth: jest.fn(() => simpleAuthMock),
+    }));
+
+    // Make the request to get categories
+    const response = await request(app).get('/categories');
+
+    // Check the response
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({ error: 'Unauthorized' });
+    expect(categories.find).not.toHaveBeenCalled();
+  });
+
+  test('should return an error if an error occurs during category retrieval', async () => {
+    // Mock simple authentication
+    const simpleAuthMock = {
+      flag: true,
+    };
+    jest.mock('../auth', () => ({
+      verifyAuth: jest.fn(() => simpleAuthMock),
+    }));
+
+    // Mock categories.find method to throw an error
+    const errorMessage = 'Error retrieving categories';
+    categories.find.mockRejectedValue(new Error(errorMessage));
+
+    // Make the request to get categories
+    const response = await request(app).get('/categories');
+
+    // Check the response
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: errorMessage });
+    expect(categories.find).toHaveBeenCalled();
+  });
+});
 --------------------------------------------------------------
 describe("createTransaction", () => { 
     test('Dummy test, change it', () => {

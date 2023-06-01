@@ -111,7 +111,7 @@ export const verifyAuth = (req, res, info) => {
         }
 
         if (decodedAccessToken.username !== decodedRefreshToken.username || decodedAccessToken.email !== decodedRefreshToken.email || decodedAccessToken.role !== decodedRefreshToken.role) {
-            return { flag: false, cause: "Mismatched users" };
+          return { flag: false, cause: "Mismatched users" };
         }
 
         const authType = info.authType;
@@ -277,7 +277,8 @@ export const checkMissingOrEmptyParams = (parameters, messageObj) => {
     
     //Check for all whitespaces string parameters by trimming
     for (i=0 ; i<nParams ; i++){
-        if (parameters[i].trim() === ""){
+      console.log(parameters);
+        if (typeof parameters[i] === 'string' && parameters[i].trim() === ""){
           messageObj.message= "Empty string values";   //TODO: choose if update here or in API
           return true;
         }

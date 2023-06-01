@@ -12,7 +12,6 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
   - Returns a 400 error if the type of category passed in the request body represents an already existing category in the database 
   - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin) 
 
-  //CHANGED SIGNATURE BASED ON SLACK REQUEST
  */export const createCategory = async (req, res) => {
     try {  
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
@@ -234,7 +233,7 @@ export const createTransaction = async (req, res) => {
             return res.status(400).json({ error: messageObj.message });
 
         //Try parsing amount as float
-        if(isNan(parseFloat(amount)))
+        if(isNaN(parseFloat(amount)))
             return res.status(400).json({ error: "Invalid amount value" });
 
         //Check if body username is the same as the one in route
@@ -251,7 +250,7 @@ export const createTransaction = async (req, res) => {
             return res.status(400).json({ error: "The category does not exist" })
         }
         //Search for requesting user(route)
-        const matchedUserRoute = await User.findOne({ username: req.param.username });
+        const matchedUserRoute = await User.findOne({ username: req.params.username });
         if(!matchedUserRoute) {
             return res.status(400).json({ error: "The requesting user does not exist" })
         }
@@ -532,7 +531,7 @@ export const getTransactionsByGroup = async (req, res) => {
             const usersById = matchedGroup.members.map((member) => member.user);
             const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
             const usernames = usersByUsername.map(user => user.username);
-            
+            console.log(usernames)
             transactions.aggregate([
                 { $match: { username: { $in: usernames } } },
                 {

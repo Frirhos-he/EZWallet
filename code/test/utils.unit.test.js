@@ -51,7 +51,7 @@ describe("handleDateFilterParams", () => {
         expect(result).toEqual({ date: { $gte: '2023-04-30T00:00:00.000Z',  $lte: '2023-04-31T23:59:59.000Z'  } });
 
     });
-    test('Should return an object with both property max,min: > queryParams', () => {   
+    test('Should return an object with both property upTo,from: > queryParams', () => {   
         const mockReq = {query: {upTo: "2023-04-30", from:"2023-04-31", tmp: "ciao"}};
         const result = handleDateFilterParams(mockReq);
         expect(result).hasOwnProperty("date");
@@ -59,7 +59,7 @@ describe("handleDateFilterParams", () => {
         expect(childProperties).hasOwnProperty("$gte", "$lte");
         expect(result).toEqual({ date: { $gte: '2023-04-30T00:00:00.000Z',  $lte: '2023-04-31T23:59:59.000Z'  } });
     });
-    test('Should return an object with property max: 1 no revelant parameter', () => {   
+    test('Should return an object with property upTo: 1 no revelant parameter', () => {   
         const mockReq = {query: {upTo: "2023-04-30", tmp: "ciao"}};
         const result = handleDateFilterParams(mockReq);
         expect(result).hasOwnProperty("date");
@@ -68,7 +68,7 @@ describe("handleDateFilterParams", () => {
         expect(result).toEqual({ date: { $lte: '2023-04-30T23:59:59.000Z' } });
 
     });
-    test('Should return an object with property min: 1 no revelant parameter', () => {   
+    test('Should return an object with property from: 1 no revelant parameter', () => {   
         const mockReq = {query: {from: "2023-04-30", tmp: "ciao"}};
         const result = handleDateFilterParams(mockReq);
         expect(result).hasOwnProperty("date");
@@ -83,20 +83,9 @@ describe("handleDateFilterParams", () => {
         expect(result).toEqual({});
 
     });
-    test('Should return an empty object: 2 strings', () => {    
-        const mockReq = {query: {min: "100", max: "1"}};
-        const result = handleDateFilterParams(mockReq);
-        expect(result).toEqual({});
 
-    });
-    test('Should return an empty object: 2 strings', () => {    
-        const mockReq = {query: {min: "100", max: "1"}};
-        const result = handleDateFilterParams(mockReq);
-        expect(result).toEqual({});
-
-    });
-    test('Should return an empty object: inverted max and min', () => {    
-        const mockReq = {query: {min: "100", max: "1"}};
+    test('Should return an empty object: inverted from and upTo', () => {    
+        const mockReq = {query: {from: "2023-04-31", upTo: "2023-04-30"}};
         const result = handleDateFilterParams(mockReq);
         expect(result).toEqual({});
 

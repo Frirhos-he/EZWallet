@@ -374,6 +374,7 @@ export const getTransactionsByUser = async (req, res) => {
             const queryDate   = handleDateFilterParams(req);
             const queryAmount = handleAmountFilterParams(req);
 
+
             let matchStage = {username: username};
             if (Object.keys(queryDate).length !== 0 ){
                 matchStage = { ...matchStage, ...queryDate };

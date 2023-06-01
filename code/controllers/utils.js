@@ -44,6 +44,8 @@ export const handleDateFilterParams = (req) => {
         const fromFormatted = new Date(`${from}T00:00:00.000Z`)
         const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
 
+        if(fromFormatted > upToFormatted) return {};
+        
           return { date: { $gte: fromFormatted, $lte: upToFormatted } };
         }
       

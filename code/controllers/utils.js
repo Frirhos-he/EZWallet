@@ -35,6 +35,10 @@ export const handleDateFilterParams = (req) => {
         }
       
         if (from && upTo) {
+
+          if(!isValidDateFormat(upTo) && !isValidDateFormat(from)){
+            throw new Error("both format are invalid");
+        }
           if(!isValidDateFormat(from)){
             throw new Error("from format is invalid");
         }
@@ -45,7 +49,7 @@ export const handleDateFilterParams = (req) => {
         const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
 
         if(fromFormatted > upToFormatted) return {};
-        
+
           return { date: { $gte: fromFormatted, $lte: upToFormatted } };
         }
       

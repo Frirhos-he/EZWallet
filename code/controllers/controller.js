@@ -704,8 +704,10 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
   - Request Body Content: The `_id` of the transaction to be deleted
   - Response `data` Content: A string indicating successful deletion of the transaction
   - Returns a 400 error if the request body does not contain all the necessary attributes
+  - Returns a 400 error if the `_id` in the request body is an empty string
   - Returns a 400 error if the username passed as a route parameter does not represent a user in the database
   - Returns a 400 error if the `_id` in the request body does not represent a transaction in the database
+  - Returns a 400 error if the `_id` in the request body represents a transaction made by a different user than the one in the route
   - Returns a 401 error if called by an authenticated user who is not the same user as the one in the route (authType = User)
  */  //a regular user should be capable deleting only own transactions
 export const deleteTransaction = async (req, res) => {
@@ -732,6 +734,11 @@ export const deleteTransaction = async (req, res) => {
         const matchedTransaction = await transactions.findOne({ _id: transactionId });
         if(!matchedTransaction) {
             return res.status(400).json({ error : "The transaction does not exist" });
+        }
+
+        //Check if the transaction was made by the user requesting deletion
+        if(matchedTransaction.username !== username){
+            return res.status(400).json({ error : "The transaction is not made by the requesting user" });
         }
 
         let data = await transactions.deleteOne({ _id: transactionId });

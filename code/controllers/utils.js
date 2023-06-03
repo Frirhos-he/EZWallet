@@ -286,11 +286,10 @@ export const checkMissingOrEmptyParams = (parameters, messageObj) => {
     
     //Check for all whitespaces string parameters by trimming
     for (i=0 ; i<nParams ; i++){
-      console.log(parameters);
-        if (typeof parameters[i] === 'string' && parameters[i].trim() === ""){
+        if (typeof parameters[i] === 'string' && parameters[i].trim() === "" ){
           messageObj.message= "Empty string values";   //TODO: choose if update here or in API
           return true;
-        }
+        } 
     }
 
     return false;

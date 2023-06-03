@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import { verifyAuth,checkMissingOrEmptyParams } from './utils.js';
-
+//TO DO INCLUDE IN TRY OTHER DATABASE
 /**
  * Register a new user in the system
   - Request Body Content: An object having attributes `username`, `email` and `password`
@@ -11,8 +11,11 @@ import { verifyAuth,checkMissingOrEmptyParams } from './utils.js';
     - error 400 is returned if there is already a user with the same username and/or email
  */
 export const register = async (req, res) => {
+
     try {
+
         const { username, email, password } = req.body
+
         let messageObj ={message:""};
         if(checkMissingOrEmptyParams([username,email, password], messageObj))
             return res.status(400).json({ error: messageObj.message });
@@ -22,6 +25,7 @@ export const register = async (req, res) => {
         if (!emailRegex.test(email)) {
             return res.status(400).json({ error: "Invalid email format" });
         }
+
           // Check if the username or email already exists
         const existingUserEmail = await User.findOne({ email: req.body.email });
         if (existingUserEmail) return res.status(400).json({ error: "Email is already registered" });
@@ -90,24 +94,25 @@ export const registerAdmin = async (req, res) => {
     - error 400 is returned if the user does not exist
     - error 400 is returned if the supplied password does not match with the one in the database
  */
-export const login = async (req, res) => {
+export const login = async (req, res) => {     
+
+    try {     
+
     const { email, password } = req.body
         //Check for missing or empty string parameter
         let messageObj ={message:""};
         if(checkMissingOrEmptyParams([email, password], messageObj))
             return res.status(400).json({ error: messageObj.message });
-        
-            
+
       // Check if the email is in a valid email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({ error: "Invalid email format" });
     }
-    const existingUser = await User.findOne({ email: email })
-    if (!existingUser) return res.status(400).json({ error: 'please you need to register' })
-    const cookie = req.cookies
 
-    try {
+    const existingUser = await User.findOne({ email: email })
+
+    if (!existingUser) return res.status(400).json({ error: 'please you need to register' })
         const match = await bcrypt.compare(password, existingUser.password)
         if (!match) return res.status(400).json('wrong credentials')
         //CREATE ACCESSTOKEN
@@ -117,6 +122,7 @@ export const login = async (req, res) => {
             username: existingUser.username,
             role: existingUser.role
         }, process.env.ACCESS_KEY, { expiresIn: '1h' })
+
         //CREATE REFRESH TOKEN
         const refreshToken = jwt.sign({
             email: existingUser.email,
@@ -144,17 +150,17 @@ export const login = async (req, res) => {
     - error 400 is returned if the user does not exist
  */
 export const logout = async (req, res) => {
-
+    try {
     const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
 
-    if(!simpleAuth.authorized)
+    if(!simpleAuth.flag)
         return res.status(401).json({ error: simpleAuth.cause }) 
 
     const refreshToken = req.cookies.refreshToken
     if (!refreshToken) return res.status(400).json({ error: "refresh token missing" })
     const user = await User.findOne({ refreshToken: refreshToken })
     if (!user) return res.status(400).json('user not found')
-    try {
+
         user.refreshToken = null
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         res.cookie('refreshToken', "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })

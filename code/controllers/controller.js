@@ -33,7 +33,7 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
 
         new_categories.save()
             .then(data => {
-                res.json({ 
+                res.status(200).json({ 
                     data: { type:data.type, color:data.color },
                     refreshedTokenMessage: res.locals.refreshedTokenMessage
                 });

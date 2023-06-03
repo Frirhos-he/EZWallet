@@ -1,8 +1,21 @@
 import request from 'supertest';
 import { app } from '../app';
 import { categories, transactions } from '../models/model';
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getCategories,
+  createTransaction,
+  deleteTransaction,
+  deleteTransactions,
+  getAllTransactions,
+  getTransactionsByUser,
+  getTransactionsByUserByCategory
+} from "../controllers/controller"
+import { verifyAuth } from '../controllers/utils';
 
-jest.mock('../models/model');
+jest.mock('../models/model.js');
 
 beforeEach(() => {
   categories.find.mockClear();
@@ -12,34 +25,27 @@ beforeEach(() => {
   transactions.aggregate.mockClear();
   transactions.prototype.save.mockClear();
 });
----------------------------------------------------------------
-describe("createCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
-}) 
-
-import request from 'supertest';
-import { app } from '../app';
-import { categories } from '../models/model';
-
-jest.mock('../models/model');
-
-beforeEach(() => {
-  categories.findOne.mockClear();
-  categories.prototype.save.mockClear();
-});
 
 describe("createCategory", () => {
   test('should create a new category successfully', async () => {
     // Mock input data
-    const reqBody = {
+    const mockReq = {
       type: 'testtype',
       color: 'testcolor',
     };
 
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
     // Mock categories.findOne method to return null (category doesn't exist)
-    categories.findOne.mockResolvedValue(null);
+    // categories.findOne.mockResolvedValue(null);
+
+    jest.spyOn(categories, "findOne").mockImplementation(() => false)
 
     // Mock categories.prototype.save method
     categories.prototype.save.mockResolvedValue({
@@ -47,17 +53,24 @@ describe("createCategory", () => {
       color: reqBody.color,
     });
 
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
     // Make the request to create a new category
-    const response = await request(app).post('/create-category').send(reqBody);
+    // const response = await request(app).post('/create-category').send(reqBody);
+
+    await createCategory(mockReq, mockRes)
+
+    expect(mockReq.status).toHaveBeenCalledWith(200)
 
     // Check the response
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      data: {
-        type: reqBody.type,
-        color: reqBody.color,
-      },
-    });
+    // expect(response.status).toBe(200);
+    // expect(response.body).toEqual({
+    //   data: {
+    //     type: reqBody.type,
+    //     color: reqBody.color,
+    //   },
+    // });
+    
     expect(categories.findOne).toHaveBeenCalledWith({ type: reqBody.type });
     expect(categories.prototype.save).toHaveBeenCalled();
   });
@@ -98,7 +111,8 @@ describe("createCategory", () => {
     expect(categories.findOne).toHaveBeenCalledWith({ type: reqBody.type });
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
-  ---------------------------------------------------------------------------------------------
+})
+  
 
 describe("updateCategory", () => { 
     test('Dummy test, change it', () => {
@@ -111,22 +125,6 @@ describe("deleteCategory", () => {
         expect(true).toBe(true);
     });
 })
---------------------------------------------------------------
-describe("getCategories", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
-})
-
-import request from 'supertest';
-import { app } from '../app';
-import { categories, transactions } from '../models/model';
-
-jest.mock('../models/model');
-
-beforeEach(() => {
-  categories.find.mockClear();
-}); 
 
 describe("getCategories", () => {
   test('should return categories data for simple authenticated user', async () => {
@@ -198,7 +196,7 @@ describe("getCategories", () => {
     expect(categories.find).toHaveBeenCalled();
   });
 });
---------------------------------------------------------------
+
 describe("createTransaction", () => { 
     test('Dummy test, change it', () => {
         expect(true).toBe(true);

@@ -101,6 +101,9 @@ export const handleDateFilterParams = (req) => {
 export const verifyAuth = (req, res, info) => {
 
     const cookie = req.cookies
+    if(cookie == undefined){
+      return { flag: false, cause: "Missing cookies" };
+    }
     if (!cookie.accessToken || !cookie.refreshToken) {
         return { flag: false, cause: "Unauthorized" };
     }

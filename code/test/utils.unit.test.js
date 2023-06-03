@@ -1,4 +1,6 @@
 import { handleDateFilterParams, verifyAuth, handleAmountFilterParams } from '../controllers/utils';
+import jwt from 'jsonwebtoken'
+jest.mock("jsonwebtoken");
 
 describe("handleDateFilterParams", () => { 
     test('Should return an empty object: no query params', () => {      
@@ -123,42 +125,260 @@ describe("handleDateFilterParams", () => {
 })
 
 
-/*
-const adminTokens = {
+
+const token = {
     accessToken:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAaC5pdCIsImlkIjoiNjQ3NjM3MDkxNzQzMTYwY2ZhMzNlMmMwIiwidXNlcm5hbWUiOiJhIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNjg1NjM3NDQwLCJleHAiOjE2ODU2NDEwNDB9.ItOPSh11ZSeegkicpMFCYzO2El-oF5GhlsiQ0IWAgh4",
+        "test",
     refreshToken:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAaC5pdCIsImlkIjoiNjQ3NjM3MDkxNzQzMTYwY2ZhMzNlMmMwIiwidXNlcm5hbWUiOiJhIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNjg1NjM3NDQwLCJleHAiOjE2ODYyNDIyNDB9.eDF28IvCTd6TaX9TOxaSz-txQG8m0Q52I0KvpggHgGo",
+        "test",
+};
+const missingToken = {
+    accessToken:
+        "",
+    refreshToken:
+        null,
 };
 
-const userTokens = {
-    accessToken:
-        "",
-    refreshToken:
-        "",
-};
-*/
 
 describe("verifyAuth", () => { 
+    //TODO: check expired token catch,
+    //NOMINAL SCENARIO 
     test("Simple loggin", async () => {
         const mockReq = {
-            cookies: adminTokens
+            cookies: token
         };
         const mockRes = {
-            locals: {
-                refreshedTokenMessage: "expired token",
-            }
         };
         const mockInfo = {
+            authType:"Simple"
         };
         const decodedAccessToken = {
-            username: "tester",
-            email: "tester@test.com",
+            username: "s",
+            email: "s@h.it",
+            role: "Simple",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "Simple"
+           }
+        const verifySpy = jest.spyOn(jwt, 'verify');   
+        verifySpy.mockReturnValueOnce(decodedAccessToken);
+        verifySpy.mockReturnValueOnce(decodedRefreshToken);
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toHaveProperty('flag');
+        expect(result).toHaveProperty('cause');
+        expect(result).toEqual({ flag: true, cause: "Authorized" });
+    });
+    test("User loggin", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"User",
+            username:"u"
+        };
+        const decodedAccessToken = {
+            username: "u",
+            email: "u@h.it",
+            role: "Regular",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "u",
+            email: "u@h.it",
             role: "Regular"
            }
-        jest.spyOn(jwt, "verify").mockReturnValue(decodedAccessToken)
-        expect(mockRes.status).toHaveBeenCalledWith(200);
+        const verifySpy = jest.spyOn(jwt, 'verify');   
+        verifySpy.mockReturnValueOnce(decodedAccessToken);
+        verifySpy.mockReturnValueOnce(decodedRefreshToken);
 
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toHaveProperty('flag');
+        expect(result).toHaveProperty('cause');
+        expect(result).toEqual({ flag: true, cause: "Authorized" });
+    });
+    test("Admin loggin", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Admin"
+        };
+        const decodedAccessToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin"
+           }
+        const verifySpy = jest.spyOn(jwt, 'verify');   
+        verifySpy.mockReturnValueOnce(decodedAccessToken);
+        verifySpy.mockReturnValueOnce(decodedRefreshToken);
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toHaveProperty('flag');
+        expect(result).toHaveProperty('cause');
+        expect(result).toEqual({ flag: true, cause: "Authorized" });
+    });
+    test("Group loggin", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Group",
+            members:["a@h.it","u@h.it","a@h.it"]
+        };
+        const decodedAccessToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin"
+           }
+        const verifySpy = jest.spyOn(jwt, 'verify');   
+        verifySpy.mockReturnValueOnce(decodedAccessToken);
+        verifySpy.mockReturnValueOnce(decodedRefreshToken);
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toHaveProperty('flag');
+        expect(result).toHaveProperty('cause');
+        expect(result).toEqual({ flag: true, cause: "Authorized" });
+    });
+    //Exceptions
+    test("Simple: no cookies ", async () => {
+        const mockReq = {
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Simple"
+        };
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toEqual({flag: false, cause: "Missing cookies" });
+    });
+    test("Simple: no cookies properties ", async () => {
+        const mockReq = {
+            cookies: missingToken
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Simple"
+        };
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toEqual({flag: false, cause: "Unauthorized" });
+    });
+    test("Simple: username in decode access is missing ", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Simple"
+        };
+        const decodedAccessToken = {
+            username: "",
+            email: "a@h.it",
+            role: "Admin",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin"
+           }
+
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockReturnValueOnce(decodedAccessToken);
+           verifySpy.mockReturnValueOnce(decodedRefreshToken);   
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toEqual({flag: false, cause: "Token is missing information" });
+    });
+    test("Simple: email in decode refresh is missing ", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Simple"
+        };
+        const decodedAccessToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "a",
+            email: "",
+            role: "Admin"
+           }
+
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockReturnValueOnce(decodedAccessToken);
+           verifySpy.mockReturnValueOnce(decodedRefreshToken);   
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toEqual({flag: false, cause: "Token is missing information" });
+    });
+    test("Simple: mismatch users  ", async () => {
+        const mockReq = {
+            cookies: token
+        };
+        const mockRes = {
+        };
+        const mockInfo = {
+            authType:"Simple"
+        };
+        const decodedAccessToken = {
+            username: "a",
+            email: "a@h.it",
+            role: "Admin",
+            exp: Date.now()  //to confirm TODO
+           }
+           const decodedRefreshToken = {
+            username: "b",
+            email: "b@h.it",
+            role: "Admin"
+           }
+
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockReturnValueOnce(decodedAccessToken);
+           verifySpy.mockReturnValueOnce(decodedRefreshToken);   
+
+        const result = verifyAuth(mockReq, mockRes, mockInfo);
+        expect(result).not.toBeNull();
+        expect(result).toEqual({flag: false, cause: "Mismatched users" });
     });
 
 })

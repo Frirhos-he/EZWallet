@@ -28,7 +28,6 @@ export const register = async (req, res) => {
         const existingUserUsername = await User.findOne({ username: req.body.username });
         if (existingUserUsername) return res.status(400).json({ error: "Username is already registered" });
 
-
         
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await User.create({

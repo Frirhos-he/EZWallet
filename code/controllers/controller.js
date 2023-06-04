@@ -94,8 +94,8 @@ export const updateCategory = async (req, res) => {
             { $set: { type: type } }
         );
 
-        return res.json({ 
-            data: { message: "Categories successfully updated", count: updateTransactions.modifiedCount },
+        return res.status(200).json({ 
+            data: { message: "Category successfully updated", count: updateTransactions.modifiedCount },
             refreshedTokenMessage: res.locals.refreshedTokenMessage 
         });
     } catch (error) {
@@ -167,7 +167,7 @@ export const deleteCategory = async (req, res) => {
 
         const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 
-        return res.json({ 
+        return res.status(200).json({ 
             data: { message: "Categories deleted", count: (updateResult ? updateResult.modifiedCount : 0 ) },
             refreshedTokenMessage: res.locals.refreshedTokenMessage
         });
@@ -195,7 +195,7 @@ export const getCategories = async (req, res) => {
         let data = await categories.find({})  
 
         let categoriesData = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
-        return res.json({
+        return res.status(200).json({
             data: categoriesData,
             refreshedTokenMessage:res.locals.refreshedTokenMessage
         })  //no need of message since the authtype is simple
@@ -257,7 +257,7 @@ export const createTransaction = async (req, res) => {
 
         const new_transactions = new transactions({ username, amount, type });
         new_transactions.save()
-            .then(data => res.json({ 
+            .then(data => res.status(200).json({ 
                 data: { username: data.username, amount: data.amount , type: data.type, date: data.date }, 
                 refreshedTokenMessage: res.locals.refreshedTokenMessage
             }))
@@ -297,7 +297,7 @@ export const getAllTransactions = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json({
+            res.status(200).json({
                 data: dataResult,
                 refreshedTokenMessage: res.locals.refreshedTokenMessage
             });
@@ -396,7 +396,7 @@ export const getTransactionsByUser = async (req, res) => {
                 { $unwind: "$categories_info" }
             ]).then((result) => {
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.json({data:dataResult,
+                res.status(200).json({data:dataResult,
                          refreshedTokenMessage: res.locals.refreshedTokenMessage});
             }).catch(error => { throw (error) })
         }
@@ -449,7 +449,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
                     { $unwind: "$categories_info" }
                 ]).then((result) => {
                     let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                    res.json({data:dataResult,
+                    res.status(200).json({data:dataResult,
                               refreshedTokenMessage:res.locals.refreshedTokenMessage});
                 }).catch(error => { throw (error) })
 
@@ -485,7 +485,7 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             { $unwind: "$categories_info" }
         ]).then((result) => {
             let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-            res.json({data:dataResult,
+            res.status(200).json({data:dataResult,
                       refreshedTokenMessage:res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
     }} catch (error) {

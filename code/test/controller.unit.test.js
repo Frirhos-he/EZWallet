@@ -18,14 +18,9 @@ import { verifyAuth, checkMissingOrEmptyParams } from '../controllers/utils';
 jest.mock('../models/model.js');
 jest.mock('../controllers/utils')
 
-beforeEach(() => {
-  categories.find.mockClear();
-  categories.prototype.save.mockClear();
-  transactions.find.mockClear();
-  transactions.deleteOne.mockClear();
-  transactions.aggregate.mockClear();
-  transactions.prototype.save.mockClear();
-});
+beforeEach (() =>{
+  jest.clearAllMocks();
+})
 
 describe("createCategory", () => {
   test('should create a new category successfully', async () => {
@@ -86,7 +81,7 @@ describe("createCategory", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnThis(true)
+    checkMissingOrEmptyParams.mockReturnValue(true)
 
 
     await createCategory(mockReq, mockRes)
@@ -115,16 +110,15 @@ describe("createCategory", () => {
 
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnThis(true)
+    checkMissingOrEmptyParams.mockReturnValue(false)
 
-    categories.findOne.mockResolvedValue({ type: mockReq.body.type });
-
-    //jest.spyOn(categories, "findOne").mockImplementation(() => true)
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
 
     await createCategory(mockReq, mockRes)
 
     // Check the response
     expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "Category already exists"})
     expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
@@ -132,9 +126,176 @@ describe("createCategory", () => {
   
 
 describe("updateCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
+  test('should update a category successfully', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'newvalue',
+        color: 'testcolor',
+      },
+      params: {
+        type: 'tobechanged'
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(categories, "findOne").mockImplementation(() => false).mockReturnValueOnce(true)
+    //jest.spyOn(categories, "findOne").mockImplementation(() => false)
+
+    jest.spyOn(categories, "updateOne").mockImplementation(() => {})
+    jest.spyOn(transactions, "updateMany").mockImplementation(() => ({ modifiedCount: 5 }))
+
+    await updateCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: {
+          message: "Category successfully updated",
+          count: 5,
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage,
+    })
+    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.params.type });
+    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
+    expect(categories.updateOne).toHaveBeenCalledWith(
+      { type: mockReq.params.type },
+      { $set: { type: mockReq.body.type,  color: mockReq.body.color } }
+    )
+    expect(categories.updateMany).toHaveBeenCalledWith(
+      { type: mockReq.params.type },
+      { $set: { type: mockReq.body.type } }
+    )
+  });
+
+  test('should return an error if missing or empty parameters', async () => {
+      // Mock input data
+      const mockReq = {
+        cookies: {
+          accessToken: 'accessToken',
+          refreshToken: 'refreshToken',
+        },
+        body: {
+          type: 'newvalue',
+          color: '',
+        },
+        params: {
+          type: 'tobechanged'
+        }
+      };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(true)
+
+    await updateCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(categories.findOne).not.toHaveBeenCalled();
+    expect(categories.updateOne).not.toHaveBeenCalledWith()
+    expect(categories.updateMany).not.toHaveBeenCalledWith()
+  });
+
+  test('should return an error if category in route parameters doesn\'t exists', async () => {
+         // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'newvalue',
+        color: 'testcolor',
+      },
+      params: {
+        type: 'tobechanged'
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(categories, "findOne").mockImplementation(() => false)
+
+    await updateCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "Category of type \'tobechanged\' not found"
+    })
+    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.params.type });
+    expect(categories.updateOne).not.toHaveBeenCalledWith()
+    expect(categories.updateMany).not.toHaveBeenCalledWith()
+  });
+
+  test('should return an error if category in body already exists', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'newvalue',
+        color: 'testcolor',
+      },
+      params: {
+        type: 'tobechanged'
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
+
+    await updateCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "Category of type 'newvalue' already exists"
+    })
+    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.params.type });
+    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
+    expect(categories.updateOne).not.toHaveBeenCalledWith()
+    expect(categories.updateMany).not.toHaveBeenCalledWith()
+ });
 })
 
 describe("deleteCategory", () => { 

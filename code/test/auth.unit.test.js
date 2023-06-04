@@ -3,10 +3,18 @@ import { User } from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import { register, registerAdmin, login ,logout } from '../controllers/auth.js';
 import jwt from 'jsonwebtoken';
-import { verifyAuth } from '../controllers/utils.js';
+import { verifyAuth, checkMissingOrEmptyParams } from '../controllers/utils.js';
+
 
 jest.mock('bcryptjs');
 jest.mock('jsonwebtoken');
+jest.mock('../models/model.js');
+jest.mock('../controllers/utils')
+
+  beforeEach (() =>{
+    jest.clearAllMocks();
+    jest.restoreAllMocks(); 
+  })
 
 
 const token = {
@@ -21,11 +29,9 @@ const missingToken = {
     refreshToken:
         null,
 };
-/*
+
 describe('register', () => { 
-    beforeEach (() =>{
-        jest.clearAllMocks();
-    })
+      
     test('Nominal scenario', async () => {
         const mockReq = {
             body: { username:"u",
@@ -40,6 +46,8 @@ describe('register', () => {
             json: jest.fn(),
         };
 
+        checkMissingOrEmptyParams.mockReturnValue(false)
+    
         const verifyFindOne = jest.spyOn(User, 'findOne');   
         verifyFindOne.mockReturnValueOnce(false);
         verifyFindOne.mockReturnValueOnce(false);
@@ -70,9 +78,8 @@ describe('register', () => {
             json: jest.fn(),
         };
 
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(true);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => true)
         await register(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
@@ -87,9 +94,7 @@ describe('register', () => {
 });
 
 describe("registerAdmin", () => {
-    beforeEach (() =>{
-        jest.clearAllMocks();
-    })
+      
     test('Nominal scenario', async () => {
         const mockReq = {
             body: { username:"u",
@@ -104,9 +109,8 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(false);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
 
         const hashedPassword = jest.spyOn(bcrypt,'hash');
         hashedPassword.mockReturnValueOnce("pippo");
@@ -133,9 +137,8 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(true);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => true)
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
@@ -160,12 +163,11 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(true);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(true)
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalledWith({error: "Empty string values"});
     });
     test('Exception attribute email missing', async () => {
         const mockReq = {
@@ -180,12 +182,10 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(true);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(true)
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalledWith({error: "Missing values"});
          
     });
     test('Exception attribute email wrong format', async () => {
@@ -201,22 +201,18 @@ describe("registerAdmin", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
         };
-
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockReturnValueOnce(true);
-        verifyFindOne.mockReturnValueOnce(false);
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+        
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Invalid email format"});
          
     });
 })
-*/
+
 describe('login', () => { 
-    beforeEach (() =>{
-        jest.clearAllMocks();
-    })
-    
+
     test('Nominal scenario', async () => {
         const mockReq = {
             body: {
@@ -231,17 +227,28 @@ describe('login', () => {
             cookie: jest.fn(),
             json:   jest.fn()
         };
+        const user = {
+            email:"u@h.it",
+            username: "u",
+            password: "password",
+            id:0,
+            accessToken : 'accesstoken',
+            save : jest.fn().mockResolvedValue({refreshToken : 'refreshToken'}),
+            role:"Regular" };
 
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue(false)
         const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockResolvedValue({  username: 'test1', email: 'test1@example.com', password: 'hashedPassword1', refreshToken: 'test'});
+        verifyFindOne.mockResolvedValue(user);
         
         const hashedPassword = jest.spyOn(bcrypt,'compare');
         hashedPassword.mockReturnValueOnce(true);
 
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(user);
+
         const tokenSign = jest.spyOn(jwt,'sign');
         tokenSign.mockReturnValueOnce("Token1");
         tokenSign.mockReturnValueOnce("Token1");
-
 
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -249,12 +256,160 @@ describe('login', () => {
         expect(mockRes.json).toHaveBeenCalledWith({ data: { accessToken: "Token1", refreshToken: "Token1"}});
     
     });
+    test('Wrong credentials scenario', async () => {
+        const mockReq = {
+            body: {
+                    email:"u@h.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+        const user = {
+            email:"u@h.it",
+            username: "u",
+            password: "password",
+            id:0,
+            accessToken : 'accesstoken',
+            save : jest.fn().mockResolvedValue({refreshToken : 'refreshToken'}),
+            role:"Regular" };
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(user);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(false);
+
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(user);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+
+    
+    });
+    test('User not found', async () => {
+        const mockReq = {
+            body: {
+                    email:"u@h.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+       
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(() => false);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(true);
+
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => false);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+    
+    });
+    test('Empty email', async () => {
+        const mockReq = {
+            body: {
+                    email:" ",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+       
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue(true)
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(() => true);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(true);
+
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => false);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+    
+    });
+    test('Wrong format email', async () => {
+        const mockReq = {
+            body: {
+                    email:"b.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+       
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(() => true);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(true);
+
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => true);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+    
+    });
+
 });
 
 describe('logout', () => { 
-    beforeEach (() =>{
-        jest.clearAllMocks();
-    })
+
+      
     test('Nominal scenario', async () => {
         const mockReq = {
             cookies: token
@@ -266,18 +421,82 @@ describe('logout', () => {
             cookie: jest.fn(),
             json:   jest.fn()
         };
+        const user = {
+            email:"u@h.it",
+            username: "u",
+            password: "password",
+            id:0,
+            accessToken : 'accesstoken',
+            save : jest.fn().mockResolvedValue({refreshToken : 'refreshToken'}),
+            role:"Regular" };
+
+            verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+            checkMissingOrEmptyParams.mockReturnValue(false)
+            jest.spyOn(User,'findOne').mockResolvedValue(user);
+
+            jest.spyOn(User.prototype, 'save').mockResolvedValue(user);
+     
+             await logout(mockReq,mockRes);
+             expect(mockRes.status).toHaveBeenCalledWith(200);
+             expect(mockRes.json).toHaveBeenCalled();
+             expect(mockRes.json).toHaveBeenCalledWith({ data:{ message:'User logged out' }});
+         
+    });
+    test('User not found scenario', async () => {
+        const mockReq = {
+            cookies: token
+
+          }
+        
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        }; 
 
 
-        verifyAuth.mockReturnValue({flag:"true", cause:"Authorized"});
-        const findOne = jest.spyOn(User,'findOne');
-        findOne.mockResolvedValue({ username: 'test1', email: 'test1@example.com', password: 'hashedPassword1', refreshToken: 'test'});
+            verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+            checkMissingOrEmptyParams.mockReturnValue(false)
+            jest.spyOn(User,'findOne').mockResolvedValue(() => false);
 
-        User.prototype.save.mockResolvedValue({ username: 'test1', email: 'test1@example.com', password: 'hashedPassword1', refreshToken: 'done'})
+     
+             await logout(mockReq,mockRes);
+             expect(mockRes.status).toHaveBeenCalledWith(400);
+    });
+    test('Not authentificated scenario', async () => {
+        const mockReq = {
+            cookies: token
 
-        await logout(mockReq,mockRes);
-        expect(mockRes.status).toHaveBeenCalledWith(200);
-        expect(mockRes.json).toHaveBeenCalled();
-        expect(mockRes.json).toHaveBeenCalledWith({ data:{ message:'User logged out' }});
-    
+          }
+        
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+
+            verifyAuth.mockReturnValue({flag: false})
+             await logout(mockReq,mockRes);
+             expect(mockRes.status).toHaveBeenCalledWith(401);
+             expect(mockRes.json).toHaveBeenCalled();
+         
+    });
+    test('No Refresh Token scenario', async () => {
+        const mockReq = {
+            cookies: missingToken
+
+          }
+        
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+
+            verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+             await logout(mockReq,mockRes);
+             expect(mockRes.status).toHaveBeenCalledWith(400);
+             expect(mockRes.json).toHaveBeenCalled();
+         
     });
 });

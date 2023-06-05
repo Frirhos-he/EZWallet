@@ -2917,5 +2917,4 @@ describe("deleteTransactions", () => {
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
    });
-
 })

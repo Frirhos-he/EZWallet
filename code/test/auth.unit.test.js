@@ -455,7 +455,7 @@ describe('login', () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith({
-            error: "Missing values"
+            error: "Empty string values"
         })
         
     

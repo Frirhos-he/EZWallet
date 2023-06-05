@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app } from '../app';
 import { categories, transactions } from '../models/model';
-import { User } from '../models/User.js';
+import { User, Group } from '../models/User.js';
 import {
   createCategory,
   updateCategory,
@@ -12,7 +12,9 @@ import {
   deleteTransactions,
   getAllTransactions,
   getTransactionsByUser,
-  getTransactionsByUserByCategory
+  getTransactionsByUserByCategory,
+  getTransactionsByGroup,
+  getTransactionsByGroupByCategory
 } from "../controllers/controller"
 import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
 
@@ -1132,7 +1134,7 @@ describe("getTransactionsByUser", () => {
 })
 
 describe("getTransactionsByUserByCategory", () => { 
-    test('should return all transactions of a user of a specific category (admin call)', async () => {
+  test('should return all transactions of a user of a specific category (admin call)', async () => {
       // Mock input data
       const mockReq = {
         cookies: {
@@ -1180,11 +1182,12 @@ describe("getTransactionsByUserByCategory", () => {
             color: "red",
             date: "YYYY-MM-DD",
         }],
-      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+        refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
       });
 
       expect(transactions.aggregate).toHaveBeenCalled()
   });
+
   test('should return an error if the user doesn\'t exist (admin call)', async () => {
     // Mock input data
     const mockReq = {
@@ -1258,9 +1261,133 @@ describe("getTransactionsByUserByCategory", () => {
 })
 
 describe("getTransactionsByGroup", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+  test("should return all transactions of a group (admin call)", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/transactions/groups/group1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+              email: "prova1@gmail.com",
+              user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
     });
+    jest.spyOn(User, "find").mockResolvedValue([
+      { username: "username1"},
+      { username: "username2" }
+    ]);
+
+    transactions.aggregate.mockResolvedValue([
+      {
+      _id: 0,
+      username: "user1",
+      amount: 10,
+      type: "type1",
+      categories_info: {
+          type: "type1",
+          color: "red",
+      },
+      date: "YYYY-MM-DD",},
+      {
+        _id: 0,
+        username: "user2",
+        amount: 10,
+        type: "type1",
+        categories_info: {
+            type: "type1",
+            color: "red",
+        },
+        date: "YYYY-MM-DD",
+      }
+    ])    
+
+    await getTransactionsByGroup(mockReq, mockRes);
+
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: [
+        {
+          username: "user1",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        },
+        {
+          username: "user2",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        }
+    ],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(transactions.aggregate).toHaveBeenCalled()
+  });
+
+  test("should return an error if the group doesn't exist (admin call)", async() => {
+     // Mock input data
+     const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/transactions/groups/group1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue(false);
+
+
+    await getTransactionsByGroup(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "The group doesn't exist"
+    });
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  })
 })
 
 describe("getTransactionsByGroupByCategory", () => { 
@@ -1270,9 +1397,281 @@ describe("getTransactionsByGroupByCategory", () => {
 })
 
 describe("deleteTransaction", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
+  test('should successfully delete a transaction of a specific user', async () => {
+    // Mock input data
+    const mockDate = "2000-03-10"
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const mockDB = [
+      {
+        _id: 0,
+        username: 'usertest1',
+        amount: 25,
+        type: 'food',
+        categories_info: {
+            type: 'food',
+            color: '#1023BC',
+        },
+        date: mockDate,
+      },
+      {
+        _id: 1,
+        username: 'usertest1',
+        amount: 10,
+        type: 'gift',
+        categories_info: {
+            type: 'gift',
+            color: '#ABC0FF',
+        },
+        date: mockDate,
+      },
+      {
+        _id: 2,
+        username: 'usertest2',
+        amount: 12,
+        type: 'sport',
+        categories_info: {
+            type: 'sport',
+            color: '#000000',
+        },
+        date: mockDate,
+      },
+      {
+        _id: 3,
+        username: 'usertest2',
+        amount: 22,
+        type: 'food',
+        categories_info: {
+            type: 'food',
+            color: '#1023BC',
+        },
+        date: mockDate,
+      },
+      {
+        _id: 4,
+        username: 'usertest3',
+        amount: 35,
+        type: 'streaming',
+        categories_info: {
+            type: 'streaming',
+            color: '#00FF44',
+        },
+        date: mockDate,
+      },
+      {
+        _id: 5,
+        username: 'usertest2',
+        amount: 9,
+        type: 'sport',
+        categories_info: {
+            type: 'sport',
+            color: '#000000',
+        },
+        date: mockDate,
+      },
+    ];
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    User.findOne.mockResolvedValueOnce(true)  //user found
+    transactions.findOne.mockResolvedValue({  //Transaction found
+      _id: 3,
+      username: 'usertest2',
+      type: 'food',
+      amount: 22,
+      date: mockDate,
+    })  
+    transactions.deleteOne.mockResolvedValue(1)   //Deleted one transaction
+
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          data: {message: "Transaction deleted"},
+          refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    })
+    expect(User.findOne).toHaveBeenCalledWith({ username: mockReq.params.username });
+    expect(transactions.findOne).toHaveBeenCalledWith({ _id: mockReq.body._id });
+    expect(transactions.deleteOne).toHaveBeenCalledWith({ _id: mockReq.body._id });
+  });
+
+  test('should return an error if missing or empty body', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(true)  //Missing or empty body
+
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: ""
+    })
+    expect(User.findOne).not.toHaveBeenCalled();
+    expect(transactions.findOne).not.toHaveBeenCalled();
+    expect(transactions.deleteOne).not.toHaveBeenCalled();
+  });
+
+  test('should return an error if user does\'t exist', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    User.findOne.mockResolvedValue(false)   //User not found
+
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: "The user does not exist"
+    })
+    expect(User.findOne).toHaveBeenCalledWith({ username: mockReq.params.username });
+    expect(transactions.findOne).not.toHaveBeenCalled();
+    expect(transactions.deleteOne).not.toHaveBeenCalled();
+  });
+
+  test('should return an error if transaction does\'t exist', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    User.findOne.mockResolvedValue(true)   //User found
+    transactions.findOne.mockResolvedValue(false)   //Transaction not found
+
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: "The transaction does not exist"
+    })
+    expect(User.findOne).toHaveBeenCalledWith({ username: mockReq.params.username });
+    expect(transactions.findOne).toHaveBeenCalledWith({ _id: mockReq.body._id });
+    expect(transactions.deleteOne).not.toHaveBeenCalled();
+  });
+
+  test('should return an error if transaction isn\'t made by requesting user', async () => {
+    // Mock input data
+    const mockDate = "1993-10-10"
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    User.findOne.mockResolvedValue(true)   //User found
+    transactions.findOne.mockResolvedValue({  //Transaction found
+      _id: 3,
+      username: 'userWithDifferentName',
+      type: 'food',
+      amount: 22,
+      date: mockDate,
+    }) 
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: "The transaction is not made by the requesting user"
+    })
+    expect(User.findOne).toHaveBeenCalledWith({ username: mockReq.params.username });
+    expect(transactions.findOne).toHaveBeenCalledWith({ _id: mockReq.body._id });
+    expect(transactions.deleteOne).not.toHaveBeenCalled();
+  });
 })
 
 describe("deleteTransactions", () => { 

@@ -516,9 +516,10 @@ export const deleteUser = async (req, res) => {
       if (!emailRegex.test(userEmail)) {
             return res.status(400).json({ error: "Invalid email format" });
       }
-    
+
     // Check if the user exists
     const user = await User.findOne({ email: userEmail });
+
     if (!user) {
       return res.status(400).json({ error: "The user doesn't exist" });
     }
@@ -531,6 +532,7 @@ export const deleteUser = async (req, res) => {
     // Check if inside a group
 
     const groups = await Group.find();
+    console.log(groups)
     const groupsWithOneMember = groups.filter(group => group.members.length === 1);
 
     const userInGroupWithOneMember = groupsWithOneMember.some(group => {

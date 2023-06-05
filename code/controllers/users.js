@@ -214,9 +214,9 @@ export const getGroup = async (req, res) => {
       if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
         
-      const group = await Group.findOne({ group: groupName });
+      let group = await Group.findOne({ group: groupName });
       if (!group)
-        return res.status(400).json({ message: "The group doesn't exist" })
+        return res.status(400).json({ error: "The group doesn't exist" })
 
       const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
 
@@ -224,12 +224,12 @@ export const getGroup = async (req, res) => {
       {
           const adminAuth = verifyAuth(req, res, { authType: "Admin" })
           if (!adminAuth.flag)
-              return res.status(401).json({ error: "groupAuth: " + groupAuth.message + ", adminAuth: " + adminAuth.message }) 
+              return res.status(401).json({ error: adminAuth.cause }) 
       }
 
       group = Object.assign({}, { name: group.name, members: group.members })
 
-      res.status(200).json({ data: { group: group }, message: res.locals.refreshedToken })      
+      res.status(200).json({ data: { group: group }, refreshedTokenMessage: res.locals.refreshedTokenMessage })      
     } catch (err) {
         res.status(400).json({ error: err.message })
     }

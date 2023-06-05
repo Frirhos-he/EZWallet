@@ -867,16 +867,208 @@ describe("getGroups", () => {
     });
   })
 
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getGroups(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getGroups(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
-describe("getGroup", () => { })
+describe("getGroup", () => {
+  test("should return the group passed in the url", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(Group, "findOne").mockResolvedValue(
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      }
+    )
+
+    await getGroup(mockReq, mockRes)
+
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      data: {
+        group: {
+          name: "group1",
+          members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+        }  
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+  })
+
+  test("should return an error if the group doesn't exist", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(Group, "findOne").mockResolvedValue(false)
+
+    await getGroup(mockReq, mockRes)
+    
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error : "The group doesn't exist"
+    });
+  })
+
+  test("should return an error of authentication", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      name: "group1",
+      members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+    })
+
+    await getGroup(mockReq, mockRes)
+    
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error : "unauthorized"
+    });
+  })
+
+  test('Exception thrown error catch', async () => {
+     // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1"
+      }
+    };
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getGroups(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
+})
 
 describe("addToGroup", () => { })
 
 describe("removeFromGroup", () => { })
 
 describe("deleteUser", () => {
-  
   test('Nominal scenario', async () => {
     const mockReq = {
       body: {email: "a@h.it"}

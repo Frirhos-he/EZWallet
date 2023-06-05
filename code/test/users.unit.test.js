@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../app';
 import { User, Group } from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { transactions } from '../models/model.js';
 import {
   getUsers,
   getUser,
@@ -17,8 +18,8 @@ import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handle
 
 jest.mock('jsonwebtoken');
 jest.mock('../controllers/utils')
+jest.mock("../models/model.js")
 jest.mock("../models/User.js")
-jest.mock('../controllers/utils');
 
 /**
  * Defines code to be executed before each test case is launched
@@ -874,7 +875,40 @@ describe("addToGroup", () => { })
 
 describe("removeFromGroup", () => { })
 
-describe("deleteUser", () => {})
+describe("deleteUser", () => {
+  
+  test('Nominal scenario', async () => {
+    const mockReq = {
+      body: {email: "a@h.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "findOne").mockImplementation({
+    username: "u",
+    email: "u@h.it",
+    role: "Admin",
+    refreshToken: "test"})
+    jest.spyOn(Group, "findOne").mockReturnValue([{ members: [{ email: "c@h.it" }, { email: "c@h.it" }] }, { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }]);
+  transactions.countDocuments.mockReturnValue(0);
+  jest.spyOn(transactions, "deleteMany").mockImplementation(()=>true);
+  jest.spyOn(User, "deleteOne").mockImplementation(true);
+  jest.spyOn(Group, "updateOne").mockImplementation(() => ({ modifiedCount: 0 }));
+  await deleteUser(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ data: { 
+    deletedTransactions: "0",
+    deletedFromGroup: false,
+  } });
+  })
+})
 
 describe("deleteGroup", () => { 
  
@@ -891,7 +925,7 @@ describe("deleteGroup", () => {
   };
   checkMissingOrEmptyParams.mockReturnValue(false)
   jest.spyOn(Group, "findOne").mockImplementation(() => true)
-  verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
   jest.spyOn(Group, "deleteOne").mockImplementation(() => true)
   await deleteGroup(mockReq,mockRes);
   expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -973,7 +1007,7 @@ describe("deleteGroup", () => {
   };
   checkMissingOrEmptyParams.mockReturnValue(false)
   jest.spyOn(Group, "findOne").mockImplementation(() => true)
-  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
   jest.spyOn(Group, "deleteOne").mockImplementation(() => {throw new Error("eccomi")})
   await deleteGroup(mockReq,mockRes);
   expect(mockRes.status).toHaveBeenCalledWith(400);

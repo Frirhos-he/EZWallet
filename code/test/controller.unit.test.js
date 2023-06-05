@@ -1460,6 +1460,60 @@ describe("getTransactionsByUser", () => {
     });
     expect(transactions.aggregate).toHaveBeenCalled()
   });
+    test("should return all transactions of a user ", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    handleAmountFilterParams.mockReturnValue({ date: { $gte: "from", $lte: "to" } })
+    handleDateFilterParams.mockReturnValue({amount: { $gte: "minInt", $lte: "maxInt" }})
+
+    jest.spyOn(User, "findOne").mockImplementation(() => true);
+    transactions.aggregate.mockResolvedValue([{
+      _id: 0,
+      username: "user1",
+      amount: 10,
+      type: "type1",
+      categories_info: {
+          type: "type1",
+          color: "red",
+      },
+      date: "YYYY-MM-DD",
+    }])    
+
+    await getTransactionsByUser(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: [{
+          username: "user1",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+      }],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+    expect(transactions.aggregate).toHaveBeenCalled()
+  });
+
 
   test("should return an error if user doesn't exist ", async () => {
     // Mock input data

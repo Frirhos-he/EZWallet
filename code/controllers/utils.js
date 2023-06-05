@@ -55,7 +55,7 @@ export const handleDateFilterParams = (req) => {
       
         if (from) {
           if(!isValidDateFormat(from)){
-            throw new Error("upTo format is invalid");
+            throw new Error("from format is invalid");
         }
         const fromFormatted = new Date(`${from}T00:00:00.000Z`)
           return { date: { $gte: fromFormatted } };
@@ -125,11 +125,12 @@ export const verifyAuth = (req, res, info) => {
 
         const authType = info.authType;
         const currentTime = Math.floor(Date.now() / 1000);
+        
         switch(authType) {
             case "Simple":
 
               if (decodedAccessToken.exp < currentTime) {
-                  throw new Error("TokenExpiredError")
+                  throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
               }
               break;
 
@@ -140,11 +141,7 @@ export const verifyAuth = (req, res, info) => {
                 return { flag: false, cause: "Mismatched users" };
               }
               if (decodedAccessToken.exp < currentTime) {
-                  throw new Error("TokenExpiredError")
-              }
-              if (username != decodedAccessToken.username) {
-                  return { flag: false, cause: "Mismatched users" };
-      
+                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
               }
 
               break;
@@ -153,10 +150,7 @@ export const verifyAuth = (req, res, info) => {
                 return { flag: false, cause: "Mismatch role" };
               }
               if (decodedAccessToken.exp < currentTime) {
-                  throw new Error("TokenExpiredError")
-              }
-              if ("Admin" != decodedAccessToken.role) {
-                return { flag: false, cause: "Mismatch role" };
+                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
               }
               break;
 
@@ -166,10 +160,7 @@ export const verifyAuth = (req, res, info) => {
                  return { flag: false, cause: "User is not in the group" };
               }
               if (decodedAccessToken.exp < currentTime) {
-                  throw new Error("TokenExpiredError")
-              }
-              if (!members.includes(decodedAccessToken.email)) {
-                return { flag: false, cause: "User is not in the group" };
+                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
               }
               break;
 
@@ -180,6 +171,7 @@ export const verifyAuth = (req, res, info) => {
 
         return { flag: true, cause: "Authorized" };
       } catch (err) {
+
         if (err.name === "TokenExpiredError") {
             try {
                 const refreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY)

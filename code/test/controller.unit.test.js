@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app } from '../app';
 import { categories, transactions } from '../models/model';
-import { User } from '../models/User.js';
+import { User, Group } from '../models/User.js';
 import {
   createCategory,
   updateCategory,
@@ -12,7 +12,9 @@ import {
   deleteTransactions,
   getAllTransactions,
   getTransactionsByUser,
-  getTransactionsByUserByCategory
+  getTransactionsByUserByCategory,
+  getTransactionsByGroup,
+  getTransactionsByGroupByCategory
 } from "../controllers/controller"
 import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
 
@@ -1132,7 +1134,7 @@ describe("getTransactionsByUser", () => {
 })
 
 describe("getTransactionsByUserByCategory", () => { 
-    test('should return all transactions of a user of a specific category (admin call)', async () => {
+  test('should return all transactions of a user of a specific category (admin call)', async () => {
       // Mock input data
       const mockReq = {
         cookies: {
@@ -1180,11 +1182,12 @@ describe("getTransactionsByUserByCategory", () => {
             color: "red",
             date: "YYYY-MM-DD",
         }],
-      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+        refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
       });
 
       expect(transactions.aggregate).toHaveBeenCalled()
   });
+
   test('should return an error if the user doesn\'t exist (admin call)', async () => {
     // Mock input data
     const mockReq = {
@@ -1258,9 +1261,133 @@ describe("getTransactionsByUserByCategory", () => {
 })
 
 describe("getTransactionsByGroup", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+  test("should return all transactions of a group (admin call)", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/transactions/groups/group1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+              email: "prova1@gmail.com",
+              user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
     });
+    jest.spyOn(User, "find").mockResolvedValue([
+      { username: "username1"},
+      { username: "username2" }
+    ]);
+
+    transactions.aggregate.mockResolvedValue([
+      {
+      _id: 0,
+      username: "user1",
+      amount: 10,
+      type: "type1",
+      categories_info: {
+          type: "type1",
+          color: "red",
+      },
+      date: "YYYY-MM-DD",},
+      {
+        _id: 0,
+        username: "user2",
+        amount: 10,
+        type: "type1",
+        categories_info: {
+            type: "type1",
+            color: "red",
+        },
+        date: "YYYY-MM-DD",
+      }
+    ])    
+
+    await getTransactionsByGroup(mockReq, mockRes);
+
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: [
+        {
+          username: "user1",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        },
+        {
+          username: "user2",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        }
+    ],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(transactions.aggregate).toHaveBeenCalled()
+  });
+
+  test("should return an error if the group doesn't exist (admin call)", async() => {
+     // Mock input data
+     const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/transactions/groups/group1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue(false);
+
+
+    await getTransactionsByGroup(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "The group doesn't exist"
+    });
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  })
 })
 
 describe("getTransactionsByGroupByCategory", () => { 

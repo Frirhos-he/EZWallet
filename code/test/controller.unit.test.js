@@ -2463,29 +2463,6 @@ describe("deleteTransactions", () => {
       json: jest.fn(),
     };
     
-    const mockFindReturn = [  
-    {
-      _id: 0,
-      username: 'usertest1',
-      amount: 25,
-      type: 'food',
-      date: mockDate,
-    },
-    {
-      _id: 2,
-      username: 'usertest2',
-      amount: 12,
-      type: 'sport',
-      date: mockDate,
-    },
-    {
-      _id: 4,
-      username: 'usertest3',
-      amount: 35,
-      type: 'streaming',
-      date: mockDate,
-    }
-  ];
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
     checkMissingOrEmptyParams.mockReturnValue(true)  //Missing or empty body
     

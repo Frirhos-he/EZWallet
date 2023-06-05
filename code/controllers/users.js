@@ -195,7 +195,7 @@ export const getGroups = async (req, res) => {
 
       groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
 
-      res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedToken})
+      res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedTokenMessage})
 
     } catch (err) {
         res.status(400).json({ error: err.message})
@@ -537,11 +537,6 @@ export const deleteUser = async (req, res) => {
       return res.status(400).json({ error: "The user doesn't exist" });
     }
 
-    // SLACK: Check if the user doesn't have admin privileges
-    if(user.role === "Admin"){
-      return res.status(400).json({ error: "User is an ADMIN!"});
-    }
-
     // Check if inside a group
 
     const groups = await Group.find();
@@ -557,8 +552,6 @@ export const deleteUser = async (req, res) => {
     if(userInGroupWithOneMember){
       return res.status(401).json({ error: "user is the last of a group, cannot delete" }) 
     }
-    
-
 
     // Count the number of transactions to be deleted
     const transactionCount = await transactions.countDocuments({ username: user.username });

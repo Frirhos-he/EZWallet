@@ -26,9 +26,9 @@ jest.mock("../models/User.js")
  * In this case the mock implementation of `User.find()` is cleared, allowing the definition of a new mock implementation.
  * Not doing this `mockClear()` means that test cases may use a mock implementation intended for other test cases.
  */
-beforeEach(() => {
-  jest.clearAllMocks()
-});
+beforeEach (() => {
+  jest.resetAllMocks();
+})
 
 describe("getUsers", () => {
   test("should retrieve list of all users", async () => {
@@ -895,7 +895,7 @@ describe("deleteUser", () => {
     email: "u@h.it",
     role: "Admin",
     refreshToken: "test"})
-    jest.spyOn(Group, "findOne").mockReturnValue([{ members: [{ email: "c@h.it" }, { email: "c@h.it" }] }, { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }]);
+  jest.spyOn(Group, "findOne").mockReturnValue([{ members: [{ email: "c@h.it" }, { email: "c@h.it" }] }, { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }]);
   transactions.countDocuments.mockReturnValue(0);
   jest.spyOn(transactions, "deleteMany").mockImplementation(()=>true);
   jest.spyOn(User, "deleteOne").mockImplementation(true);

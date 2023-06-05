@@ -22,9 +22,9 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
         const { type, color } = req.body;
 
         //Check for missing or empty string parameter
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([type, color], messageObj))
-            return res.status(400).json({ error: messageObj.message });
+        let message;
+        if((message = checkMissingOrEmptyParams([type, color])))
+            return res.status(400).json({ error: message });
         
         // Check if the username or email already exists
         const existingCategory = await categories.findOne({ type: type });
@@ -66,9 +66,9 @@ export const updateCategory = async (req, res) => {
         const { type, color } = req.body;
 
         //Check for missing or empty string parameter
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([type, color], messageObj))
-            return res.status(400).json({ error: messageObj.message });
+        let message;
+        if((message = checkMissingOrEmptyParams([type, color])))
+            return res.status(400).json({ error: message });
         //Check if there is the specified category to be modified
         const foundCategory = await categories.findOne({ type: req.params.type });
         if(!foundCategory){
@@ -227,10 +227,10 @@ export const createTransaction = async (req, res) => {
 
         const { username, amount, type } = req.body;
 
-        //Check for missing or empty string parameter
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([username, amount, type], messageObj))
-            return res.status(400).json({ error: messageObj.message });
+
+        let message;
+        if((message = checkMissingOrEmptyParams([username, amount, type])))
+                return res.status(400).json({ error: message });
 
         //Try parsing amount as float
         if(isNaN(parseFloat(amount)))
@@ -572,10 +572,11 @@ export const deleteTransaction = async (req, res) => {
             return res.status(401).json({ error: userAuth.cause})
 
         //Check for missing or empty string parameter
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([req.body._id], messageObj))
-            return res.status(400).json({ error: messageObj.message });
 
+        let message;
+        if((message = checkMissingOrEmptyParams([req.body._id])))
+                    return res.status(400).json({ error: message });
+        
         //Search requested user
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
@@ -627,14 +628,10 @@ export const deleteTransactions = async (req, res) => {
         const transactionsToDelete = req.body._ids;
 
         //Check for missing or empty string parameter
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([transactionsToDelete], messageObj))
-            return res.status(400).json({ error: messageObj.message });
-
-        //Check if one of the categories is empty string
-        if (transactionsToDelete.some((element) => element.trim() === "")) 
-            return res.status(400).json({ error: "at least one of the ids in the array is an empty string" }); 
-
+        let message;
+        if((message = checkMissingOrEmptyParams([transactionsToDelete])))
+                    return res.status(400).json({ error: message });
+   
         const matchingDocuments = await transactions.find({ _id: { $in: transactionsToDelete } });
         // Check if all input IDs have corresponding transactions
 

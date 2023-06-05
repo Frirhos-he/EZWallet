@@ -1,7 +1,7 @@
 import { decode } from "jsonwebtoken";
 import { Group, User } from "../models/User.js";
 import { transactions } from "../models/model.js";
-import { verifyAuth } from "./utils.js";
+import { verifyAuth, checkMissingOrEmptyParams } from "./utils.js";
 import jwt from 'jsonwebtoken'
 
 
@@ -44,10 +44,10 @@ export const getUser = async (req, res) => {
                 return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
         }
         const username = req.params.username
-        let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([username], messageObj))
-            return res.status(400).json({ error: messageObj.message });
-        
+        let message;
+        if((message = checkMissingOrEmptyParams([username])))
+            return res.status(400).json({ error: message });
+    
 
         const user = await User.findOne({ refreshToken: cookie.refreshToken })
         if (!user) return res.status(400).json({ error: "User not found" })
@@ -200,9 +200,9 @@ export const getGroups = async (req, res) => {
 export const getGroup = async (req, res) => {
     try {
       const groupName = req.params.name;
-      let messageObj ={message:""};
-        if(checkMissingOrEmptyParams([groupName], messageObj))
-            return res.status(400).json({ error: messageObj.message });
+      let message;
+      if((message = checkMissingOrEmptyParams([groupName])))
+          return res.status(400).json({ error: message });
         
       const group = await Group.findOne({ group: groupName });
       if (!group)
@@ -243,9 +243,9 @@ export const addToGroup = async (req, res) => {
       const memberEmails = req.body.emails
 
       //Check for missing or empty string parameter
-      let messageObj ={message:""};
-      if(checkMissingOrEmptyParams([groupName], messageObj))
-            return res.status(400).json({ error: messageObj.message });
+      let message;
+      if((message = checkMissingOrEmptyParams([groupName])))
+          return res.status(400).json({ error: message });
       
       if(memberEmails == null || memberEmails == undefined)
             return res.status(400).json({ error: "member emails not defined "});     
@@ -344,9 +344,9 @@ export const removeFromGroup = async (req, res) => {
 
 
           //Check for missing or empty string parameter
-          let messageObj ={message:""};
-          if(checkMissingOrEmptyParams([groupName], messageObj))
-                return res.status(400).json({ error: messageObj.message });
+          let message;
+          if((message = checkMissingOrEmptyParams([groupName])))
+              return res.status(400).json({ error: message });
           
           if(memberEmails == null || memberEmails == undefined)
                 return res.status(400).json({ error: "member emails not defined "});     
@@ -506,9 +506,9 @@ export const deleteUser = async (req, res) => {
     const userEmail = req.body.email;
 
      //Check for missing or empty string parameter
-     let messageObj ={message:""};
-     if(checkMissingOrEmptyParams([userEmail], messageObj))
-           return res.status(400).json({ error: messageObj.message });
+     let message;
+     if((message = checkMissingOrEmptyParams([userEmail])))
+         return res.status(400).json({ error: message });
 
 
      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
@@ -584,9 +584,10 @@ export const deleteGroup = async (req, res) => {
     const groupName = req.body.name;
 
 
-    let messageObj ={message:""};
-    if(checkMissingOrEmptyParams([groupName], messageObj))
-        return res.status(400).json({ error: messageObj.message });
+    let message;
+    if((message = checkMissingOrEmptyParams([groupName])))
+        return res.status(400).json({ error: message });
+
     
     
     const group = await Group.findOne({ group: groupName });

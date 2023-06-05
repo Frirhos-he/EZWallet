@@ -1,13 +1,23 @@
 import request from 'supertest';
 import { app } from '../app';
-import { User } from '../models/User.js';
+import { User, Group } from '../models/User.js';
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getCategories,
+  createTransaction,
+  deleteTransaction,
+  deleteTransactions,
+  getAllTransactions,
+  getTransactionsByUser,
+  getTransactionsByUserByCategory,
+  getTransactionsByGroup,
+  getTransactionsByGroupByCategory
+} from "../controllers/controller"
+import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
 
-/**
- * In order to correctly mock the calls to external modules it is necessary to mock them using the following line.
- * Without this operation, it is not possible to replace the actual implementation of the external functions with the one
- * needed for the test cases.
- * `jest.mock()` must be called for every external module that is called in the functions under test.
- */
+jest.mock('../controllers/utils')
 jest.mock("../models/User.js")
 
 /**
@@ -16,7 +26,7 @@ jest.mock("../models/User.js")
  * Not doing this `mockClear()` means that test cases may use a mock implementation intended for other test cases.
  */
 beforeEach(() => {
-  User.find.mockClear()
+  jest.clearAllMocks()
   //additional `mockClear()` must be placed here
 });
 

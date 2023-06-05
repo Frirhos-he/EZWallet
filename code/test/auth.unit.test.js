@@ -511,7 +511,11 @@ describe('login', () => {
 
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalledWith({error : "please you need to register"});
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error: "Empty string values"
+        })
+        
     
     });
     test('Wrong format email', async () => {

@@ -592,11 +592,11 @@ export const deleteGroup = async (req, res) => {
     
     const group = await Group.findOne({ group: groupName });
     if (!group)
-      return res.status(400).json({ message: "The group doesn't exist" })
+      return res.status(400).json({ error: "The group doesn't exist" })
 
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if (!adminAuth.flag)
-            return res.status(401).json({ error: " adminAuth: " + adminAuth.message }) 
+            return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
 
     // Delete the group
     await Group.deleteOne({ name: groupName });

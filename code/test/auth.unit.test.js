@@ -9,7 +9,7 @@ import { verifyAuth, checkMissingOrEmptyParams } from '../controllers/utils.js';
 jest.mock('bcryptjs');
 jest.mock('jsonwebtoken');
 jest.mock('../models/model.js');
-jest.mock('../controllers/utils')
+jest.mock('../controllers/utils');
 
   beforeEach (() =>{
     jest.clearAllMocks();

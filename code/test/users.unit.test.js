@@ -16,9 +16,11 @@ import {
   getTransactionsByGroupByCategory
 } from "../controllers/controller"
 import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
+import {deleteGroup} from '../controllers/users';
 
 jest.mock('../controllers/utils')
 jest.mock("../models/User.js")
+jest.mock('../controllers/utils');
 
 /**
  * Defines code to be executed before each test case is launched
@@ -64,6 +66,132 @@ describe("addToGroup", () => { })
 
 describe("removeFromGroup", () => { })
 
-describe("deleteUser", () => { })
+describe("deleteUser", () => {})
 
-describe("deleteGroup", () => { })
+
+describe("deleteGroup", () => { 
+ 
+    test('Nominal scenario', async () => {
+      const mockReq = {
+        body: {name: "pippo"}
+    };
+    const mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json:   jest.fn(),
+      locals: {
+        refreshedTokenMessage: "",
+       }
+    };
+    checkMissingOrEmptyParams.mockReturnValue(false)
+    jest.spyOn(User, "findOne").mockImplementation(() => true)
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    jest.spyOn(Group, "deleteOne").mockImplementation(() => true)
+    await deleteGroup(mockReq,mockRes);
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ data: { message: "Group deleted successfully" }, message: mockRes.locals.refreshedToken });
+    })
+    
+  })
+  describe("deleteGroup", () => { 
+ 
+  test('Nominal scenario', async () => {
+    const mockReq = {
+      body: {name: "pippo"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockImplementation(() => true)
+  verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+  jest.spyOn(Group, "deleteOne").mockImplementation(() => true)
+  await deleteGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(200);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ data: { message: "Group deleted successfully" }, message: mockRes.locals.refreshedToken });
+  })
+  test('Missin params scenario', async () => {
+    const mockReq = {
+      body: {name: " "}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  checkMissingOrEmptyParams.mockReturnValue("Missing values")
+
+  await deleteGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ error: "Missing values" });
+  }) 
+  test("The group doesn't exist scenario", async () => {
+    const mockReq = {
+      body: {name: "name"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockImplementation(() => false)
+ 
+
+  await deleteGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ error: "The group doesn't exist" });
+  }) 
+  test("admin not authentificated", async () => {
+    const mockReq = {
+      body: {name: "name"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockImplementation(() => true)
+  verifyAuth.mockReturnValue({flag: false, cause:"myerror"})
+  jest.spyOn(Group, "deleteOne").mockImplementation(() => true)
+  await deleteGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(401);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ error: " adminAuth: " + "myerror" });
+  }) 
+  test("throw expection", async () => {
+    const mockReq = {
+      body: {name: "name"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockImplementation(() => true)
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  jest.spyOn(Group, "deleteOne").mockImplementation(() => {throw new Error("eccomi")})
+  await deleteGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ error: "eccomi" });
+  }) 
+  
+})

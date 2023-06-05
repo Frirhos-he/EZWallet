@@ -280,7 +280,7 @@ export const getAllTransactions = async (req, res) => {
     try {
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if (!adminAuth.flag)
-            return res.status(401).json({ error:  " admin: " + adminAuth.cause }) 
+            return res.status(401).json({ error: adminAuth.cause }) 
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
          */
@@ -327,12 +327,12 @@ export const getTransactionsByUser = async (req, res) => {
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.flag)
-                return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
+                return res.status(401).json({ error: adminAuth.cause }) 
         }
         else {   //user
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
             if(!userAuth.flag)
-                return res.status(401).json({ error: " user: " + userAuth.cause }) 
+                return res.status(401).json({ error: userAuth.cause }) 
         }
 
         //see if on db the user requesting the getTransactionsByUser
@@ -392,11 +392,11 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.flag)
-                return res.status(401).json({ error: "Admin: " + adminAuth.cause }) 
+                return res.status(401).json({ error: adminAuth.cause }) 
         } else {                       //user
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
             if(!userAuth.flag)
-                return res.status(401).json({ error: "User: " + userAuth.cause }) 
+                return res.status(401).json({ error: userAuth.cause }) 
         }
 
         const username = req.params.username;
@@ -453,11 +453,11 @@ export const getTransactionsByGroup = async (req, res) => {
         if (req.url.indexOf("/transactions/groups/") >= 0) {   //admin 
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.flag)
-                return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
+                return res.status(401).json({ error: adminAuth.cause }) 
         } else {                               //user
             const groupAuth = verifyAuth(req, res, { authType: "Group", members: matchedGroup.members })
             if(!groupAuth.flag)
-                return res.status(401).json({ error: "group: " + groupAuth.cause }) 
+                return res.status(401).json({ error: groupAuth.cause }) 
         }
 
         const usersById = matchedGroup.members.map((member) => member.user);
@@ -510,26 +510,23 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
         if (req.url.indexOf("/transactions/groups/") >= 0) {   //admin 
             const adminAuth = verifyAuth(req, res, { authType: "Admin" })
             if (!adminAuth.flag)
-                return res.status(401).json({ error: " admin: " + adminAuth.cause })    
+                return res.status(401).json({ error: adminAuth.cause })    
         } else {                    ///user
             const groupAuth = verifyAuth(req, res, { authType: "Group", members: matchedGroup.members })
             if(!groupAuth.flag)
-                return res.status(401).json({ error: "group: " + groupAuth.cause  }) 
+                return res.status(401).json({ error: groupAuth.cause  }) 
         }
 
         //Search requested category
         const type = req.params.category;
         const matchedCategory = await categories.findOne({type: type});
         if(!matchedCategory) {
-            return res.status(401).json({ error: "the category does not exist" });
+            return res.status(400).json({ error: "the category does not exist" });
         }
-
 
         const usersById = matchedGroup.members.map((member) => member.user);
         const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
-        
-
 
         transactions.aggregate([
             { $match: { username: { $in: usernames}, type: type } },
@@ -625,7 +622,7 @@ export const deleteTransactions = async (req, res) => {
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
         if(!adminAuth.flag)
-            return res.status(401).json({ error: "admin: " + adminAuth.cause }) 
+            return res.status(401).json({ error: adminAuth.cause }) 
         
         const transactionsToDelete = req.body._ids;
 

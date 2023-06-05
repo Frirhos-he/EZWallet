@@ -684,7 +684,7 @@ export const deleteTransaction = async (req, res) => {
         }
 
         let data = await transactions.deleteOne({ _id: transactionId });
-        return res.json({ 
+        return res.status(200).json({ 
             data: { message: "Transaction deleted" }, 
             refreshedTokenMessage: res.locals.refreshedTokenMessage
         });
@@ -731,7 +731,7 @@ export const deleteTransactions = async (req, res) => {
         }
         const result = await transactions.deleteMany({_id: { $in: transactionsToDelete }}); 
         
-        return res.json({ 
+        return res.status(200).json({ 
             data: { message: "Transactions deleted" }, 
             refreshedTokenMessage: res.locals.refreshedTokenMessage
         });

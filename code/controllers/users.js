@@ -17,7 +17,7 @@ export const getUsers = async (req, res) => {
       const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
       if(!adminAuth.flag)
-          return res.status(401).json({ error: adminAuth.message }) 
+          return res.status(401).json({ error: adminAuth.cause }) 
 
       const users = await User.find();
       const userObject = users.map(v => Object.assign({}, { username: v.username, email: v.email, role: v.role }))
@@ -39,24 +39,24 @@ export const getUser = async (req, res) => {
     try {
       const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
 
-        if(!userAuth.flag)
-        {
-            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-            if (!adminAuth.flag)
-                return res.status(401).json({ error: "userAuth: " + userAuth.message + ", adminAuth: " + adminAuth.message }) 
-        }
-        const username = req.params.username
-        let message;
-        if((message = checkMissingOrEmptyParams([username])))
-            return res.status(400).json({ error: message });
-    
+      if(!userAuth.flag)
+      {
+          const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+          if (!adminAuth.flag)
+              return res.status(401).json({ error:  adminAuth.cause }) 
+      }
+      const username = req.params.username
+      let message;
+      if((message = checkMissingOrEmptyParams([username])))
+          return res.status(400).json({ error: message });
+  
 
-        const user = await User.findOne({ refreshToken: req.cookies.refreshToken })
-          if (!user) return res.status(400).json({ error: "User not found" })
-        
-        const userObject = Object.assign({}, { username: user.username, email: user.email, role: user.role })
+      const user = await User.findOne({ refreshToken: req.cookies.refreshToken })
+        if (!user) return res.status(400).json({ error: "User not found" })
+      
+      const userObject = Object.assign({}, { username: user.username, email: user.email, role: user.role })
 
-        res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage })
+      res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage })
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -76,7 +76,7 @@ export const getUser = async (req, res) => {
 export const createGroup = async (req, res) => {
     try {
         const simpleAuth = verifyAuth(req, res, { authType : "Simple" })
-        if(!simpleAuth.flag) return res.status(401).json({ error: "userAuth: " + userAuth.message })
+        if(!simpleAuth.flag) return res.status(401).json({ error: simpleAuth.cause })
 
         const { name, memberEmails } = req.body
 

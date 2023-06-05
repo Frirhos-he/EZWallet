@@ -14,7 +14,6 @@ import {
   deleteGroup
 } from "../controllers/users"
 import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
-import {deleteGroup} from '../controllers/users';
 
 jest.mock('jsonwebtoken');
 jest.mock('../controllers/utils')
@@ -102,6 +101,59 @@ describe("getUsers", () => {
     });
     expect(mockRes.status).toHaveBeenCalledWith(200)
   })
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getUsers(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getUsers(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
 describe("getUser", () => { 
@@ -213,6 +265,65 @@ describe("getUser", () => {
       error: "Missing parameters"
     });
   })
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getUser(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getUser(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
 describe("createGroup", () => {
@@ -651,6 +762,67 @@ describe("createGroup", () => {
     })
   })
 
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        name: "newgroup",
+        memberEmails: ["email1@gmail.com", "notexisting@gmail.com", "alreadyingroup@gmail.com"]
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await createGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        name: "newgroup",
+        memberEmails: ["email1@gmail.com", "notexisting@gmail.com", "alreadyingroup@gmail.com"]
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await createGroup(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
+
 })
 
 describe("getGroups", () => { })
@@ -662,8 +834,6 @@ describe("addToGroup", () => { })
 describe("removeFromGroup", () => { })
 
 describe("deleteUser", () => {})
-
-
 
 describe("deleteGroup", () => { 
  
@@ -687,6 +857,7 @@ describe("deleteGroup", () => {
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ data: { message: "Group deleted successfully" }, message: mockRes.locals.refreshedToken });
   })
+
   test('Missin params scenario', async () => {
     const mockReq = {
       body: {name: " "}
@@ -704,7 +875,8 @@ describe("deleteGroup", () => {
   expect(mockRes.status).toHaveBeenCalledWith(400);
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ error: "Missing values" });
-  }) 
+  })
+
   test("The group doesn't exist scenario", async () => {
     const mockReq = {
       body: {name: "name"}
@@ -724,7 +896,8 @@ describe("deleteGroup", () => {
   expect(mockRes.status).toHaveBeenCalledWith(400);
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ error: "The group doesn't exist" });
-  }) 
+  })
+
   test("admin not authentificated", async () => {
     const mockReq = {
       body: {name: "name"}
@@ -745,6 +918,7 @@ describe("deleteGroup", () => {
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ error: " adminAuth: " + "myerror" });
   }) 
+
   test("throw expection", async () => {
     const mockReq = {
       body: {name: "name"}

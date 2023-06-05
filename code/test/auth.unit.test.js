@@ -513,7 +513,7 @@ describe('login', () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith({
-            error: "Empty string values"
+            error: "please you need to register"
         })
         
     
@@ -662,10 +662,13 @@ describe('logout', () => {
             json:   jest.fn()
         };
 
-            verifyAuth.mockReturnValue({flag: false})
+            verifyAuth.mockReturnValue({flag: false, cause:"not authorized"})
+            checkMissingOrEmptyParams.mockReturnValue(false)
+            jest.spyOn(User,'findOne').mockResolvedValue(false);
              await logout(mockReq,mockRes);
              expect(mockRes.status).toHaveBeenCalledWith(401);
              expect(mockRes.json).toHaveBeenCalled();
+             expect(mockRes.json).toHaveBeenCalledWith({error: "not authorized"});
          
     });
     test('No Refresh Token scenario', async () => {
@@ -681,9 +684,30 @@ describe('logout', () => {
         };
 
             verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+            jest.spyOn(User,'findOne').mockResolvedValue(false);
              await logout(mockReq,mockRes);
              expect(mockRes.status).toHaveBeenCalledWith(400);
              expect(mockRes.json).toHaveBeenCalled();
+             expect(mockRes.json).toHaveBeenCalledWith({error : "refresh token missing"});
+         
+    });
+    test('Try catch scenario', async () => {
+        const mockReq = {
+            cookies: missingToken
+
+          }
+        
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+
+            verifyAuth.mockImplementation(() => { throw Error("myerror")});
+             await logout(mockReq,mockRes);
+             expect(mockRes.status).toHaveBeenCalledWith(400);
+             expect(mockRes.json).toHaveBeenCalled();
+             expect(mockRes.json).toHaveBeenCalledWith({error : "myerror"});
          
     });
 });

@@ -157,7 +157,9 @@ export const logout = async (req, res) => {
         return res.status(401).json({ error: simpleAuth.cause }) 
 
     const refreshToken = req.cookies.refreshToken
-    if (!refreshToken) return res.status(400).json({ error: "refresh token missing" })
+    if(refreshToken == undefined || refreshToken == null || (typeof refreshToken === 'string' && refreshToken.trim() === "" ))
+            return res.status(400).json({ error: "refresh token missing" })
+
     const user = await User.findOne({ refreshToken: refreshToken })
     if (!user) return res.status(400).json({error:'user not found'})
 

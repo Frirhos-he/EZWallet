@@ -393,10 +393,10 @@ describe("createGroup", () => {
     .mockResolvedValue(false)
 
     jest.spyOn(User, "find")
-    .mockImplementationOnce(async () => memberEmails)
-    .mockImplementationOnce(async () => foundInGroup)
-    .mockImplementationOnce(async () => allUsers)
-    .mockImplementationOnce(async () => foundInGroup)
+    .mockReturnValueOnce(memberEmails)
+    .mockReturnValueOnce(foundInGroup)
+    .mockReturnValueOnce(allUsers)
+    .mockReturnValueOnce(foundInGroup)
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
@@ -825,7 +825,48 @@ describe("createGroup", () => {
 
 })
 
-describe("getGroups", () => { })
+describe("getGroups", () => {
+  test("should retrieve list of all groups", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const groups = [
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      },  
+      {
+        name: "group2",
+        members: [{email: "mario.yellow@email.com"}, {email: "luigi.purple@email.com"}]
+      }
+    ]
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    jest.spyOn(Group, "find").mockResolvedValue(groups)
+
+    await getGroups(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      data: groups,
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+  })
+
+})
 
 describe("getGroup", () => { })
 

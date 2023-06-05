@@ -131,8 +131,6 @@ export const createGroup = async (req, res) => {
         if(!emailsVect.includes(currentUserEmail)){
           if(!foundInGroup) {
             let memberUser = await User.find({ email: currentUserEmail });  
-            console.log("PIPPOOOO: " + memberUser)
-
             memberUsers.push(memberUser);
             emailsVect.push(memberUser.email);
           }
@@ -187,15 +185,17 @@ export const createGroup = async (req, res) => {
  */
 export const getGroups = async (req, res) => {
     try {
-
-        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-        if (!adminAuth.flag)
-            return res.status(401).json({ error: " adminAuth: " + adminAuth.message }) 
+      const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+      if (!adminAuth.flag)
+          return res.status(401).json({ error: adminAuth.cause }) 
 
       let groups = await Group.find({})
+
+      console.log(groups)
+
       groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
 
-      res.status(200).json({ data: { groups }, message: res.locals.refreshedToken})
+      res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedToken})
 
     } catch (err) {
         res.status(400).json({ error: err.message})

@@ -389,47 +389,19 @@ export const getTransactionsByUser = async (req, res) => {
  */
 export const getTransactionsByUserByCategory = async (req, res) => {
     try {
-      
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
-                    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-                    if (!adminAuth.flag)
-                        return res.status(401).json({ error: "Admin: " + adminAuth.cause }) 
-                    //Search requested user
-                const username = req.params.username;
-                const matchedUserid = await User.findOne({username: username });
-                if(!matchedUserid) {
-                    return res.status(400).json({ error : "The user does not exist" });
-                }
-                //Search requested category
-                const category = req.params.category;
-                const matchedCategory = await categories.findOne({ type: category });
-                if(!matchedCategory) {
-                    return res.status(400).json({ error: "The category does not exist" });
-                }
-                transactions.aggregate([
-                    { $match: { username: username, type: category }},
-                    {
-                        $lookup: {
-                            from: "categories",
-                            localField: "type",
-                            foreignField: "type",
-                            as: "categories_info"
-                        }
-                    },
-                    { $unwind: "$categories_info" }
-                ]).then((result) => {
-                    let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                    res.status(200).json({data:dataResult,
-                              refreshedTokenMessage:res.locals.refreshedTokenMessage});
-                }).catch(error => { throw (error) })
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.flag)
+                return res.status(401).json({ error: "Admin: " + adminAuth.cause }) 
+            //Search requested user
+
 
         } else {                       //user
             const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
             if(!userAuth.flag)
-            {
                 return res.status(401).json({ error: "User: " + userAuth.cause }) 
-            }
-             //Search requested user
+        }
+
         const username = req.params.username;
         const matchedUserid = await User.findOne({username: username });
         if(!matchedUserid) {
@@ -441,7 +413,6 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         if(!matchedCategory) {
             return res.status(400).json({ error: "The category does not exist" });
         }
-
         transactions.aggregate([
             { $match: { username: username, type: category }},
             {
@@ -458,7 +429,8 @@ export const getTransactionsByUserByCategory = async (req, res) => {
             res.status(200).json({data:dataResult,
                       refreshedTokenMessage:res.locals.refreshedTokenMessage});
         }).catch(error => { throw (error) })
-    }} catch (error) {
+
+    } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }

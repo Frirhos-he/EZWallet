@@ -1082,6 +1082,7 @@ describe("getTransactionsByUser", () => {
 
     await getTransactionsByUser(mockReq, mockRes);
 
+    expect(mockRes.status).toHaveBeenCalledWith(200)
     expect(mockRes.json).toHaveBeenCalledWith({
       data: [{
           username: "user1",
@@ -1091,9 +1092,7 @@ describe("getTransactionsByUser", () => {
           date: "YYYY-MM-DD",
       }],
       refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
-  });
-    expect(mockRes.status).toHaveBeenCalledWith(200)
-
+    });
     expect(transactions.aggregate).toHaveBeenCalled()
   });
 
@@ -1133,9 +1132,129 @@ describe("getTransactionsByUser", () => {
 })
 
 describe("getTransactionsByUserByCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+    test('should return all transactions of a user of a specific category (admin call)', async () => {
+      // Mock input data
+      const mockReq = {
+        cookies: {
+          accessToken: 'accessToken',
+          refreshToken: 'refreshToken',
+        },
+        params: {
+          username: "user1",
+        },
+        url: "/transactions/users/user1"
+      };
+
+      const mockRes = {
+        locals: {
+            refreshedTokenMessage: "",
+        },
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+      jest.spyOn(User, "findOne").mockImplementation(() => true);
+      jest.spyOn(categories, "findOne").mockImplementation(() => true);
+      transactions.aggregate.mockResolvedValue([{
+        _id: 0,
+        username: "user1",
+        amount: 10,
+        type: "type1",
+        categories_info: {
+            type: "type1",
+            color: "red",
+        },
+        date: "YYYY-MM-DD",
+      }])    
+
+      await getTransactionsByUserByCategory(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+      expect(mockRes.json).toHaveBeenCalledWith({
+        data: [{
+            username: "user1",
+            amount: 10,
+            type: "type1",
+            color: "red",
+            date: "YYYY-MM-DD",
+        }],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+      });
+
+      expect(transactions.aggregate).toHaveBeenCalled()
+  });
+  test('should return an error if the user doesn\'t exist (admin call)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(User, "findOne").mockImplementation(() => false);
+
+    await getTransactionsByUserByCategory(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "The user does not exist"
     });
+
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  });
+
+  test('should return an error if the category doesn\'t exist (admin call)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(User, "findOne").mockImplementation(() => true);
+    jest.spyOn(categories, "findOne").mockImplementation(() => false);
+
+    await getTransactionsByUserByCategory(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "The category does not exist"
+    });
+
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+});
 })
 
 describe("getTransactionsByGroup", () => { 

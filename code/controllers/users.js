@@ -521,7 +521,7 @@ export const deleteUser = async (req, res) => {
     const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
     if(!adminAuth.flag)
-        return res.status(401).json({ error: adminAuth.message }) 
+        return res.status(401).json({ error: adminAuth.cause }) 
 
     const userEmail = req.body.email;
 
@@ -547,7 +547,7 @@ export const deleteUser = async (req, res) => {
     // Check if inside a group
 
     const groups = await Group.find({});
-    console.log(groups)
+
     const groupsWithOneMember = groups.filter(group => group.members.length === 1);
 
     const userInGroupWithOneMember = groupsWithOneMember.some(group => {

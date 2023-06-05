@@ -1118,6 +1118,145 @@ describe("deleteUser", () => {
       refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
     });
   })
+  test('authentification fail scenario', async () => {
+    const mockReq = {
+      body: {email: "a@h.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: false, cause:"not"})
+  
+  
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "not"
+    });
+  })
+  test('mssing email fail scenario', async () => {
+    const mockReq = {
+      body: {email: ""}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  checkMissingOrEmptyParams.mockReturnValue("Empty String")
+  
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "Empty String"
+    });
+  })
+  test('wrong email format fail scenario', async () => {
+    const mockReq = {
+      body: {email: "b.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "Invalid email format"
+    });
+  })
+  test('mssing user fail scenario', async () => {
+    const mockReq = {
+      body: {email: "b@i.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "findOne").mockImplementation(false)
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "The user doesn't exist"
+    });
+  })
+  test('one found scenario', async () => {
+    const mockReq = {
+      body: {email: "b@i.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "findOne").mockReturnValue(true)
+  jest.spyOn(Group, "find").mockReturnValue( 
+    [
+      { members: [{ email: "b@i.it" }] }, 
+      { members: [{ email: "c@h.it" }] }
+    ]
+  );
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "user is the last of a group, cannot delete"
+    });
+  })
+  test('thrown scenario', async () => {
+    const mockReq = {
+      body: {email: "b@i.it"}
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authenticated"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "findOne").mockReturnValue(true)
+  jest.spyOn(Group, "find").mockImplementation(() => {throw Error("myerror")});
+  await deleteUser(mockReq,mockRes);
+  
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "myerror"
+    });
+  })
 })
 
 describe("deleteGroup", () => { 

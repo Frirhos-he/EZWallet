@@ -268,27 +268,27 @@ export const handleAmountFilterParams = (req) => {
  * -true if there is a missing parameter(falsy value) or if a parameter is empty after a trim
  */
 // EXPECTING AN ARRAY OF PARAMS OF VALUES 
-export const checkMissingOrEmptyParams = (parameters, messageObj) => {
+export const checkMissingOrEmptyParams = (parameters) => {
     let i = 0;
     const nParams = parameters.length;
-
+    
     if(parameters.length == 0){
-          messageObj.message= "Missing values"; 
-          return true;
+          const message= "Missing values"; 
+          return message;
     }
     //Check if missing parameter (all falsy values)  --> containing also empty string: Bruno --> modified not consider this case
     for (i=0 ; i<nParams ; i++){
         if (parameters[i] == null || parameters[i] == undefined){
-          messageObj.message= "Missing values";  //TODO: choose if update here or in API
-          return true;
+          const message= "Missing values"; 
+          return message;
         }
     }
     
     //Check for all whitespaces string parameters by trimming
     for (i=0 ; i<nParams ; i++){
         if (typeof parameters[i] === 'string' && parameters[i].trim() === "" ){
-          messageObj.message= "Empty string values";   //TODO: choose if update here or in API
-          return true;
+          const message= "Empty string values"; 
+          return message;
         } 
     }
 

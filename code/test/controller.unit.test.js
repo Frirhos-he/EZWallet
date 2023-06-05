@@ -648,7 +648,7 @@ describe("createTransaction", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-          error: "" //message is updated in another function
+          error: true
     })
     expect(User.findOne).not.toHaveBeenCalled();
     expect(categories.findOne).not.toHaveBeenCalled();
@@ -1544,7 +1544,7 @@ describe("deleteTransaction", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-          error: ""
+          error: true
     })
     expect(User.findOne).not.toHaveBeenCalled();
     expect(transactions.findOne).not.toHaveBeenCalled();
@@ -1786,7 +1786,7 @@ describe("deleteTransactions", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-          error: ""
+          error: true
     })
     expect(transactions.find).not.toHaveBeenCalled();
     expect(transactions.deleteMany).not.toHaveBeenCalled();

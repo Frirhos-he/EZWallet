@@ -64,7 +64,7 @@ describe('register', () => {
         expect(mockRes.json).toHaveBeenCalledWith({data: {message:'User added successfully'}});
     
     });
-    test('Exception existing username/email (false and true)', async () => {
+    test('Exception existing email ', async () => {
         const mockReq = {
             body: { username:"u",
                     email:"u@h.it",
@@ -79,16 +79,96 @@ describe('register', () => {
         };
 
         checkMissingOrEmptyParams.mockReturnValue(false)
-        jest.spyOn(User, "findOne").mockImplementation(() => true)
+        jest.spyOn(User, "findOne").mockImplementation(() => false).mockReturnValueOnce(true)
         await register(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith( 
-            expect.objectContaining({
-            error: expect.stringMatching(/Email is already registered|Username is already registered/)
-          })
-          );            // Additional assertions for the response if needed
+        {error: "Email is already registered"});            // Additional assertions for the response if needed
     });
+    test('Exception existing username ', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"u@h.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => true).mockReturnValueOnce(false)
+        await register(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith( 
+        {error: "Username is already registered"});            // Additional assertions for the response if needed
+    });
+    test('Exception Missing params: empty email', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        checkMissingOrEmptyParams.mockReturnValue("Empty string values")
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+        await register(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Empty string values"});            // Additional assertions for the response if needed
+    });
+    test('Exception wrong format email', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"bit",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+        await register(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Invalid email format"});            // Additional assertions for the response if needed
+    });
+    test('Exception thrown error catch', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"b@e.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        checkMissingOrEmptyParams.mockImplementation(() => { throw Error("myerror")})
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+        await register(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({error : "myerror"});
+        //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+    });
+
 
 
 });
@@ -123,7 +203,7 @@ describe("registerAdmin", () => {
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith({data: {message:'admin added succesfully'}});
     });
-    test('Exception existing username/email (false and true)', async () => {
+    test('Exception existing email', async () => {
         const mockReq = {
             body: { username:"u",
                     email:"u@h.it",
@@ -138,14 +218,13 @@ describe("registerAdmin", () => {
         };
 
         checkMissingOrEmptyParams.mockReturnValue(false)
-        jest.spyOn(User, "findOne").mockImplementation(() => true)
+        jest.spyOn(User, "findOne").mockImplementation(() => false).mockReturnValueOnce(true)
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
-        expect(mockRes.json).toHaveBeenCalledWith( 
-            expect.objectContaining({
-            error: expect.stringMatching(/Email is already registered|Username is already registered/)
-          })
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error:"Email is already registered"
+        }
           );
          
     });

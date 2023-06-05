@@ -125,6 +125,37 @@ describe("createCategory", () => {
     expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'testtype',
+        color: 'testcolor',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await createCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("updateCategory", () => { 
@@ -156,8 +187,7 @@ describe("updateCategory", () => {
     checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(categories, "findOne").mockImplementation(() => false).mockReturnValueOnce(true)
-    //jest.spyOn(categories, "findOne").mockImplementation(() => false)
-
+    
     jest.spyOn(categories, "updateOne").mockImplementation(() => {})
     jest.spyOn(transactions, "updateMany").mockImplementation(() => ({ modifiedCount: 5 }))
 
@@ -297,7 +327,41 @@ describe("updateCategory", () => {
     expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
     expect(categories.updateOne).not.toHaveBeenCalledWith()
     expect(categories.updateMany).not.toHaveBeenCalledWith()
- });
+  });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'newvalue',
+        color: 'testcolor',
+      },
+      params: {
+        type: 'tobechanged'
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await updateCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("deleteCategory", () => { 
@@ -523,6 +587,36 @@ describe("deleteCategory", () => {
         error: "Only one category remaining in database"
     })
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type1']
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getCategories", () => {
@@ -564,6 +658,32 @@ describe("getCategories", () => {
     });
     expect(categories.find).toHaveBeenCalled();
   });
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getCategories(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 });
 
 describe("createTransaction", () => { 
@@ -859,6 +979,41 @@ describe("createTransaction", () => {
     expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
     expect(transactions.prototype.save).not.toHaveBeenCalled();
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'testusername',
+      },
+      body: {
+        username: 'testusername',
+        type: 'testtype',
+        amount: 50,
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await createTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getAllTransactions", () => { 
@@ -1041,10 +1196,37 @@ describe("getAllTransactions", () => {
     
     expect(transactions.aggregate).toHaveBeenCalled();
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getAllTransactions(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getTransactionsByUser", () => { 
-  test("should return all transactions of a user (admin call)", async () => {
+  test("should return all transactions of a user ", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1098,7 +1280,7 @@ describe("getTransactionsByUser", () => {
     expect(transactions.aggregate).toHaveBeenCalled()
   });
 
-  test("should return an error if user doesn't exist (admin call)", async () => {
+  test("should return an error if user doesn't exist ", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1131,10 +1313,72 @@ describe("getTransactionsByUser", () => {
     });
     expect(transactions.aggregate).not.toHaveBeenCalled()
   });
+
+  test('should return an error of authentication (admin)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByUser(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('should return an error of authentication (user)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/users/user1/transactions"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByUser(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getTransactionsByUserByCategory", () => { 
-  test('should return all transactions of a user of a specific category (admin call)', async () => {
+  test('should return all transactions of a user of a specific category ', async () => {
       // Mock input data
       const mockReq = {
         cookies: {
@@ -1143,8 +1387,9 @@ describe("getTransactionsByUserByCategory", () => {
         },
         params: {
           username: "user1",
+          category: "type1"
         },
-        url: "/transactions/users/user1"
+        url: "/transactions/users/user1/categories/type1"
       };
 
       const mockRes = {
@@ -1188,7 +1433,7 @@ describe("getTransactionsByUserByCategory", () => {
       expect(transactions.aggregate).toHaveBeenCalled()
   });
 
-  test('should return an error if the user doesn\'t exist (admin call)', async () => {
+  test('should return an error if the user doesn\'t exist ', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1197,8 +1442,9 @@ describe("getTransactionsByUserByCategory", () => {
       },
       params: {
         username: "user1",
+        category: "type1"
       },
-      url: "/transactions/users/user1"
+      url: "/transactions/users/user1/categories/type1"
     };
 
     const mockRes = {
@@ -1223,7 +1469,7 @@ describe("getTransactionsByUserByCategory", () => {
     expect(transactions.aggregate).not.toHaveBeenCalled()
   });
 
-  test('should return an error if the category doesn\'t exist (admin call)', async () => {
+  test('should return an error if the category doesn\'t exist ', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1232,8 +1478,9 @@ describe("getTransactionsByUserByCategory", () => {
       },
       params: {
         username: "user1",
+        category: "type1"
       },
-      url: "/transactions/users/user1"
+      url: "/transactions/users/user1/categories/type1"
     };
 
     const mockRes = {
@@ -1257,11 +1504,75 @@ describe("getTransactionsByUserByCategory", () => {
     });
 
     expect(transactions.aggregate).not.toHaveBeenCalled()
-});
+  });
+
+  test('should return an error of authentication (admin)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+        category: "type1"
+      },
+      url: "/transactions/users/user1/categories/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByUserByCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('should return an error of authentication (user)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+        category: "type1"
+      },
+      url: "/users/username1/transactions/category/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByUserByCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getTransactionsByGroup", () => { 
-  test("should return all transactions of a group (admin call)", async () => {
+  test("should return all transactions of a group ", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1353,7 +1664,7 @@ describe("getTransactionsByGroup", () => {
     expect(transactions.aggregate).toHaveBeenCalled()
   });
 
-  test("should return an error if the group doesn't exist (admin call)", async() => {
+  test("should return an error if the group doesn't exist ", async() => {
      // Mock input data
      const mockReq = {
       cookies: {
@@ -1388,12 +1699,375 @@ describe("getTransactionsByGroup", () => {
     });
     expect(transactions.aggregate).not.toHaveBeenCalled()
   })
+
+  test('should return an error of authentication (admin)', async () => {
+      // Mock input data
+      const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/transactions/groups/group1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+              email: "prova1@gmail.com",
+              user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
+    });
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('should return an error of authentication (group)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+      },
+      url: "/groups/group1/transactions"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+              email: "prova1@gmail.com",
+              user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
+    });
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("getTransactionsByGroupByCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+  test("should return all transactions of a group of a category", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+        category: "type1"
+      },
+      url: "/transactions/groups/group1/category/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "findOne").mockResolvedValue(true)
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+            email: "prova1@gmail.com",
+            user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
     });
+    jest.spyOn(User, "find").mockResolvedValue([
+      { username: "username1"},
+      { username: "username2" }
+    ]);
+
+    transactions.aggregate.mockResolvedValue([
+      {
+      _id: 0,
+      username: "user1",
+      amount: 10,
+      type: "type1",
+      categories_info: {
+          type: "type1",
+          color: "red",
+      },
+      date: "YYYY-MM-DD",},
+      {
+        _id: 0,
+        username: "user2",
+        amount: 10,
+        type: "type1",
+        categories_info: {
+            type: "type1",
+            color: "red",
+        },
+        date: "YYYY-MM-DD",
+      }
+    ])    
+
+    await getTransactionsByGroupByCategory(mockReq, mockRes);
+
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: [
+        {
+          username: "user1",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        },
+        {
+          username: "user2",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+        }
+    ],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(transactions.aggregate).toHaveBeenCalled()
+  });
+
+  test("should return an error if the group doesn't exist ", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+        category: "type1"
+      },
+      url: "/transactions/groups/group1/category/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "findOne").mockResolvedValue(true)
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue(false);
+
+    await getTransactionsByGroupByCategory(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "The group doesn't exist"
+    });
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  });
+
+  test("should return all transactions of a group of a category", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+        category: "type1"
+      },
+      url: "/transactions/groups/group1/category/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "findOne").mockResolvedValue(false)
+    
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+            email: "prova1@gmail.com",
+            user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
+    });
+
+    await getTransactionsByGroupByCategory(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "the category does not exist"
+    });
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  });
+
+  test('should return an error of authentication (admin)', async () => {
+    // Mock input data
+    const mockReq = {
+    cookies: {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+    },
+    params: {
+      name: "group1",
+      category: "type1"
+    },
+    url: "/transactions/groups/group1/category/type1"
+  };
+
+  const mockRes = {
+    locals: {
+        refreshedTokenMessage: "",
+    },
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+
+  jest.spyOn(Group, "findOne").mockResolvedValue({
+    _id: 0,
+    name: "group1",
+    members: [
+        {
+            email: "prova1@gmail.com",
+            user: { _id: 0 }
+        },
+        {
+          email: "prova2@gmail.com",
+          user: { _id: 1 }
+        }
+    ]
+  });
+
+  verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+  await getTransactionsByGroupByCategory(mockReq, mockRes)
+
+  expect(mockRes.status).toHaveBeenCalledWith(401)
+  expect(mockRes.json).toHaveBeenCalledWith({
+    error: "unauthorized"
+  })
+  })
+
+  test('should return an error of authentication (group)', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+        category: "type1"
+      },
+      url: "/groups/group1/transactions/category/type1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jest.spyOn(Group, "findOne").mockResolvedValue({
+      _id: 0,
+      name: "group1",
+      members: [
+          {
+              email: "prova1@gmail.com",
+              user: { _id: 0 }
+          },
+          {
+            email: "prova2@gmail.com",
+            user: { _id: 1 }
+          }
+      ]
+    });
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await getTransactionsByGroupByCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("deleteTransaction", () => { 
@@ -1672,6 +2346,39 @@ describe("deleteTransaction", () => {
     expect(transactions.findOne).toHaveBeenCalledWith({ _id: mockReq.body._id });
     expect(transactions.deleteOne).not.toHaveBeenCalled();
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await deleteTransaction(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
 })
 
 describe("deleteTransactions", () => { 

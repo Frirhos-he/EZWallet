@@ -1069,7 +1069,42 @@ describe("addToGroup", () => {
 })
 
 describe("removeFromGroup", () => {
+  test('Nominal scenario', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["a@h.it", "b@h.it"]
+      },
+      url: "groups/pull"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+      { members: [{ email: "c@h.it" }, { email: "b@h.it" }] }
+  );
+  jest.spyOn(User, "find").mockReturnValue(   
+    [{ email: "c@h.it", _id:"cc" }, { email: "b@h.it", _id:"cc" }] 
+  );
+  
+  Group.prototype.save.mockResolvedValue({
+    name: "newgroup",
+    memberEmails: ["email1@gmail.com"]
+  });
 
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ data: "not"});
+  })
 })
 
 describe("deleteUser", () => {

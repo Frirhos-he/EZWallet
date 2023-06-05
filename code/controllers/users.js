@@ -105,7 +105,7 @@ export const createGroup = async (req, res) => {
             return res.status(400).json({ error: "Invalid email format" });
           }
         }
-
+      
         // Check if the group already exist
         const group = await Group.findOne({ name: name });
         if (group)
@@ -362,17 +362,6 @@ export const removeFromGroup = async (req, res) => {
     if (!group)
       return res.status(400).json({ message: "The group doesn't exist" })
 
-    if (req.url.indexOf("/groups/group1/pull") >= 0) {   //admin 
-        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-        if (!adminAuth.flag)
-            return res.status(401).json({ error: adminAuth.cause }) 
-    }
-    else {   //user
-        const groupAuth = verifyAuth(req, res, { authType: "Group", username: group.members })
-        if(!groupAuth.flag)
-            return res.status(401).json({ error: groupAuth.cause }) 
-    }
-
     //Check for missing or empty string parameter
     let message;
     if((message = checkMissingOrEmptyParams([groupName])))
@@ -403,11 +392,11 @@ export const removeFromGroup = async (req, res) => {
     if (startIndexAdmin >= 0 && endIndexAdmin >= 0 && startIndexAdmin < endIndexAdmin) { //admin 
       const adminAuth = verifyAuth(req, res, { authType: "Admin" })
       if (!adminAuth.flag)
-          return res.status(401).json({ error:" adminAuth: " + adminAuth.message }) 
+          return res.status(401).json({ error:" adminAuth: " + adminAuth.cause }) 
       } else {    //user of the group    
       const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
        if(!groupAuth.flag)
-          return res.status(401).json({ error: "groupAuth: " + groupAuth.message })       
+          return res.status(401).json({ error: "groupAuth: " + groupAuth.cause })       
       }
             // Retrieve the list of all users
             let allUsers = await User.find({})
@@ -438,7 +427,7 @@ export const removeFromGroup = async (req, res) => {
             let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
             
             membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
-
+            console.log("here");
             //Update modification on member array
             const updatedGroup = await membersInGroup.save();
 
@@ -446,7 +435,7 @@ export const removeFromGroup = async (req, res) => {
             let newMembersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
                 newMembersInGroup = newMembersInGroup.members.map(u => u.email);
 
-            res.status(200).json({ data: {group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound }, message: res.locals.refreshedToken})
+            res.status(200).json({ data: {group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound }, refreshedTokenMessage: res.locals.refreshedToken})
   } catch (err) {
       res.status(400).json({ error: err.message })
   }

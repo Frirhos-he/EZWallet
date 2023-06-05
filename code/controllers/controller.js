@@ -639,7 +639,7 @@ export const deleteTransactions = async (req, res) => {
         // Check if all input IDs have corresponding transactions
 
         if (matchingDocuments.length !== transactionsToDelete.length) {
-            return res.status(401).json({ error: 'At least one ID does not have a corresponding transaction.' });
+            return res.status(400).json({ error: 'At least one ID does not have a corresponding transaction.' });
         }
         const result = await transactions.deleteMany({_id: { $in: transactionsToDelete }}); 
         

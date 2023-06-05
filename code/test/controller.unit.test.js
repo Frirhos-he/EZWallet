@@ -629,7 +629,7 @@ describe("createTransaction", () => {
         username: 'testusername',
       },
       body: {
-        username: 'testusername'
+        username: ''
       }
     };
 
@@ -1525,7 +1525,7 @@ describe("deleteTransaction", () => {
         username: 'usertest2'  
       },
       body: {
-         _id: '3' 
+         _id: '' 
       }
     };
 
@@ -1675,7 +1675,171 @@ describe("deleteTransaction", () => {
 })
 
 describe("deleteTransactions", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
+  test('should successfully delete multiple transactions', async () => {
+    // Mock input data
+    const mockDate = "2000-03-10"
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+         _ids: ['0','2','4']
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    
+    const mockFindReturn = [  
+    {
+      _id: 0,
+      username: 'usertest1',
+      amount: 25,
+      type: 'food',
+      date: mockDate,
+    },
+    {
+      _id: 2,
+      username: 'usertest2',
+      amount: 12,
+      type: 'sport',
+      date: mockDate,
+    },
+    {
+      _id: 4,
+      username: 'usertest3',
+      amount: 35,
+      type: 'streaming',
+      date: mockDate,
+    }
+  ];
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    transactions.find.mockResolvedValue(mockFindReturn)  //Transactions found
+    transactions.deleteMany.mockResolvedValue(3)   //Deleted one transaction
+
+    await deleteTransactions(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          data: {message: "Transactions deleted"},
+          refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    })
+    expect(transactions.find).toHaveBeenCalledWith({ _id: { $in: mockReq.body._ids } });
+    expect(transactions.deleteMany).toHaveBeenCalledWith({ _id: { $in: mockReq.body._ids } });
+  });
+
+  test('should return an error if missing or empty body', async () => {
+    // Mock input data
+    const mockDate = "2000-03-10"
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+         _ids: ['','2','4']
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    
+    const mockFindReturn = [  
+    {
+      _id: 0,
+      username: 'usertest1',
+      amount: 25,
+      type: 'food',
+      date: mockDate,
+    },
+    {
+      _id: 2,
+      username: 'usertest2',
+      amount: 12,
+      type: 'sport',
+      date: mockDate,
+    },
+    {
+      _id: 4,
+      username: 'usertest3',
+      amount: 35,
+      type: 'streaming',
+      date: mockDate,
+    }
+  ];
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(true)  //Missing or empty body
+    
+    await deleteTransactions(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: ""
+    })
+    expect(transactions.find).not.toHaveBeenCalled();
+    expect(transactions.deleteMany).not.toHaveBeenCalled();
+  });
+
+  test('should return an error if at least one transaction is not in database', async () => {
+    // Mock input data
+    const mockDate = "2000-03-10"
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+         _ids: ['0','2','4']
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    
+    const mockFindReturn = [  
+    {
+      _id: 0,
+      username: 'usertest1',
+      amount: 25,
+      type: 'food',
+      date: mockDate,
+    },
+    {
+      _id: 2,
+      username: 'usertest2',
+      amount: 12,
+      type: 'sport',
+      date: mockDate,
+    }
+  ];
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
+    checkMissingOrEmptyParams.mockReturnValue(false)  //No missing or empty body
+    transactions.find.mockResolvedValue(mockFindReturn)  //Transactions found (wrong number)
+
+    await deleteTransactions(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+          error: "At least one ID does not have a corresponding transaction."
+    })
+    expect(transactions.find).toHaveBeenCalledWith({ _id: { $in: mockReq.body._ids } });
+    expect(transactions.deleteMany).not.toHaveBeenCalled();
+  });
 })

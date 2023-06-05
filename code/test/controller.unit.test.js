@@ -14,7 +14,7 @@ import {
   getTransactionsByUser,
   getTransactionsByUserByCategory
 } from "../controllers/controller"
-import { verifyAuth, checkMissingOrEmptyParams } from '../controllers/utils';
+import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handleDateFilterParams } from '../controllers/utils';
 
 jest.mock('../models/model.js');
 jest.mock('../controllers/utils')
@@ -1042,9 +1042,94 @@ describe("getAllTransactions", () => {
 })
 
 describe("getTransactionsByUser", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+  test("should return all transactions of a user (admin call)", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    handleAmountFilterParams.mockReturnValue({ date: { $gte: "from", $lte: "to" } })
+    handleDateFilterParams.mockReturnValue({amount: { $gte: "minInt", $lte: "maxInt" }})
+
+    jest.spyOn(User, "findOne").mockImplementation(() => true);
+    transactions.aggregate.mockResolvedValue([{
+      _id: 0,
+      username: "user1",
+      amount: 10,
+      type: "type1",
+      categories_info: {
+          type: "type1",
+          color: "red",
+      },
+      date: "YYYY-MM-DD",
+    }])    
+
+    await getTransactionsByUser(mockReq, mockRes);
+
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: [{
+          username: "user1",
+          amount: 10,
+          type: "type1",
+          color: "red",
+          date: "YYYY-MM-DD",
+      }],
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+  });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+
+    expect(transactions.aggregate).toHaveBeenCalled()
+  });
+
+  test("should return an error if user doesn't exist (admin call)", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(User, "findOne").mockImplementation(() => false);
+
+    await getTransactionsByUser(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+        error: "the user does not exist"
     });
+    expect(transactions.aggregate).not.toHaveBeenCalled()
+  });
 })
 
 describe("getTransactionsByUserByCategory", () => { 

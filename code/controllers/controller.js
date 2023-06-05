@@ -325,81 +325,51 @@ export const getTransactionsByUser = async (req, res) => {
         //Distinction between route accessed by Admins or Regular users for functions that can be called by both
         //and different behaviors and access rights
         if (req.url.indexOf("/transactions/users/") >= 0) {   //admin 
-            try {
-                const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-                if (!adminAuth.flag)
-                    return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
-            
-                //see if on db the user requesting the getTransactionsByUser
-                const username = req.params.username;
-                const matchedUser = await User.findOne({ username: username });
-                if(!matchedUser) {
-                    return res.status(400).json({ error: "the user does not exist" })
-                }
-                
-                //Query the MONGODB Transactions
-                transactions.aggregate([
-                    { $match: { username: username }},
-                    {
-                        $lookup: {
-                            from: "categories",
-                            localField: "type",
-                            foreignField: "type",
-                            as: "categories_info"
-                        }
-                    },
-                    { $unwind: "$categories_info" }
-                ]).then((result) => {
-                    let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                    res.json({data:dataResult,
-                              refreshedTokenMessage:res.locals.refreshedTokenMessage});
-                }).catch(error => { throw (error) })
-            } catch (error) {
-                if(error.message == "the user does not exist") res.status(401).json({ error: error.message })
-                else res.status(400).json({ error: error.message })
-            }
-        }  else {   //user
-            const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-
-            if(!userAuth.flag){
-                return res.status(401).json({ error: " user: " + userAuth.cause }) 
-            }
-            //see if on db the user requesting the getTransactionsByUser
-            const username = req.params.username;
-            const matchedUser = await User.findOne({ username: username });
-            if(!matchedUser) {
-                return res.status(400).json({ error: "the user does not exist" })
-            }
-            
-            const queryDate   = handleDateFilterParams(req);
-            const queryAmount = handleAmountFilterParams(req);
-
-
-            let matchStage = {username: username};
-            if (Object.keys(queryDate).length !== 0 ){
-                matchStage = { ...matchStage, ...queryDate };
-            }
-            if (Object.keys(queryAmount).length !== 0 ){
-                matchStage = { ...matchStage, ...queryAmount };
-            }
-            //Query the MONGODB Transactions
-            transactions.aggregate([
-                { $match: matchStage},
-                {
-                    $lookup: {
-                        from: "categories",
-                        localField: "type",
-                        foreignField: "type",
-                        as: "categories_info"
-                    }
-                },
-                { $unwind: "$categories_info" }
-            ]).then((result) => {
-                let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
-                res.status(200).json({data:dataResult,
-                         refreshedTokenMessage: res.locals.refreshedTokenMessage});
-            }).catch(error => { throw (error) })
+            const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+            if (!adminAuth.flag)
+                return res.status(401).json({ error: " admin: " + adminAuth.cause }) 
         }
+        else {   //user
+            const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
+            if(!userAuth.flag)
+                return res.status(401).json({ error: " user: " + userAuth.cause }) 
+        }
+
+        //see if on db the user requesting the getTransactionsByUser
+        const username = req.params.username;
+        const matchedUser = await User.findOne({ username: username });
+        if(!matchedUser) {
+            return res.status(400).json({ error: "the user does not exist" })
+        }
+        
+        const queryDate   = handleDateFilterParams(req);
+        const queryAmount = handleAmountFilterParams(req);
+
+        let matchStage = {username: username};
+        if (Object.keys(queryDate).length !== 0 ){
+            matchStage = { ...matchStage, ...queryDate };
+        }
+        if (Object.keys(queryAmount).length !== 0 ){
+            matchStage = { ...matchStage, ...queryAmount };
+        }
+        //Query the MONGODB Transactions
+        transactions.aggregate([
+            { $match: matchStage},
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "type",
+                    foreignField: "type",
+                    as: "categories_info"
+                }
+            },
+            { $unwind: "$categories_info" }
+        ]).then((result) => {
+            let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
+            res.status(200).json({data:dataResult,
+                     refreshedTokenMessage: res.locals.refreshedTokenMessage});
+        }).catch(error => { throw (error) })
+
     } catch (error) {
         res.status(400).json({ error: error.message })
    }  

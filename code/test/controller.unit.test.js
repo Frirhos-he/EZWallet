@@ -299,9 +299,228 @@ describe("updateCategory", () => {
 })
 
 describe("deleteCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
-    });
+  test('should delete a category successfully', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type1']
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "find").mockImplementation(() => (
+        [{
+          color: 'color1',
+          type: 'type1',
+          createdAt: '1'
+        },
+        {
+          color: 'color2',
+          type: 'type2',
+          createdAt: '2'
+        }]
+    ))
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
+
+    jest.spyOn(transactions, "updateMany").mockImplementation(() => ({ modifiedCount: 1 }))
+    jest.spyOn(categories, "deleteMany").mockImplementation(() => true)
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: {
+          message: "Categories deleted",
+          count: 1,
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage,
+    })
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(categories.find).toHaveBeenCalledWith({});
+  });
+
+  test('should return an error if missing field in body', async () => {
+          // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "find").mockImplementation(() => (
+        [{
+          color: 'color1',
+          type: 'type1',
+          createdAt: '1'
+        },
+        {
+          color: 'color2',
+          type: 'type2',
+          createdAt: '2'
+        }]
+    ))
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "types object not inserted" 
+    })
+  });
+
+  test('should return an error if there\a an empty string', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type1', '']
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "find").mockImplementation(() => (
+        [{
+          color: 'color1',
+          type: 'type1',
+          createdAt: '1'
+        },
+        {
+          color: 'color2',
+          type: 'type2',
+          createdAt: '2'
+        }]
+    ))
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error:  "at least one of the types in the array is an empty string"
+    })
+  });
+
+  test('should return an error if there\a a category to be deleted that is not in the database', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type3', 'type1']
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "find").mockImplementation(() => (
+        [{
+          color: 'color1',
+          type: 'type1',
+          createdAt: '1'
+        },
+        {
+          color: 'color2',
+          type: 'type2',
+          createdAt: '2'
+        }]
+    ))
+    jest.spyOn(categories, "findOne").mockImplementation(() => true).mockReturnValueOnce(false)
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error:  "Category for type 'type3' not found"
+    })
+  });
+
+  test('should return an error if there\a only one category in the database', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type3', 'type1']
+      },
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(categories, "find").mockImplementation(() => (
+        [{
+          color: 'color1',
+          type: 'type1',
+          createdAt: '1'
+        }]
+    ))
+    jest.spyOn(categories, "findOne").mockImplementation(() => true)
+
+    await deleteCategory(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Only one category remaining in database"
+    })
+  });
 })
 
 // describe("getCategories", () => {

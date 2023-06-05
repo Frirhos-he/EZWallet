@@ -146,7 +146,7 @@ export const deleteCategory = async (req, res) => {
 
         const allCategories = await categories.find({});
         //count the tot number of categories
-         const totNumberCategories = allCategories.length;
+        const totNumberCategories = allCategories.length;
         //Only one category in db, no deletion done
         if(totNumberCategories == 1)
                 return res.status(400).json({ error: "Only one category remaining in database" });

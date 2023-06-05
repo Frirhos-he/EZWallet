@@ -223,8 +223,31 @@ describe("registerAdmin", () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith({
-            error:"Email is already registered"
-        }
+            error:"Email is already registered"}
+          );
+         
+    });
+    test('Exception existing username', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"u@h.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+
+        checkMissingOrEmptyParams.mockReturnValue(false)
+        jest.spyOn(User, "findOne").mockImplementation(() => true).mockReturnValueOnce(false)
+        await registerAdmin(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error:"Username is already registered"}
           );
          
     });
@@ -294,6 +317,27 @@ describe("registerAdmin", () => {
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Invalid email format"});
+         
+    });
+    test('Exception thrown catch', async () => {
+        const mockReq = {
+            body: { username:"u",
+                    email:"bh@fd.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+        checkMissingOrEmptyParams.mockImplementation(() => { throw Error("myerror")})
+        jest.spyOn(User, "findOne").mockImplementation(() => false)
+        
+        await registerAdmin(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
          
     });
 })
@@ -383,13 +427,62 @@ describe('login', () => {
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({error : "wrong credentials"});
+    
+    });
 
+    test('Empty email', async () => {
+        const mockReq = {
+            body: {
+                    email:" ",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+        const user = {
+            email:"u@h.it",
+            username: "u",
+            password: "password",
+            id:0,
+            accessToken : 'accesstoken',
+            save : jest.fn().mockResolvedValue({refreshToken : 'refreshToken'}),
+            role:"Regular" };
+       
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockReturnValue("Empty string values")
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(() => true);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(true);
+
+
+        jest.spyOn(User.prototype, 'save').mockResolvedValue(user);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error: "Empty string values"
+        })
+        
     
     });
     test('User not found', async () => {
         const mockReq = {
             body: {
-                    email:"u@h.it",
+                    email:"b@d.it",
                     password:"password"
                 }
         };
@@ -405,12 +498,12 @@ describe('login', () => {
         verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
         checkMissingOrEmptyParams.mockReturnValue(false)
         const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockResolvedValue(() => false);
+        verifyFindOne.mockResolvedValue(false);
         
         const hashedPassword = jest.spyOn(bcrypt,'compare');
         hashedPassword.mockReturnValueOnce(true);
 
-        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => false);
+        jest.spyOn(User.prototype, 'save').mockImplementation(() => false);
 
         const tokenSign = jest.spyOn(jwt,'sign');
         tokenSign.mockReturnValueOnce("Token1");
@@ -418,46 +511,7 @@ describe('login', () => {
 
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalled();
-    
-    });
-    test('Empty email', async () => {
-        const mockReq = {
-            body: {
-                    email:" ",
-                    password:"password"
-                }
-        };
-        
-        const mockRes = {
-
-            status: jest.fn().mockReturnThis(),
-            cookie: jest.fn(),
-            json:   jest.fn()
-        };
-       
-
-        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-        checkMissingOrEmptyParams.mockReturnValue("Empty string values")
-        const verifyFindOne = jest.spyOn(User, 'findOne');   
-        verifyFindOne.mockResolvedValue(() => true);
-        
-        const hashedPassword = jest.spyOn(bcrypt,'compare');
-        hashedPassword.mockReturnValueOnce(true);
-
-        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => false);
-
-        const tokenSign = jest.spyOn(jwt,'sign');
-        tokenSign.mockReturnValueOnce("Token1");
-        tokenSign.mockReturnValueOnce("Token1");
-
-        await login(mockReq,mockRes);
-        expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalled();
-        expect(mockRes.json).toHaveBeenCalledWith({
-            error: "Missing values"
-        })
-        
+        expect(mockRes.json).toHaveBeenCalledWith({error : "please you need to register"});
     
     });
     test('Wrong format email', async () => {
@@ -484,7 +538,7 @@ describe('login', () => {
         const hashedPassword = jest.spyOn(bcrypt,'compare');
         hashedPassword.mockReturnValueOnce(true);
 
-        jest.spyOn(User.prototype, 'save').mockResolvedValue(() => true);
+        jest.spyOn(User.prototype, 'save').mockImplementation(() => true);
 
         const tokenSign = jest.spyOn(jwt,'sign');
         tokenSign.mockReturnValueOnce("Token1");
@@ -493,6 +547,43 @@ describe('login', () => {
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({error : "Invalid email format"});
+    
+    });
+    
+    test('Throw catch error', async () => {
+        const mockReq = {
+            body: {
+                    email:"b.it",
+                    password:"password"
+                }
+        };
+        
+        const mockRes = {
+
+            status: jest.fn().mockReturnThis(),
+            cookie: jest.fn(),
+            json:   jest.fn()
+        };
+       
+
+        verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+        checkMissingOrEmptyParams.mockImplementation(() => { throw Error("myerror")})
+        const verifyFindOne = jest.spyOn(User, 'findOne');   
+        verifyFindOne.mockResolvedValue(() => true);
+        
+        const hashedPassword = jest.spyOn(bcrypt,'compare');
+        hashedPassword.mockReturnValueOnce(true);
+
+        jest.spyOn(User.prototype, 'save').mockImplementation(() => false);
+
+        const tokenSign = jest.spyOn(jwt,'sign');
+        tokenSign.mockReturnValueOnce("Token1");
+        tokenSign.mockReturnValueOnce("Token1");
+
+        await login(mockReq,mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({error : "myerror"});
     
     });
 
@@ -548,11 +639,12 @@ describe('logout', () => {
 
             verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
             checkMissingOrEmptyParams.mockReturnValue(false)
-            jest.spyOn(User,'findOne').mockResolvedValue(() => false);
+            jest.spyOn(User,'findOne').mockResolvedValue(false);
 
      
              await logout(mockReq,mockRes);
              expect(mockRes.status).toHaveBeenCalledWith(400);
+             expect(mockRes.json).toHaveBeenCalledWith({error: "user not found"});
     });
     test('Not authentificated scenario', async () => {
         const mockReq = {

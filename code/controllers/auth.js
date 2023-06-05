@@ -114,7 +114,7 @@ export const login = async (req, res) => {
 
     if (!existingUser) return res.status(400).json({ error: 'please you need to register' })
         const match = await bcrypt.compare(password, existingUser.password)
-        if (!match) return res.status(400).json('wrong credentials')
+        if (!match) return res.status(400).json({ error:'wrong credentials'})
         //CREATE ACCESSTOKEN
         const accessToken = jwt.sign({
             email: existingUser.email,
@@ -159,7 +159,7 @@ export const logout = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
     if (!refreshToken) return res.status(400).json({ error: "refresh token missing" })
     const user = await User.findOne({ refreshToken: refreshToken })
-    if (!user) return res.status(400).json('user not found')
+    if (!user) return res.status(400).json({error:'user not found'})
 
         user.refreshToken = null
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })

@@ -2859,4 +2859,63 @@ describe("deleteTransactions", () => {
     expect(transactions.find).toHaveBeenCalledWith({ _id: { $in: mockReq.body._ids } });
     expect(transactions.deleteMany).not.toHaveBeenCalled();
   });
+
+  test('should return an error of authentication', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+         _ids: ['0','2','4']
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
+
+    await deleteTransactions(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(401)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "unauthorized"
+    })
+  })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+         _ids: ['0','2','4']
+      }
+    };
+ 
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+ 
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await deleteTransactions(mockReq,mockRes);
+ 
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+   });
+
 })

@@ -69,31 +69,8 @@ describe("removeFromGroup", () => { })
 describe("deleteUser", () => {})
 
 
+
 describe("deleteGroup", () => { 
- 
-    test('Nominal scenario', async () => {
-      const mockReq = {
-        body: {name: "pippo"}
-    };
-    const mockRes = {
-      status: jest.fn().mockReturnThis(),
-      json:   jest.fn(),
-      locals: {
-        refreshedTokenMessage: "",
-       }
-    };
-    checkMissingOrEmptyParams.mockReturnValue(false)
-    jest.spyOn(User, "findOne").mockImplementation(() => true)
-    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    jest.spyOn(Group, "deleteOne").mockImplementation(() => true)
-    await deleteGroup(mockReq,mockRes);
-    expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalled();
-    expect(mockRes.json).toHaveBeenCalledWith({ data: { message: "Group deleted successfully" }, message: mockRes.locals.refreshedToken });
-    })
-    
-  })
-  describe("deleteGroup", () => { 
  
   test('Nominal scenario', async () => {
     const mockReq = {

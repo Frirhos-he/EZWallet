@@ -1065,7 +1065,132 @@ describe("getGroup", () => {
 })
 
 describe("addToGroup", () => {
-  
+  test("should add to the group the members passed in the body", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1"
+      },
+      body: {
+        emails: [
+          "toadd1@gmail.com",
+          "toadd2@gmail.com",
+          "alreadyingroup@gmail.com",
+          "notexisting@gmail.com"
+        ]
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const foundInGroup = [
+      {
+        members: [{
+          email: "alreadyingroup@gmail.com",
+          _id: "1"
+        }],
+      },
+    ]
+
+    const allUsers = [
+      {
+        email: "email1@gmail.com",
+        _id: "0"
+      },
+      {
+        email: "alreadyingroup@gmail.com",
+        _id: "1"
+      },
+      {
+        email: "other@gmail.com",
+        _id: "2"
+      },
+      {
+        email: "toadd1@gmail.com",
+        _id: "3"
+      },
+      {
+        email: "toadd2@gmail.com",
+        _id: "4"
+      },
+      {
+        email: "mario.red@email.com",
+        _id: "5"
+      },
+      {
+        email: "luigi.red@email.com",
+        _id: "6"
+      }
+    ]
+
+    const membersToAdd = [
+      {
+        email: "toadd1@gmail.com",
+        _id: "3"
+      },
+      {
+        email: "toadd2@gmail.com",
+        _id: "4"
+      },
+    ]
+    
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+
+    jest.spyOn(Group, "findOne").mockResolvedValue(
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      }
+    )
+
+    jest.spyOn(User, "find")
+    .mockReturnValueOnce(membersToAdd)
+    .mockReturnValueOnce(allUsers)
+    .mockReturnValueOnce(foundInGroup)
+
+    jest.spyOn(Group, "findOneAndUpdate").mockResolvedValue(
+      {
+        name: "group1",
+        members: [
+          { email: "mario.red@email.com", user: "5" }, 
+          { email: "luigi.red@email.com", user: "6" },
+          { email: "toadd1@gmail.com", user: "3" },
+          { email: "toadd2@gmail.com", user: "4" },
+        ]
+      }
+    )
+
+    await getGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(200)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      data: {
+        group: {
+          name: "group1",
+          members:[
+            { email: "mario.red@email.com", user: "5" }, 
+            { email: "luigi.red@email.com", user: "6" },
+            { email: "toadd1@gmail.com", user: "3" },
+            { email: "toadd2@gmail.com", user: "4" },
+          ]
+        },
+        alreadyInGroup: foundInGroup[0].members,
+        membersNotFound: ["notexisting@gmail.com"]
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
+  })
 })
 
 describe("removeFromGroup", () => {

@@ -190,9 +190,6 @@ export const getGroups = async (req, res) => {
           return res.status(401).json({ error: adminAuth.cause }) 
 
       let groups = await Group.find({})
-
-      console.log(groups)
-
       groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
 
       res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedTokenMessage})
@@ -539,7 +536,7 @@ export const deleteUser = async (req, res) => {
 
     // Check if inside a group
 
-    const groups = await Group.find();
+    const groups = await Group.find({});
     console.log(groups)
     const groupsWithOneMember = groups.filter(group => group.members.length === 1);
 
@@ -573,7 +570,7 @@ export const deleteUser = async (req, res) => {
         deletedTransactions: transactionCount,
         deletedFromGroup: deletedFromGroup.modifiedCount > 0,
       },
-      message: res.locals.refreshedToken
+      refreshedTokenMessage: res.locals.refreshedTokenMessage
     });
   } catch (err) {
     res.status(400).json({ error: err.message });

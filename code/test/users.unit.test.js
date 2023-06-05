@@ -889,24 +889,38 @@ describe("deleteUser", () => {
      }
   };
   verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  
   checkMissingOrEmptyParams.mockReturnValue(false)
-  jest.spyOn(User, "findOne").mockImplementation({
+  
+  jest.spyOn(User, "findOne").mockImplementation(() => ({
     username: "u",
     email: "u@h.it",
     role: "Admin",
-    refreshToken: "test"})
-  jest.spyOn(Group, "findOne").mockReturnValue([{ members: [{ email: "c@h.it" }, { email: "c@h.it" }] }, { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }]);
+    refreshToken: "test"}))
+  jest.spyOn(Group, "find").mockReturnValue(
+    [
+      { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }, 
+      { members: [{ email: "c@h.it" }, { email: "c@h.it" }] }
+    ]
+  );
+  
   transactions.countDocuments.mockReturnValue(0);
-  jest.spyOn(transactions, "deleteMany").mockImplementation(()=>true);
-  jest.spyOn(User, "deleteOne").mockImplementation(true);
+  
+  jest.spyOn(transactions, "deleteMany").mockImplementation(() => true);
+  jest.spyOn(User, "deleteOne").mockImplementation(() => true);
   jest.spyOn(Group, "updateOne").mockImplementation(() => ({ modifiedCount: 0 }));
+  
   await deleteUser(mockReq,mockRes);
-  expect(mockRes.status).toHaveBeenCalledWith(400);
-  expect(mockRes.json).toHaveBeenCalled();
-  expect(mockRes.json).toHaveBeenCalledWith({ data: { 
-    deletedTransactions: "0",
-    deletedFromGroup: false,
-  } });
+  
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      data: { 
+        deletedTransactions: 0,
+        deletedFromGroup: false,
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
+    });
   })
 })
 

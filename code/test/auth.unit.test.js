@@ -163,11 +163,15 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        checkMissingOrEmptyParams.mockReturnValue(true)
+        checkMissingOrEmptyParams.mockReturnValue("Empty string values")
         jest.spyOn(User, "findOne").mockImplementation(() => false)
 
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error: "Empty string values"
+        })
     });
     test('Exception attribute email missing', async () => {
         const mockReq = {
@@ -182,10 +186,14 @@ describe("registerAdmin", () => {
             json: jest.fn(),
         };
 
-        checkMissingOrEmptyParams.mockReturnValue(true)
+        checkMissingOrEmptyParams.mockReturnValue("Missing values")
         jest.spyOn(User, "findOne").mockImplementation(() => false)
         await registerAdmin(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error: "Missing values"
+        })
          
     });
     test('Exception attribute email wrong format', async () => {
@@ -351,7 +359,7 @@ describe('login', () => {
        
 
         verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-        checkMissingOrEmptyParams.mockReturnValue(true)
+        checkMissingOrEmptyParams.mockReturnValue("Empty string values")
         const verifyFindOne = jest.spyOn(User, 'findOne');   
         verifyFindOne.mockResolvedValue(() => true);
         
@@ -367,6 +375,10 @@ describe('login', () => {
         await login(mockReq,mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
+        expect(mockRes.json).toHaveBeenCalledWith({
+            error: "Missing values"
+        })
+        
     
     });
     test('Wrong format email', async () => {

@@ -84,12 +84,14 @@ describe("createCategory", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(true)
-
+    checkMissingOrEmptyParams.mockReturnValue("empty or missing parameters")
 
     await createCategory(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "empty or missing parameters"
+    })
     expect(categories.findOne).not.toHaveBeenCalledWith();
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
@@ -156,6 +158,36 @@ describe("createCategory", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'testtype',
+        color: 'testcolor',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await createCategory(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
 describe("updateCategory", () => { 
@@ -238,11 +270,14 @@ describe("updateCategory", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(true)
+    checkMissingOrEmptyParams.mockReturnValue("empty or missing parameters")
 
     await updateCategory(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: "empty or missing parameters"
+    })
     expect(categories.findOne).not.toHaveBeenCalled();
     expect(categories.updateOne).not.toHaveBeenCalledWith()
     expect(categories.updateMany).not.toHaveBeenCalledWith()
@@ -362,6 +397,39 @@ describe("updateCategory", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        type: 'newvalue',
+        color: 'testcolor',
+      },
+      params: {
+        type: 'tobechanged'
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await updateCategory(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
 describe("deleteCategory", () => { 
@@ -617,6 +685,36 @@ describe("deleteCategory", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        types: ['type1']
+      },
+    };
+
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await deleteCategory(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
+  });
 })
 
 describe("getCategories", () => {
@@ -658,6 +756,7 @@ describe("getCategories", () => {
     });
     expect(categories.find).toHaveBeenCalled();
   });
+  
   test('should return an error of authentication', async () => {
     // Mock input data
     const mockReq = {
@@ -684,6 +783,31 @@ describe("getCategories", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+     // Mock input data
+     const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getCategories(mockReq,mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+  });
 });
 
 describe("createTransaction", () => { 
@@ -762,13 +886,13 @@ describe("createTransaction", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
-    checkMissingOrEmptyParams.mockReturnValue(true)  ///Missing parameters
+    checkMissingOrEmptyParams.mockReturnValue("empty or missing parameters")  ///Missing parameters
 
     await createTransaction(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-          error: "" //message is updated in another function
+          error: "empty or missing parameters" //message is updated in another function
     })
     expect(User.findOne).not.toHaveBeenCalled();
     expect(categories.findOne).not.toHaveBeenCalled();
@@ -1014,6 +1138,38 @@ describe("createTransaction", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'testusername',
+      },
+      body: {
+        username: 'testusername',
+        type: 'testtype',
+        amount: 50,
+      }
+    };
+
+   const mockRes = {
+     locals: {
+         refreshedTokenMessage: "",
+     },
+     status: jest.fn().mockReturnThis(),
+     json: jest.fn(),
+   };
+
+   verifyAuth.mockImplementation(() => { throw Error("myerror")})
+   
+   await createTransaction(mockReq,mockRes);
+
+   expect(mockRes.status).toHaveBeenCalledWith(400);
+   expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+ });
 })
 
 describe("getAllTransactions", () => { 
@@ -1223,6 +1379,31 @@ describe("getAllTransactions", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
+
+
+   const mockRes = {
+     locals: {
+         refreshedTokenMessage: "",
+     },
+     status: jest.fn().mockReturnThis(),
+     json: jest.fn(),
+   };
+
+   verifyAuth.mockImplementation(() => { throw Error("myerror")})
+   
+   await getAllTransactions(mockReq,mockRes);
+
+   expect(mockRes.status).toHaveBeenCalledWith(400);
+   expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+  });
 })
 
 describe("getTransactionsByUser", () => { 
@@ -1375,6 +1556,34 @@ describe("getTransactionsByUser", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+      },
+      url: "/transactions/users/user1"
+    };
+
+   const mockRes = {
+     locals: {
+         refreshedTokenMessage: "",
+     },
+     status: jest.fn().mockReturnThis(),
+     json: jest.fn(),
+   };
+
+   verifyAuth.mockImplementation(() => { throw Error("myerror")})
+   
+   await getTransactionsByUser(mockReq,mockRes);
+
+   expect(mockRes.status).toHaveBeenCalledWith(400);
+   expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+  });
 })
 
 describe("getTransactionsByUserByCategory", () => { 
@@ -1569,6 +1778,37 @@ describe("getTransactionsByUserByCategory", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: "user1",
+        category: "type1"
+      },
+      url: "/transactions/users/user1/categories/type1"
+    };
+
+
+   const mockRes = {
+     locals: {
+         refreshedTokenMessage: "",
+     },
+     status: jest.fn().mockReturnThis(),
+     json: jest.fn(),
+   };
+
+   verifyAuth.mockImplementation(() => { throw Error("myerror")})
+   
+   await getTransactionsByUserByCategory(mockReq,mockRes);
+
+   expect(mockRes.status).toHaveBeenCalledWith(400);
+   expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+  });
 })
 
 describe("getTransactionsByGroup", () => { 
@@ -1791,6 +2031,36 @@ describe("getTransactionsByGroup", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+   // Mock input data
+   const mockReq = {
+    cookies: {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+    },
+    params: {
+      name: "group1",
+    },
+    url: "/transactions/groups/group1"
+  };
+
+
+   const mockRes = {
+     locals: {
+         refreshedTokenMessage: "",
+     },
+     status: jest.fn().mockReturnThis(),
+     json: jest.fn(),
+   };
+
+   verifyAuth.mockImplementation(() => { throw Error("myerror")})
+   
+   await getTransactionsByGroup(mockReq,mockRes);
+
+   expect(mockRes.status).toHaveBeenCalledWith(400);
+   expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+  });
 })
 
 describe("getTransactionsByGroupByCategory", () => { 
@@ -2068,6 +2338,38 @@ describe("getTransactionsByGroupByCategory", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        name: "group1",
+        category: "type1"
+      },
+      url: "/transactions/groups/group1/category/type1"
+    };
+
+ 
+ 
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+ 
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await getTransactionsByGroupByCategory(mockReq,mockRes);
+ 
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+   });
 })
 
 describe("deleteTransaction", () => { 
@@ -2212,13 +2514,13 @@ describe("deleteTransaction", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"}) //Authorized
-    checkMissingOrEmptyParams.mockReturnValue(true)  //Missing or empty body
+    checkMissingOrEmptyParams.mockReturnValue("empty or missing parameters")  //Missing or empty body
 
     await deleteTransaction(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-          error: ""
+          error: "empty or missing parameters"
     })
     expect(User.findOne).not.toHaveBeenCalled();
     expect(transactions.findOne).not.toHaveBeenCalled();
@@ -2379,6 +2681,37 @@ describe("deleteTransaction", () => {
       error: "unauthorized"
     })
   })
+
+  test('Exception thrown error catch', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+        username: 'usertest2'  
+      },
+      body: {
+         _id: '3' 
+      }
+    };
+ 
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+ 
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
+    
+    await deleteTransaction(mockReq,mockRes);
+ 
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
+   });
 })
 
 describe("deleteTransactions", () => { 

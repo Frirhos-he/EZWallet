@@ -359,32 +359,42 @@ export const removeFromGroup = async (req, res) => {
     const groupName = req.params.name;
     const memberEmails = req.body.emails;
     const group = await Group.findOne({ group: groupName });
-            if (!group)
-              return res.status(400).json({ message: "The group doesn't exist" })
+    if (!group)
+      return res.status(400).json({ message: "The group doesn't exist" })
 
+    if (req.url.indexOf("/groups/group1/pull") >= 0) {   //admin 
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+        if (!adminAuth.flag)
+            return res.status(401).json({ error: adminAuth.cause }) 
+    }
+    else {   //user
+        const groupAuth = verifyAuth(req, res, { authType: "Group", username: group.members })
+        if(!groupAuth.flag)
+            return res.status(401).json({ error: groupAuth.cause }) 
+    }
 
-          //Check for missing or empty string parameter
-          let message;
-          if((message = checkMissingOrEmptyParams([groupName])))
-              return res.status(400).json({ error: message });
-          
-          if(memberEmails == null || memberEmails == undefined)
-                return res.status(400).json({ error: "member emails not defined "});     
+    //Check for missing or empty string parameter
+    let message;
+    if((message = checkMissingOrEmptyParams([groupName])))
+        return res.status(400).json({ error: message });
     
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
-    
-          // Iterate over each email in the vector
-          for (const email of memberEmails) {
-            // Check if the email is empty
-            if (email.trim() === "") {
-                return res.status(400).json({ error: "Empty email" });
-            }
-            
-            // Check if the email is in a valid format
-            if (!emailRegex.test(email)) {
-                return res.status(400).json({ error: "Invalid email format" });
-            }
-          }
+    if(memberEmails == null || memberEmails == undefined)
+          return res.status(400).json({ error: "member emails not defined "});     
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
+
+    // Iterate over each email in the vector
+    for (const email of memberEmails) {
+      // Check if the email is empty
+      if (email.trim() === "") {
+          return res.status(400).json({ error: "Empty email" });
+      }
+      
+      // Check if the email is in a valid format
+      if (!emailRegex.test(email)) {
+          return res.status(400).json({ error: "Invalid email format" });
+      }
+    }
 
     const startIndexAdmin = req.url.indexOf("groups/");
     const endIndexAdmin = req.url.indexOf("/pull");

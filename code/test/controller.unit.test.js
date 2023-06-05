@@ -124,7 +124,6 @@ describe("createCategory", () => {
     expect(categories.prototype.save).not.toHaveBeenCalled();
   });
 })
-  
 
 describe("updateCategory", () => { 
   test('should update a category successfully', async () => {
@@ -524,76 +523,46 @@ describe("deleteCategory", () => {
   });
 })
 
-// describe("getCategories", () => {
-//   test('should return categories data for simple authenticated user', async () => {
-//     // Mock simple authentication
-//     const simpleAuthMock = {
-//       flag: true,
-//     };
-//     jest.mock('../auth', () => ({
-//       verifyAuth: jest.fn(() => simpleAuthMock),
-//     }));
+describe("getCategories", () => {
+  test('should return all the categories', async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      }
+    };
 
-//     // Mock categories.find method to return categories data
-//     const categoriesData = [
-//       { type: 'category1', color: 'color1' },
-//       { type: 'category2', color: 'color2' },
-//     ];
-//     categories.find.mockResolvedValue(categoriesData);
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+  
+    // Mock simple authentication
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
 
-//     // Make the request to get categories
-//     const response = await request(app).get('/categories');
+    // Mock categories.find method to return categories data
+    const categoriesData = [
+      { type: 'category1', color: 'color1' },
+      { type: 'category2', color: 'color2' },
+    ];
+    categories.find.mockResolvedValue(categoriesData);
 
-//     // Check the response
-//     expect(response.statusCode).toBe(200);
-//     expect(response.body).toEqual({
-//       data: categoriesData,
-//       refreshedTokenMessage: undefined,
-//     });
-//     expect(categories.find).toHaveBeenCalled();
-//   });
+    // Make the request to get categories
+    await getCategories(mockReq, mockRes)
 
-//   test('should return an error if not authenticated as simple user', async () => {
-//     // Mock simple authentication failure
-//     const simpleAuthMock = {
-//       flag: false,
-//       cause: 'Unauthorized',
-//     };
-//     jest.mock('../auth', () => ({
-//       verifyAuth: jest.fn(() => simpleAuthMock),
-//     }));
-
-//     // Make the request to get categories
-//     const response = await request(app).get('/categories');
-
-//     // Check the response
-//     expect(response.statusCode).toBe(401);
-//     expect(response.body).toEqual({ error: 'Unauthorized' });
-//     expect(categories.find).not.toHaveBeenCalled();
-//   });
-
-//   test('should return an error if an error occurs during category retrieval', async () => {
-//     // Mock simple authentication
-//     const simpleAuthMock = {
-//       flag: true,
-//     };
-//     jest.mock('../auth', () => ({
-//       verifyAuth: jest.fn(() => simpleAuthMock),
-//     }));
-
-//     // Mock categories.find method to throw an error
-//     const errorMessage = 'Error retrieving categories';
-//     categories.find.mockRejectedValue(new Error(errorMessage));
-
-//     // Make the request to get categories
-//     const response = await request(app).get('/categories');
-
-//     // Check the response
-//     expect(response.statusCode).toBe(400);
-//     expect(response.body).toEqual({ error: errorMessage });
-//     expect(categories.find).toHaveBeenCalled();
-//   });
-// });
+    // Check the response
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: categoriesData,
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage,
+    });
+    expect(categories.find).toHaveBeenCalled();
+  });
+});
 
 describe("createTransaction", () => { 
   test('should create a new transaction successfully', async () => {

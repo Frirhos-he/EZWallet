@@ -1064,9 +1064,13 @@ describe("getGroup", () => {
   });
 })
 
-describe("addToGroup", () => { })
+describe("addToGroup", () => {
+  
+})
 
-describe("removeFromGroup", () => { })
+describe("removeFromGroup", () => {
+
+})
 
 describe("deleteUser", () => {
   test('Nominal scenario', async () => {

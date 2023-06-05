@@ -250,6 +250,21 @@ export const addToGroup = async (req, res) => {
     try {
   
       const groupName = req.params.name;
+      const group = await Group.findOne({ group: groupName });
+      if (!group)
+          return res.status(400).json({ message: "The group doesn't exist" })
+
+      if (req.url.indexOf("/groups/group1/insert") >= 0) {   //admin 
+          const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+          if (!adminAuth.flag)
+              return res.status(401).json({ error: adminAuth.cause }) 
+      }
+      else {   //user
+          const groupAuth = verifyAuth(req, res, { authType: "Group", username: group.members })
+          if(!groupAuth.flag)
+              return res.status(401).json({ error: groupAuth.cause }) 
+      }
+
       const memberEmails = req.body.emails
 
       //Check for missing or empty string parameter
@@ -274,11 +289,6 @@ export const addToGroup = async (req, res) => {
             return res.status(400).json({ error: "Invalid email format" });
         }
       }
-
-      const group = await Group.findOne({ group: groupName });
-      if (!group)
-          return res.status(400).json({ message: "The group doesn't exist" })
-
 
       const startIndexAdmin = req.url.indexOf("groups/");
       const endIndexAdmin = req.url.indexOf("/insert");

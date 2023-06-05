@@ -513,7 +513,7 @@ describe('login', () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalled();
         expect(mockRes.json).toHaveBeenCalledWith({
-            error: "Empty string values"
+            error: "please you need to register"
         })
         
     

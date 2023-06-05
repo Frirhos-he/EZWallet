@@ -59,7 +59,16 @@ describe("createCategory", () => {
     await createCategory(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(200)
-    expect(categories.findOne).toHaveBeenCalledWith({ type: mockReq.body.type });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: { 
+        type: mockReq.body.type,
+        color: mockReq.body.color, 
+      },
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage,
+    })
+    expect(categories.findOne).toHaveBeenCalledWith({
+      type: mockReq.body.type,
+    });
     expect(categories.prototype.save).toHaveBeenCalled();
   });
 

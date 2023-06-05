@@ -19,8 +19,10 @@ export const getUsers = async (req, res) => {
       if(!adminAuth.flag)
           return res.status(401).json({ error: adminAuth.message }) 
 
-        const users = await User.find();
-        res.status(200).json({ data: { users: users }, refreshedTokenMessage: res.locals.refreshedToken });
+      const users = await User.find();
+      const userObject = users.map(v => Object.assign({}, { username: v.username, email: v.email, role: v.role }))
+      
+      res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -49,10 +51,12 @@ export const getUser = async (req, res) => {
             return res.status(400).json({ error: message });
     
 
-        const user = await User.findOne({ refreshToken: cookie.refreshToken })
-        if (!user) return res.status(400).json({ error: "User not found" })
-        if (user.username !== username) return res.status(401).json({ error: "Unauthorized" }) //TODO Shouldn't it be already checked on verifyAuth?
-        res.status(200).json({ data: { user: user }, refreshedTokenMessage: res.locals.refreshedToken })
+        const user = await User.findOne({ refreshToken: req.cookies.refreshToken })
+          if (!user) return res.status(400).json({ error: "User not found" })
+        
+        const userObject = Object.assign({}, { username: user.username, email: user.email, role: user.role })
+
+        res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage })
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
@@ -71,19 +75,19 @@ export const getUser = async (req, res) => {
  */
 export const createGroup = async (req, res) => {
     try {
-      //TO DO CHECK NEW SPECIFICATIONS FOR THE USER REQUESTING THE CREATEGROUP
         const simpleAuth = verifyAuth(req, res, { authType : "Simple" })
         if(!simpleAuth.flag) return res.status(401).json({ error: "userAuth: " + userAuth.message })
 
         const { name, memberEmails } = req.body
 
         if(name == null || name == undefined)
-          res.status(400).json({ error: 'Missing values'});
+          return res.status(400).json({ error: 'Missing values'});
+
         if(name.trim() === "")
-            res.status(400).json({ error: 'Empty string values'});
+          return res.status(400).json({ error: 'Empty string values'});
 
         if(memberEmails == null || memberEmails == undefined)
-          res.status(400).json({ error: 'Missing values'}); 
+          return res.status(400).json({ error: 'Missing values'}); 
 
         let emailsVect = memberEmails;
 
@@ -109,24 +113,26 @@ export const createGroup = async (req, res) => {
 
         // Retrieve the list of users with their id from memberEmails
         let memberUsers = await User.find({ email: { $in: emailsVect } })
-       
+
         //must add the user that required to create the group
         const cookie = req.cookies
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
         const currentUserEmail = decodedRefreshToken.email;
 
         let foundInGroup = await Group.find({}, {members: 1, _id: 0})
-          foundInGroup = foundInGroup.map(v =>  v.members);
-          foundInGroup = [...new Set(foundInGroup.flat())];
-          foundInGroup = foundInGroup.filter(m => m.email == currentUserEmail);
-
-         if(foundInGroup)
-             return  res.status(400).json({ error: 'User who called the Api is in a groupp'});
+        foundInGroup = foundInGroup.map(v =>  v.members);
+        foundInGroup = [...new Set(foundInGroup.flat())];
+        foundInGroup = foundInGroup.filter(m => m.email == currentUserEmail);
+ 
+        if(foundInGroup.length != 0)
+             return  res.status(400).json({ error: 'User who called the Api is in a group'});
 
 
         if(!emailsVect.includes(currentUserEmail)){
           if(!foundInGroup) {
-            let memberUser = await User.find({ email: currentUserEmail });
+            let memberUser = await User.find({ email: currentUserEmail });  
+            console.log("PIPPOOOO: " + memberUser)
+
             memberUsers.push(memberUser);
             emailsVect.push(memberUser.email);
           }
@@ -156,7 +162,14 @@ export const createGroup = async (req, res) => {
         // Creating a new group
         const newGroup = new Group({ name, members })
         newGroup.save()
-          .then(() => res.status(200).json({ data: {group: {name: name, members: members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound}, message: res.locals.refreshedToken}))
+          .then(() => res.status(200).json({ 
+            data: {
+              group: {name: name, members: members}, 
+              alreadyInGroup: alreadyInGroup, 
+              membersNotFound: membersNotFound
+            },
+            refreshedTokenMessage: res.locals.refreshedTokenMessage
+          }))
           .catch(err => { throw err })
 
     } catch (err) {

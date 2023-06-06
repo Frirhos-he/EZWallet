@@ -645,6 +645,7 @@ export const deleteTransactions = async (req, res) => {
         if (matchingDocuments.length !== transactionsToDelete.length) {
             return res.status(400).json({ error: 'At least one ID does not have a corresponding transaction.' });
         }
+
         const result = await transactions.deleteMany({_id: { $in: transactionsToDelete }}); 
         
         return res.status(200).json({ 

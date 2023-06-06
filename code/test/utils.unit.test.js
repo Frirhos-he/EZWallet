@@ -275,7 +275,19 @@ describe("verifyAuth", () => {
         };
         const mockInfo = {
             authType:"Group",
-            members:["a@h.it","u@h.it","a@h.it"]
+            members:[
+            {
+                user:"ss",
+                email:"a@h.it"
+            },
+            {
+                user:"a",
+                email:"u@h.it"
+            },
+            {
+                user:"m",
+                email:"b@h.it"
+            }]
         };
         const decodedAccessToken = {
             username: "a",
@@ -692,8 +704,19 @@ describe("verifyAuth", () => {
         };
         const mockInfo = {
             authType:"Group",
-            username:"u",
-            members:["u@h.it"]
+            members:[
+            {
+                user:"ss",
+                email:"a@h.it"
+            },
+            {
+                user:"a",
+                email:"u@h.it"
+            },
+            {
+                user:"m",
+                email:"b@h.it"
+            }]
         };
         const decodedAccessToken = {
             username: "u",

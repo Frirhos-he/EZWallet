@@ -348,7 +348,7 @@ export const removeFromGroup = async (req, res) => {
     let message;
     if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
-          console.log(memberEmails)
+
     if(memberEmails == null || memberEmails == undefined  )
          return res.status(400).json({ error: "member emails not defined"});     
         
@@ -395,6 +395,7 @@ export const removeFromGroup = async (req, res) => {
  
             // Select members already in the group that will be deleted
             let deleteMembers = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+
             deleteMembers = deleteMembers.members.map(u => u.email);
 
             deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))

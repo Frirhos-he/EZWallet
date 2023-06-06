@@ -214,7 +214,7 @@ export const getGroup = async (req, res) => {
       if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
         
-      let group = await Group.findOne({ group: groupName });
+      let group = await Group.findOne({ name: groupName });
       if (!group)
         return res.status(400).json({ error: "The group doesn't exist" })
 
@@ -250,7 +250,7 @@ export const addToGroup = async (req, res) => {
     try {
   
       const groupName = req.params.name;
-      const group = await Group.findOne({ group: groupName });
+      const group = await Group.findOne({ name: groupName });
       if (!group)
           return res.status(400).json({ error: "The group doesn't exist" })
 
@@ -273,7 +273,7 @@ export const addToGroup = async (req, res) => {
           return res.status(400).json({ error: message });
       
       if(memberEmails == null || memberEmails == undefined)
-            return res.status(400).json({ error: "member emails not defined "});     
+            return res.status(400).json({ error: "member emails not defined"});     
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
 
@@ -344,17 +344,19 @@ export const removeFromGroup = async (req, res) => {
 
     const groupName = req.params.name;
     const memberEmails = req.body.emails;
-    const group = await Group.findOne({ group: groupName });
-    if (!group)
-      return res.status(400).json({ error: "The group doesn't exist" })
-
-    //Check for missing or empty string parameter
+        //Check for missing or empty string parameter
     let message;
     if((message = checkMissingOrEmptyParams([groupName])))
-        return res.status(400).json({ error: message });
-    
-    if(memberEmails == null || memberEmails == undefined)
-          return res.status(400).json({ error: "member emails not defined "});     
+          return res.status(400).json({ error: message });
+          console.log(memberEmails)
+    if(memberEmails == null || memberEmails == undefined  )
+         return res.status(400).json({ error: "member emails not defined"});     
+        
+    const group = await Group.findOne({ name: groupName });
+      if (!group)
+        return res.status(400).json({ error: "The group doesn't exist" })
+
+
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
 
@@ -390,10 +392,11 @@ export const removeFromGroup = async (req, res) => {
 
             // Select not existing members
             const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
-
+ 
             // Select members already in the group that will be deleted
             let deleteMembers = await Group.findOne({name: groupName}, {members: 1, _id: 0})
             deleteMembers = deleteMembers.members.map(u => u.email);
+
             deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))
             if (deleteMembers.length == 0) 
               return res.status(400).json({ error: 'All the members have emails that don\'t exist or are not in the group' })
@@ -413,9 +416,9 @@ export const removeFromGroup = async (req, res) => {
             let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
             
             membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
-            console.log("here");
+            const groupModel = new Group(membersInGroup)  //convert back to mongoose //added for testing TODO
             //Update modification on member array
-            const updatedGroup = await membersInGroup.save();
+            const updatedGroup = await groupModel.save();
 
             //Select the users left in the group
             let newMembersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
@@ -590,7 +593,7 @@ export const deleteGroup = async (req, res) => {
 
     
     
-    const group = await Group.findOne({ group: groupName });
+    const group = await Group.findOne({ name: groupName });
     if (!group)
       return res.status(400).json({ error: "The group doesn't exist" })
 

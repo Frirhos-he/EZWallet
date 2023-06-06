@@ -1469,7 +1469,8 @@ describe("getTransactionsByUser", () => {
     });
     expect(transactions.aggregate).toHaveBeenCalled()
   });
-    test("should return all transactions of a user ", async () => {
+
+  test("should return all transactions of a user ", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1522,7 +1523,6 @@ describe("getTransactionsByUser", () => {
     });
     expect(transactions.aggregate).toHaveBeenCalled()
   });
-
 
   test("should return an error if user doesn't exist ", async () => {
     // Mock input data

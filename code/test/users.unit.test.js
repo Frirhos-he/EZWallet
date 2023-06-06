@@ -2391,7 +2391,7 @@ describe("deleteGroup", () => {
   };
   checkMissingOrEmptyParams.mockReturnValue(false)
   jest.spyOn(Group, "findOne").mockImplementation(() => false)
- 
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
 
   await deleteGroup(mockReq,mockRes);
   expect(mockRes.status).toHaveBeenCalledWith(400);
@@ -2417,7 +2417,7 @@ describe("deleteGroup", () => {
   await deleteGroup(mockReq,mockRes);
   expect(mockRes.status).toHaveBeenCalledWith(401);
   expect(mockRes.json).toHaveBeenCalled();
-  expect(mockRes.json).toHaveBeenCalledWith({ error: " adminAuth: " + "myerror" });
+  expect(mockRes.json).toHaveBeenCalledWith({ error: "myerror" });
   }) 
 
   test("throw expection", async () => {

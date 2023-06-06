@@ -244,7 +244,8 @@ export const addToGroup = async (req, res) => {
 
       const groupName = req.params.name;
       const startIndexAdmin = req.url.indexOf("groups/");
-      const endIndexAdmin = req.url.indexOf("/add");
+      const endIndexAdmin = req.url.indexOf("/insert");
+
       //startIndex < endIndex ensure that startIndex happens before endIndex
       //startIndex < endIndex ensure that startIndex happens before endIndex
       const group = await Group.findOne({ name: groupName });
@@ -257,9 +258,10 @@ export const addToGroup = async (req, res) => {
               return res.status(401).json({ error: adminAuth.cause }) 
       }
       else {   //user
-          const groupAuth = verifyAuth(req, res, { authType: "Group", username: group.members })
+          const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
           if(!groupAuth.flag)
               return res.status(401).json({ error: groupAuth.cause }) 
+
       }
 
       const memberEmails = req.body.emails
@@ -594,15 +596,13 @@ export const deleteGroup = async (req, res) => {
     if((message = checkMissingOrEmptyParams([groupName])))
         return res.status(400).json({ error: message });
 
-    
-    
-    const group = await Group.findOne({ name: groupName });
-    if (!group)
-      return res.status(400).json({ error: "The group doesn't exist" })
-
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if (!adminAuth.flag)
             return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
+
+            const group = await Group.findOne({ name: groupName });
+            if (!group)
+              return res.status(400).json({ error: "The group doesn't exist" })
 
     // Delete the group
     await Group.deleteOne({ name: groupName });

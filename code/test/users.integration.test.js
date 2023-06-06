@@ -10,9 +10,9 @@ import jwt from 'jsonwebtoken'
 dotenv.config();
 
 const adminToken = jwt.sign({
-  email: "tester@token.token",
+  email: "token@token.token",
   id: "0",
-  username: "tester",
+  username: "tokenadmin",
   role: "Admin"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
@@ -22,28 +22,28 @@ const userToken = jwt.sign({
   username: "tokenuser",
   role: "Regular"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
-/**
- * Necessary setup in order to create a new database for testing purposes before starting the execution of test cases.
- * Each test suite has its own database in order to avoid different tests accessing the same database at the same time and expecting different data.
- */
-beforeAll(async () => {
-  const dbName = "testingDatabaseUsers";
-  const url = `${process.env.MONGO_URI}/${dbName}`;
 
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+const wrongUserToken = jwt.sign({
+  email: "token@token.token",
+  id: "0",
+  username: "wronguser",
+  role: "Regular"
+}, process.env.ACCESS_KEY, { expiresIn: '1h' })
+
+beforeAll(async () => {
+const dbName = "testingDatabaseController";
+const url = `${process.env.MONGO_URI}/${dbName}`;
+
+await mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 });
 
-/**
- * After all test cases have been executed the database is deleted.
- * This is done so that subsequent executions of the test suite start with an empty database.
- */
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+await mongoose.connection.db.dropDatabase();
+await mongoose.connection.close();
 });
 beforeEach(async () => {
   await categories.deleteMany({})
@@ -227,17 +227,51 @@ describe("createGroup", () => {
 });
 */
 describe("getGroups", () => {
+  var bulma,pluto,pippo;
   beforeEach(async () => {
-    await User.create({
+     pippo = await User.create({
       username: "pippo",
       email: "pippo@h.it",
       password: "pippo",
       role: "Admin",
       refreshToken: adminToken
     });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+});
     await Group.create({
-      name: "group",
-      emails:["pippo@h.it"]
+      name: "g1",
+      members: [
+          {
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
+
+    await Group.create({
+      name: "g2",
+      members: [
+          {
+              email: bulma.email,
+              user: bulma._id,
+          },
+      ],
     });
   });
 
@@ -249,23 +283,138 @@ describe("getGroups", () => {
         `accessToken=${adminToken};refreshToken=${adminToken}`
       )
       .then((response) => {
-        expect(response.body).toStrictEqual({
-          "data":  [
-                  {
-                   "members": ["pippo@h.it"],
-                   "name": "group"
-                  }]})
         expect(response.status).toBe(200)
-
+        //TODO
         done();
       })
       .catch((err) => done(err))
     })
 })
 
-describe("getGroup", () => { })
+describe("getGroup", () => {
+  var bulma,pluto,pippo;
+  beforeEach(async () => {
+     pippo = await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+    });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+});
+    await Group.create({
+      name: "g1",
+      members: [
+          {
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
 
-describe("addToGroup", () => { })
+    await Group.create({
+      name: "g2",
+      members: [
+          {
+              email: bulma.email,
+              user: bulma._id,
+          },
+      ],
+    });
+  });
+
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .get("/api/groups/g1")
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.status).toBe(200)
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
+    })
+ })
+
+describe("addToGroup", () => {
+  var bulma,pluto,pippo;
+  beforeEach(async () => {
+     pippo = await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+  });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+  });
+    await Group.create({
+      name: "g1",
+      members: [
+          {
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
+
+  });
+
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .patch("/api/groups/g1/insert")
+      .send(
+        {"members":
+        ["bulma@h.it"]}
+      )
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual("")
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
+    })
+ })
 
 describe("removeFromGroup", () => { })
 

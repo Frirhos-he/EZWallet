@@ -321,7 +321,17 @@ export const addToGroup = async (req, res) => {
 
       updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members })
 
-      return res.status(200).json({ data: {group: {name: groupName, members:updatedGroup.members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound}, refreshedTokenMessage: res.locals.refreshedTokenMessage })
+      return res.status(200).json({ 
+        data: {
+          group: {
+            name: groupName,
+            members:updatedGroup.members
+          }, 
+          alreadyInGroup: alreadyInGroup, 
+          membersNotFound: membersNotFound
+        }, 
+        refreshedTokenMessage: res.locals.refreshedTokenMessage 
+      })
   
 
     } catch (err) {

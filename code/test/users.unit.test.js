@@ -1082,7 +1082,8 @@ describe("addToGroup", () => {
           "alreadyingroup@gmail.com",
           "notexisting@gmail.com"
         ]
-      }
+      },
+      url: "/groups/group1/insert"
     };
 
     const mockRes = {
@@ -1171,7 +1172,7 @@ describe("addToGroup", () => {
       }
     )
 
-    await getGroup(mockReq, mockRes)
+    await addToGroup(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(200)
     expect(mockRes.json).toHaveBeenCalledWith({ 

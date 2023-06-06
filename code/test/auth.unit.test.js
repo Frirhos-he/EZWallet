@@ -201,7 +201,7 @@ describe("registerAdmin", () => {
 
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalled();
-        expect(mockRes.json).toHaveBeenCalledWith({data: {message:'admin added succesfully'}});
+        expect(mockRes.json).toHaveBeenCalledWith({data: {message:'admin added successfully'}});
     });
     test('Exception existing email', async () => {
         const mockReq = {

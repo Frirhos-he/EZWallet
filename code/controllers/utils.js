@@ -108,6 +108,7 @@ export const verifyAuth = (req, res, info) => {
         return { flag: false, cause: "Unauthorized" };
     }
     try {
+
         const decodedAccessToken = jwt.verify(cookie.accessToken, process.env.ACCESS_KEY);
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
 
@@ -265,10 +266,6 @@ export const checkMissingOrEmptyParams = (parameters) => {
     let i = 0;
     const nParams = parameters.length;
     
-    if(parameters.length == 0){
-          const message= "Missing values"; 
-          return message;
-    }
     //Check if missing parameter (all falsy values)  --> containing also empty string: Bruno --> modified not consider this case
     for (i=0 ; i<nParams ; i++){
         if (parameters[i] == null || parameters[i] == undefined){

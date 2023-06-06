@@ -164,7 +164,13 @@ describe("verifyAuth", () => {
         username: "tester",
         role: "Regular"
     }, process.env.ACCESS_KEY, { expiresIn: '1y' })
-    
+
+
+
+    const testerAccessTokenValidWithoutUsername = jwt.sign({
+        email: "admin@test.com",
+        role: "Admin"
+    }, process.env.ACCESS_KEY, { expiresIn: '1y' })
 
     const testerAccessTokenExpired = jwt.sign({
         email: "tester@test.com",
@@ -191,6 +197,42 @@ describe("verifyAuth", () => {
         const req = {}
         const res = {}
         const response = verifyAuth(req, res, { authType: "Simple" })
+        //The test is passed if the function returns an object with a false value, no matter its name
+        expect(Object.values(response).includes(false)).toBe(true)
+    })
+    test("Undefined token accessToken missing username", () => {
+        const req = { cookies: { accessToken: testerAccessTokenValidWithoutUsername, refreshToken: testerAccessTokenValid}}
+        const res = {}
+        const response = verifyAuth(req, res, { authType: "User" })
+        //The test is passed if the function returns an object with a false value, no matter its name
+        expect(Object.values(response).includes(false)).toBe(true)
+    })
+    test("Undefined token refreshToken missing username", () => {
+        const req = { cookies: { accessToken: testerAccessTokenValid, refreshToken: testerAccessTokenValidWithoutUsername}}
+        const res = {}
+        const response = verifyAuth(req, res, { authType: "User" })
+        //The test is passed if the function returns an object with a false value, no matter its name
+        expect(Object.values(response).includes(false)).toBe(true)
+    })
+    test("Mismatch tokens username", () => {
+        const req = { cookies: { accessToken: testerAccessTokenValid, refreshToken: adminAccessTokenValid}}
+        const res = {}
+        const response = verifyAuth(req, res, { authType: "User" })
+        //The test is passed if the function returns an object with a false value, no matter its name
+        expect(Object.values(response).includes(false)).toBe(true)
+    })
+    test("Default case", () => {
+        const req = { cookies: { accessToken: testerAccessTokenValid, refreshToken: testerAccessTokenValid}}
+        const res = {}
+        const response = verifyAuth(req, res, { authType: "Default" })
+        //The test is passed if the function returns an object with a false value, no matter its name
+        expect(Object.values(response).includes(false)).toBe(true)
+    })
+
+    test("Expiration user case", () => {
+        const req = { cookies: { accessToken: testerAccessTokenExpired, refreshToken: testerAccessTokenExpired}}
+        const res = {}
+        const response = verifyAuth(req, res, { authType: "Regular", username:"tester" })
         //The test is passed if the function returns an object with a false value, no matter its name
         expect(Object.values(response).includes(false)).toBe(true)
     })

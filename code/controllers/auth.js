@@ -79,7 +79,7 @@ export const registerAdmin = async (req, res) => {
             password: hashedPassword,
             role: "Admin"
         });
-        res.status(200).json({ data: { message:'admin added succesfully' }});
+        res.status(200).json({ data: { message:'admin added successfully' }});
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

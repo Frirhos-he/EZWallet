@@ -408,6 +408,7 @@ export const removeFromGroup = async (req, res) => {
  
             // Select members already in the group that will be deleted
             let deleteMembers = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+
             deleteMembers = deleteMembers.members.map(u => u.email);
 
             deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))

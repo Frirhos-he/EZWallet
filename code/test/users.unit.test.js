@@ -1765,6 +1765,232 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "Empty email" })
   })
+  test('Regex failed email', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch.it"]
+      },
+      url: "groups/pull"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{ email: "c@h.it" }, { email: "b@h.it" }] }
+);
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+    error: "Invalid email format" })
+  })
+  test('Admin failed login', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@d.it"]
+      },
+      url: "groups/pull"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: false, cause:"not authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{ email: "c@h.it" }, { email: "b@h.it" }] }
+);
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(401);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+    error: " adminAuth: not authorized" })
+  })
+  test('Group failed login', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@d.it"]
+      },
+      url: "noturl"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: false, cause:"not authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{ email: "c@h.it" }, { email: "b@h.it" }] }
+);
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(401);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+    error: "groupAuth: not authorized" })
+  })
+  test('length 0 toDelete', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@d.it"]
+      },
+      url: "noturl"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "find").mockReturnValue(   
+    [] 
+  );
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{email:"ch@s.it"}, {email:"ch@s.it"}] });
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+    error: "All the members have emails that don\'t exist or are not in the group" })
+  })
+  test('if the group has same number to delete', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@d.it", "ch@c.it"]
+      },
+      url: "noturl"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "find").mockReturnValue(   
+    [] 
+  );
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{email:"ch@d.it"}, {email:"ch@c.it"}] });
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(200);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith(
+    {  data: {
+         NotInGroup: [],
+         group: {
+           members:  [
+             "ch@d.it",
+           ],
+           name: "group",
+         },
+         membersNotFound: [
+           "ch@d.it",
+           "ch@c.it",
+         ],
+       },
+       refreshedTokenMessage: ""
+  })
+})
+  test('if the group has 1 member and is the selected', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@s.it"]
+      },
+      url: "noturl"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "find").mockReturnValue(   
+    [] 
+  );
+  jest.spyOn(Group, "findOne").mockReturnValue(   
+    { members: [{email:"ch@s.it"}] });
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+     error: 'if the group only has one member ' 
+  })
+  })
+  test('throw error', async () => {
+    const mockReq = {
+      params: {
+        name: "group"
+      },
+      body: {
+        emails:["ch@s.it"]
+      },
+      url: "noturl"
+  };
+  const mockRes = {
+    status: jest.fn().mockReturnThis(),
+    json:   jest.fn(),
+    locals: {
+      refreshedTokenMessage: "",
+     }
+  };
+  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+  checkMissingOrEmptyParams.mockReturnValue(false)
+  jest.spyOn(User, "find").mockReturnValue(   
+    [] 
+  );
+  jest.spyOn(Group, "findOne").mockImplementation(() => {throw Error("error")})
+
+  await removeFromGroup(mockReq,mockRes);
+  expect(mockRes.status).toHaveBeenCalledWith(400);
+  expect(mockRes.json).toHaveBeenCalled();
+  expect(mockRes.json).toHaveBeenCalledWith({ 
+     error: 'error' 
+  })
+  })
 })
 
 describe("deleteUser", () => {

@@ -632,8 +632,13 @@ export const deleteTransactions = async (req, res) => {
         //Check for missing or empty string parameter
         let message;
         if((message = checkMissingOrEmptyParams([transactionsToDelete])))
-                    return res.status(400).json({ error: message });
+            return res.status(400).json({ error: message });
    
+        let emptyStrings = transactionsToDelete.filter((o) => typeof o === 'string' && o.trim() === "")
+
+        if (emptyStrings.length != 0)
+            return res.status(400).json({ error: 'Empty strings' });
+
         const matchingDocuments = await transactions.find({ _id: { $in: transactionsToDelete } });
         // Check if all input IDs have corresponding transactions
 

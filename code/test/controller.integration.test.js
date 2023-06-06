@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken"
 dotenv.config();
 
 const adminToken = jwt.sign({
-    email: "token@token.token",
+    email: "admin@admin.admin",
     id: "0",
     username: "tokenadmin",
     role: "Admin"
@@ -41,8 +41,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+    await mongoose.connection.db.dropDatabase();
+    await mongoose.connection.close()
 });
 
 describe("createCategory", () => { 
@@ -1406,14 +1406,348 @@ describe("getTransactionsByGroupByCategory", () => {
     });
 })
 
-describe("deleteTransaction", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+describe("deleteTransaction", () => {
+    const today = new Date();
+    let transaction1 = "";
+    let transaction2 = "";
+    
+    beforeAll(async () => {
+        await categories.create({
+            type: "investment",
+            color: "blue",
+        });
+        await categories.create({
+            type: "work",
+            color: "red",
+        });
+        await User.create({
+            username: "tokenuser",
+            email: "token@token.token",
+            password: "token",
+            refreshToken: userToken,
+            role: "Regular"
+        })
+        await User.create({
+            username: "tokenadmin",
+            email: "admin@admin.admin",
+            password: "token",
+            refreshToken: adminToken,
+            role: "Regular"
+        })
+        transaction1 = await transactions.create({
+            username: "tokenuser",
+            amount: 12.54,
+            type: "investment",
+            date: today,
+        });
+        transaction2 = await transactions.create({
+            username: "tokenuser",
+            amount: 14213,
+            type: "work",
+            date: today,
+        });
+    }); 
+    
+    test('should successfully delete a transaction of a specific user', (done) => {
+        
+        request(app)
+            .delete("/api/users/tokenuser/transactions")
+            .send({
+                _id: transaction1.id,
+            })
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(200);
+                expect(response.body).toStrictEqual({
+                    data: { message: "Transaction deleted" },
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if missing parameters in body', (done) => {
+        
+        request(app)
+            .delete("/api/users/tokenuser/transactions")
+            .send({
+            })
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "Missing values"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if empty strings in body', (done) => {
+        
+        request(app)
+            .delete("/api/users/tokenuser/transactions")
+            .send({
+                _id: "",
+            })
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "Empty string values"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if user does\'t exist', (done) => {
+        
+        request(app)
+            .delete("/api/users/wronguser/transactions")
+            .send({
+                _id: transaction1.id,
+            })
+            .set(
+                "Cookie",
+                `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "The user does not exist"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if transaction isn\'t made by requesting user', (done) => {
+    
+        request(app)
+            .delete("/api/users/tokenadmin/transactions")
+            .send({
+                _id: transaction2.id,
+            })
+            .set(
+                "Cookie",
+                `accessToken=${adminToken};refreshToken=${adminToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "The transaction is not made by the requesting user" 
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (missing token)', (done) => {
+        
+        request(app)
+            .delete("/api/users/tokenuser/transactions")
+            .send({
+                _id: transaction1.id,
+            })
+            .then((response) => {
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Unauthorized"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    
+    afterAll(async () => {
+        await categories.deleteMany();
+        await User.deleteMany()
+        await transactions.deleteMany()
     });
 })
 
 describe("deleteTransactions", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+    const today = new Date();
+    let transaction1 = "";
+    let transaction2 = "";
+    
+    beforeAll(async () => {
+        await transactions.create({
+            username: "tokenuser",
+            amount: 12.54,
+            type: "investment",
+            date: today,
+        })
+        .then(() => transactions.findOne({amount: 12.54}))
+        .then(o => transaction1 = o._id);
+
+        await transactions.create({
+            username: "tokenuser",
+            amount: 14213,
+            type: "work",
+            date: today,
+        })        
+        .then(() => transactions.findOne({amount: 14213}))
+        .then(o => transaction2 = o._id);
+
+        await categories.create({
+            type: "investment",
+            color: "blue",
+        });
+        await categories.create({
+            type: "work",
+            color: "red",
+        });
+        await User.create({
+            username: "tokenuser",
+            email: "token@token.token",
+            password: "token",
+            refreshToken: userToken,
+            role: "Regular"
+        })
+        await User.create({
+            username: "tokenadmin",
+            email: "admin@admin.admin",
+            password: "token",
+            refreshToken: adminToken,
+            role: "Regular"
+        })
+    }); 
+    
+    test('should successfully delete all the transactions in the body', (done) => {
+        
+        request(app)
+            .delete("/api/transactions")
+            .send({
+                _ids: [transaction1._id, transaction2._id]
+            })
+            .set(
+                "Cookie",
+                `accessToken=${adminToken};refreshToken=${adminToken}`
+            )
+            .then((response) => {
+                expect(response.body).toStrictEqual({
+                    data: { message: "Transactions deleted" },
+                });
+                expect(response.status).toBe(200);
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if missing parameters in body', (done) => {
+        
+        request(app)
+            .delete("/api/transactions")
+            .send({
+            })
+            .set(
+                "Cookie",
+                `accessToken=${adminToken};refreshToken=${adminToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "Missing values"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if empty strings in body', (done) => {
+        
+        request(app)
+        .delete("/api/transactions")
+        .send({
+            _ids: ["", ""]
+        })
+        .set(
+            "Cookie",
+            `accessToken=${adminToken};refreshToken=${adminToken}`
+        )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: 'Empty strings'
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error if at least one transaction is not in database', (done) => {
+        
+        request(app)
+        .delete("/api/transactions")
+        .send({
+            _ids: [transaction1._id]
+        })
+        .set(
+            "Cookie",
+            `accessToken=${adminToken};refreshToken=${adminToken}`
+        )
+            .then((response) => {
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: 'At least one ID does not have a corresponding transaction.'
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (user token)', (done) => {
+        
+        request(app)
+            .delete("/api/transactions")
+            .send({
+                _ids: [transaction1._id, transaction2._id]
+            })
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Mismatch role"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (missing token)', (done) => {
+        
+        request(app)
+            .delete("/api/transactions")
+            .send({
+                _ids: [transaction1._id, transaction2._id]
+            })
+            .then((response) => {
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Unauthorized"
+                });
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    
+    afterAll(async () => {
+        await categories.deleteMany();
+        await User.deleteMany()
+        await transactions.deleteMany()
     });
 })

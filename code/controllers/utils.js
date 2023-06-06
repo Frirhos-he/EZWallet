@@ -155,7 +155,8 @@ export const verifyAuth = (req, res, info) => {
               break;
 
             case "Group":
-              const members = info.members;
+              let members = info.members;
+              members = members.map(m => m.email)
               if (!members.includes(decodedRefreshToken.email)) {
                  return { flag: false, cause: "User is not in the group" };
               }

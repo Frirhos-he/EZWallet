@@ -129,6 +129,7 @@ export const createGroup = async (req, res) => {
 
 
         if(!emailsVect.includes(currentUserEmail)){
+          console.log(foundInGroup +"help")
           if(!foundInGroup) {
             let memberUser = await User.find({ email: currentUserEmail });  
             memberUsers.push(memberUser);

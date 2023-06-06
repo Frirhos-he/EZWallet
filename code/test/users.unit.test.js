@@ -762,6 +762,33 @@ describe("createGroup", () => {
       error: "Empty email"
     })
   })
+  test("should return an error Missing values", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        name: "newgroup"
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    await createGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Missing values'})
+  })
 
   test('should return an error of authentication', async () => {
     // Mock input data
@@ -823,6 +850,89 @@ describe("createGroup", () => {
     expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
     //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
   });
+  test("should return an enter if(!foundInGroup) {", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      body: {
+        name: "newgroup",
+        emails: ["c@h.it"]
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const foundInGroup = [
+      {
+        members: [{
+          email: "alreadyingroup@gmail.com",
+          _id: "2"
+        }],
+      },
+    ]
+
+    const allUsers = [
+      {
+        email: "email1@gmail.com",
+        _id: "0"
+      },
+      {
+        email: "alreadyingroup@gmail.com",
+        _id: "2"
+      },
+      {
+        email: "other@gmail.com",
+        _id: "3"
+      }
+    ]
+
+    const memberEmails = [
+      {
+        email: "email1@gmail.com",
+        _id: "0"
+      },
+      {
+        email: "notexisting@gmail.com",
+        _id: "1"
+      },
+      {
+        email: "alreadyingroup@gmail.com",
+        _id: "2"
+      }
+    ]
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(Group, "findOne")
+    .mockResolvedValue(false)
+
+    jest.spyOn(User, "find")
+    .mockReturnValueOnce([])
+    .mockReturnValueOnce([])
+    .mockReturnValueOnce([])
+    .mockReturnValueOnce([])
+
+
+    Group.prototype.save.mockResolvedValue({
+      name: "newgroup",
+      memberEmails: ["email1@gmail.com"]
+    });
+
+    jwt.verify.mockReturnValue({email: "email1@gmail.com"})
+    await createGroup(mockReq, mockRes)
+
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Missing values'})
+  })
 
 })
 

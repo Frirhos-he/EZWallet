@@ -23,7 +23,7 @@ const userToken = jwt.sign({
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
 const wrongUserToken = jwt.sign({
-    email: "token@token.token",
+    email: "wronguser@token.token",
     id: "0",
     username: "wronguser",
     role: "Regular"
@@ -1143,14 +1143,266 @@ describe("getTransactionsByUserByCategory", () => {
 })
 
 describe("getTransactionsByGroup", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+    const today = new Date();
+    beforeAll(async () => {
+        let _id = null
+        await User.create({
+            username: "tokenuser",
+            email: "token@token.com",
+            password: "token",
+            refreshToken: userToken,
+            role: "Regular"
+        }).then(async () => {
+            await User.findOne({username: "tokenuser"})
+            .then((o) => _id = o._id)
+        })
+        await categories.create({
+            type: "investment",
+            color: "blue",
+        });
+        await categories.create({
+            type: "work",
+            color: "red",
+        });
+        await transactions.create({
+            username: "tokenuser",
+            amount: 12.54,
+            type: "investment",
+            date: today,
+        });
+
+        await Group.create({
+            name: "group1",
+            members : [
+                { email: "token@token.token", user: _id }
+            ]
+        })
+    }); 
+    
+    test('should return all transactions by a specific group', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(200);
+                expect(response.body.data[0].username).toBe("tokenuser")
+                expect(response.body.data[0].amount).toBe(12.54)
+                expect(response.body.data[0].type).toBe("investment")
+                expect(response.body.data[0].color).toBe("blue")
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test("should return an error if the group doesn't exist ", (done) => {
+        request(app)
+            .get("/api/groups/groupx/transactions")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "The group doesn't exist"
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (user not part of the group)', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions")
+            .set(
+                "Cookie",
+                `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "User is not in the group" 
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (not admin)', (done) => {
+        request(app)
+            .get("/api/transactions/groups/group1")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Mismatch role" 
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (token missing)', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions")
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Unauthorized"
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    afterAll(async () => {
+        await categories.deleteMany();
+        await User.deleteMany()
+        await transactions.deleteMany()
+        await Group.deleteMany()
     });
 })
 
 describe("getTransactionsByGroupByCategory", () => { 
-    test('Dummy test, change it', () => {
-        expect(true).toBe(true);
+    const today = new Date();
+    beforeAll(async () => {
+        let _id = null
+        await User.create({
+            username: "tokenuser",
+            email: "token@token.com",
+            password: "token",
+            refreshToken: userToken,
+            role: "Regular"
+        }).then(async () => {
+            await User.findOne({username: "tokenuser"})
+            .then((o) => _id = o._id)
+        })
+        await categories.create({
+            type: "investment",
+            color: "blue",
+        });
+        await categories.create({
+            type: "work",
+            color: "red",
+        });
+        await transactions.create({
+            username: "tokenuser",
+            amount: 12.54,
+            type: "investment",
+            date: today,
+        });
+
+        await Group.create({
+            name: "group1",
+            members : [
+                { email: "token@token.token", user: _id }
+            ]
+        })
+    }); 
+    
+    test('should return all transactions by a specific group of a specific type', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions/category/investment")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(200);
+                expect(response.body.data[0].username).toBe("tokenuser")
+                expect(response.body.data[0].amount).toBe(12.54)
+                expect(response.body.data[0].type).toBe("investment")
+                expect(response.body.data[0].color).toBe("blue")
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test("should return an error if the group doesn't exist ", (done) => {
+        request(app)
+            .get("/api/groups/groupx/transactions/category/investment")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(400);
+                expect(response.body).toStrictEqual({
+                    error: "The group doesn't exist"
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (user not part of the group)', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions/category/investment")
+            .set(
+                "Cookie",
+                `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "User is not in the group" 
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (not admin)', (done) => {
+        request(app)
+            .get("/api/transactions/groups/group1/category/investment")
+            .set(
+                "Cookie",
+                `accessToken=${userToken};refreshToken=${userToken}`
+            )
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Mismatch role" 
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    test('should return an error of authentication (token missing)', (done) => {
+        request(app)
+            .get("/api/groups/group1/transactions")
+            .then((response) => {
+                console.log(response.body)
+                expect(response.status).toBe(401);
+                expect(response.body).toStrictEqual({
+                    error: "Unauthorized"
+                })
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    afterAll(async () => {
+        await categories.deleteMany();
+        await User.deleteMany()
+        await transactions.deleteMany()
+        await Group.deleteMany()
     });
 })
 

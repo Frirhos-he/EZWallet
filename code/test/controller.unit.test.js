@@ -1967,7 +1967,7 @@ describe("getTransactionsByGroup", () => {
     expect(transactions.aggregate).toHaveBeenCalled()
   });
 
-  test("should return an error if the group doesn't exist ", async() => {
+  test("should return an error if the group doesn't exist", async() => {
      // Mock input data
      const mockReq = {
       cookies: {

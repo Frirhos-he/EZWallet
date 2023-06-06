@@ -156,7 +156,6 @@ export const deleteCategory = async (req, res) => {
         //sort based on the oldest one
         allCategories.sort((a, b) => b.createdAt - a.createdAt);
         const oldestCategory = allCategories[0];
-        console.log(oldestCategory)
         //Updating affected transactions
             updateResult =  await transactions.updateMany(
             { type: { $in: types } },
@@ -462,8 +461,10 @@ export const getTransactionsByGroup = async (req, res) => {
         }
 
         const usersById = matchedGroup.members.map((member) => member.user);
+
             const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
             const usernames = usersByUsername.map(user => user.username);
+            
             transactions.aggregate([
                 { $match: { username: { $in: usernames } } },
                 {

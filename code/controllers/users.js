@@ -250,7 +250,7 @@ export const addToGroup = async (req, res) => {
     try {
   
       const groupName = req.params.name;
-      const group = await Group.findOne({ group: groupName });
+      const group = await Group.findOne({ name: groupName });
       if (!group)
           return res.status(400).json({ error: "The group doesn't exist" })
 
@@ -321,7 +321,17 @@ export const addToGroup = async (req, res) => {
 
       updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members })
 
-      return res.status(200).json({ data: {group: {name: groupName, members:updatedGroup.members}, alreadyInGroup: alreadyInGroup, membersNotFound: membersNotFound}, refreshedTokenMessage: res.locals.refreshedTokenMessage })
+      return res.status(200).json({ 
+        data: {
+          group: {
+            name: groupName,
+            members:updatedGroup.members
+          }, 
+          alreadyInGroup: alreadyInGroup, 
+          membersNotFound: membersNotFound
+        }, 
+        refreshedTokenMessage: res.locals.refreshedTokenMessage 
+      })
   
 
     } catch (err) {

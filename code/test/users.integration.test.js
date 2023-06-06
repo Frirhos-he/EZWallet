@@ -10,9 +10,9 @@ import jwt from 'jsonwebtoken'
 dotenv.config();
 
 const adminToken = jwt.sign({
-  email: "token@token.token",
+  email: "tester@token.token",
   id: "0",
-  username: "tokenuser",
+  username: "tester",
   role: "Admin"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
@@ -26,7 +26,6 @@ const userToken = jwt.sign({
  * Necessary setup in order to create a new database for testing purposes before starting the execution of test cases.
  * Each test suite has its own database in order to avoid different tests accessing the same database at the same time and expecting different data.
  */
-dotenv.config();
 beforeAll(async () => {
   const dbName = "testingDatabaseUsers";
   const url = `${process.env.MONGO_URI}/${dbName}`;
@@ -46,6 +45,7 @@ afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.connection.close();
 });
+
 
 describe("getUsers", () => {
   /**
@@ -87,7 +87,7 @@ describe("getUsers", () => {
           expect(response.body).toStrictEqual(
             {"data": [{"email": "test@test.com", "role": "Regular", "username": "tester"}]})
         
-          done() // Notify Jest that the test is complete
+          done() 
         })
         .catch((err) => done(err))
     })
@@ -109,7 +109,7 @@ describe("getUsers", () => {
           expect(response.body).toStrictEqual(
             {"error":"Mismatch role"})
         
-          done() // Notify Jest that the test is complete
+          done()
         })
         .catch((err) => done(err))
     })
@@ -120,33 +120,95 @@ describe("getUsers", () => {
 describe("getUser", () => { 
   beforeEach(async () => {
     await User.deleteMany({})
+    await User.create({
+      username: "tester",
+      email: "tester@token.token",
+      password: "tester",
+      role: "Admin"
+    })
+    await User.create({
+      username: "User",
+      email: "user@test.com",
+      password: "user",
+      role: "Regular"
+    })
+
   });
   test("nominal scenario", (done) => {
-    User.create({
-      username: "tester",
-      email: "test@test.com",
-      password: "tester",
-    }).then(() => {
       request(app)
         .get("/api/users/tester")
         .set(
-          "cookies",
+          "Cookie",
           `accessToken=${adminToken};refreshToken=${adminToken}`
         )
         .then((response) => {
           expect(response.body).toStrictEqual(
-            {"error":"Mismatch role"})
+            {"data":"Mismatch role"})
           expect(response.status).toBe(200)
-          
-        
-          done() // Notify Jest that the test is complete
+          done() 
         })
         .catch((err) => done(err))
     })
-    })
 })
 
-describe("createGroup", () => { })
+describe("createGroup", () => {
+  const _id = mongoose.Types.ObjectId()
+  beforeEach(async () => {
+    await User.deleteMany({})
+    await Group.deleteMany({})
+    await User.create({
+      username: "tester",
+      email: "tester@token.token",
+      password: "tester",
+      role: "Admin",
+    })
+    await User.create({
+      username: "User",
+      email: "user@test.com",
+      password: "user",
+      role: "Regular",
+      _id: mongoose.Types.ObjectId(_id.valueOf())
+    })
+    await Group.create({
+      name: "groupTest",
+      emails: ["tester@token.token"]
+    })
+  });
+
+  test("nominal scenario", (done) => {
+      request(app)
+        .post("/api/groups")
+        .set(
+          "Cookie",
+          `accessToken=${adminToken};refreshToken=${adminToken}`
+        ).send(
+          {
+            "name": "g",
+            "memberEmails": ["user@test.com"]
+        }
+        )
+        .then((response) => {
+          expect(response.body).toStrictEqual(
+            { "data":{
+                   "alreadyInGroup": [],
+                   "group": {
+                     "members": [
+                        {
+                         "email": "user@test.com",
+                         "user": mongoose.Types.ObjectId(_id.valueOf())
+                       },
+                     ],
+                     "name": "g",
+                   },
+                   "membersNotFound": []}})
+          expect(response.status).toBe(200)
+          done() 
+        })
+        .catch((err) => done(err))
+    })
+
+
+ })
 
 describe("getGroups", () => { })
 

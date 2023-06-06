@@ -395,18 +395,16 @@ describe("createGroup", () => {
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
 
     jest.spyOn(Group, "findOne")
-    .mockResolvedValue(false)
+    .mockResolvedValueOnce(false)
+    .mockReturnValueOnce({
+      email: "creator@gmail.com",
+      _id: "10"
+    },)
 
     jest.spyOn(User, "find")
     .mockReturnValueOnce(memberEmails)
     .mockReturnValueOnce(foundInGroup)
     .mockReturnValueOnce(allUsers)
-    .mockReturnValueOnce(     
-       {
-        email: "creator@gmail.com",
-        _id: "10"
-      },
-    )
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",

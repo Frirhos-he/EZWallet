@@ -237,36 +237,6 @@ describe("getUser", () => {
     });
   })
 
-  test("should return an error when the params are not present or empty strings", async () => {
-    // Mock input data
-    const mockReq = {
-      cookies: {
-        accessToken: 'accessToken',
-        refreshToken: 'refreshToken',
-      },
-      params: {
-      }
-    };
-
-    const mockRes = {
-      locals: {
-          refreshedTokenMessage: "",
-      },
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue("Missing parameters")
-
-    await getUser(mockReq, mockRes)
-
-    expect(mockRes.status).toHaveBeenCalledWith(400)
-    expect(mockRes.json).toHaveBeenCalledWith({ 
-      error: "Missing parameters"
-    });
-  })
-
   test('should return an error of authentication', async () => {
     // Mock input data
     const mockReq = {

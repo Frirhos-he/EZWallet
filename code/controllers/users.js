@@ -45,11 +45,6 @@ export const getUser = async (req, res) => {
           if (!adminAuth.flag)
               return res.status(401).json({ error:  adminAuth.cause }) 
       }
-      const username = req.params.username
-      let message;
-      if((message = checkMissingOrEmptyParams([username])))
-          return res.status(400).json({ error: message });
-  
 
       const user = await User.findOne({ refreshToken: req.cookies.refreshToken })
         if (!user) return res.status(400).json({ error: "User not found" })
@@ -120,8 +115,9 @@ export const createGroup = async (req, res) => {
         const currentUserEmail = decodedRefreshToken.email;
 
         let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
-        alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
+        alreadyInGroup = alreadyInGroup.map(v =>  v.members)
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+        alreadyInGroup = alreadyInGroup.map(v => Object.assign({}, { email: v.email, user: v.user }))
         alreadyInGroup = alreadyInGroup.filter(m => emailsVect.includes(m.email))
   
         let foundInGroup = alreadyInGroup.filter(m => m.email == currentUserEmail);
@@ -183,6 +179,11 @@ export const getGroups = async (req, res) => {
           return res.status(401).json({ error: adminAuth.cause }) 
 
       let groups = await Group.find({})
+      groups = groups.map(v => {
+        v.members = v.members.map(m => Object.assign({}, { email: m.email, user: m.user }))
+        console.log(v.members)
+      })
+      console.log(groups)
       groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
 
       res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedTokenMessage})

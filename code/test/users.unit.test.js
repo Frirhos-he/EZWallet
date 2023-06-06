@@ -360,6 +360,10 @@ describe("createGroup", () => {
 
     const allUsers = [
       {
+        email: "creator@gmail.com",
+        _id: "10"
+      },
+      {
         email: "email1@gmail.com",
         _id: "0"
       },
@@ -397,14 +401,19 @@ describe("createGroup", () => {
     .mockReturnValueOnce(memberEmails)
     .mockReturnValueOnce(foundInGroup)
     .mockReturnValueOnce(allUsers)
-    .mockReturnValueOnce(foundInGroup)
+    .mockReturnValueOnce(     
+       {
+        email: "creator@gmail.com",
+        _id: "10"
+      },
+    )
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
       memberEmails: ["email1@gmail.com"]
     });
 
-    jwt.verify.mockReturnValue({email: "email1@gmail.com"})
+    jwt.verify.mockReturnValue({email: "creator@gmail.com"})
 
     await createGroup(mockReq, mockRes)
 
@@ -412,7 +421,7 @@ describe("createGroup", () => {
       data: {
         group: {
           name: "newgroup",
-          members: [{ email: "email1@gmail.com", user: "0"}]
+          members: [{ email: "email1@gmail.com", user: "0"}, { email: "creator@gmail.com", user: "10" }]
         },
         alreadyInGroup: foundInGroup[0].members,
         membersNotFound: ["notexisting@gmail.com"]
@@ -526,7 +535,7 @@ describe("createGroup", () => {
       },
       body: {
         name: "newgroup",
-        memberEmails: ["email1@gmail.com", "notexisting@gmail.com", "alreadyingroup@gmail.com"]
+        memberEmails: ["notexisting@gmail.com", "alreadyingroup@gmail.com"]
       }
     };
 
@@ -541,10 +550,6 @@ describe("createGroup", () => {
     const foundInGroup = [
       {
         members: [
-          {
-            email: "email1@gmail.com",
-            _id: "0"
-          },
           {
             email: "alreadyingroup@gmail.com",
             _id: "2"
@@ -570,10 +575,6 @@ describe("createGroup", () => {
 
     const memberEmails = [
       {
-        email: "email1@gmail.com",
-        _id: "0"
-      },
-      {
         email: "notexisting@gmail.com",
         _id: "1"
       },
@@ -592,7 +593,6 @@ describe("createGroup", () => {
     .mockImplementationOnce(async () => memberEmails)
     .mockImplementationOnce(async () => foundInGroup)
     .mockImplementationOnce(async () => allUsers)
-    .mockImplementationOnce(async () => foundInGroup)
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
@@ -605,7 +605,7 @@ describe("createGroup", () => {
     
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({
-      error: 'All the members have emails taht don\'t exist or are already inside anothre group'
+      error: 'All the members have emails that don\'t exist or are already inside anothre group'
     })
   })
 
@@ -762,6 +762,7 @@ describe("createGroup", () => {
       error: "Empty email"
     })
   })
+
   test("should return an error Missing values", async () => {
     // Mock input data
     const mockReq = {
@@ -850,6 +851,7 @@ describe("createGroup", () => {
     expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
     //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
   });
+
   test("should return an enter if(!foundInGroup) {", async () => {
     // Mock input data
     const mockReq = {
@@ -859,7 +861,7 @@ describe("createGroup", () => {
       },
       body: {
         name: "newgroup",
-        emails: ["c@h.it"]
+        emails: ["alreadyingroup@gmail.com", "notexisting@gmail.com"]
       }
     };
 
@@ -897,14 +899,6 @@ describe("createGroup", () => {
 
     const memberEmails = [
       {
-        email: "email1@gmail.com",
-        _id: "0"
-      },
-      {
-        email: "notexisting@gmail.com",
-        _id: "1"
-      },
-      {
         email: "alreadyingroup@gmail.com",
         _id: "2"
       }
@@ -915,11 +909,19 @@ describe("createGroup", () => {
     jest.spyOn(Group, "findOne")
     .mockResolvedValue(false)
 
+    jwt.verify.mockReturnValue({email: "email1@gmail.com"})
+
     jest.spyOn(User, "find")
-    .mockReturnValueOnce([])
-    .mockReturnValueOnce([])
-    .mockReturnValueOnce([])
-    .mockReturnValueOnce([])
+    .mockReturnValueOnce(memberEmails)
+    .mockReturnValueOnce(foundInGroup)
+    .mockReturnValueOnce(      
+      {
+        email: "email1@gmail.com",
+        _id: "0"
+      },
+    )
+    .mockReturnValueOnce(allUsers)
+    .mockReturnValueOnce(foundInGroup)
 
 
     Group.prototype.save.mockResolvedValue({
@@ -927,7 +929,7 @@ describe("createGroup", () => {
       memberEmails: ["email1@gmail.com"]
     });
 
-    jwt.verify.mockReturnValue({email: "email1@gmail.com"})
+
     await createGroup(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)

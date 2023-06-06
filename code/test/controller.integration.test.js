@@ -44,7 +44,7 @@ afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close()
 });
-/*
+
 describe("createCategory", () => { 
       beforeAll(async () => {
         await categories.create({
@@ -184,7 +184,7 @@ describe("createCategory", () => {
         await categories.deleteMany();
     });
 })
-*/
+
 describe("updateCategory", () => { 
     const today = new Date();
     beforeAll(async () => {
@@ -637,7 +637,6 @@ describe("createTransaction", () => {
             })
             .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(200);
                 expect(response.body.data.username).toBe("tokenuser")
                 expect(response.body.data.amount).toBe(43.2)
@@ -1187,7 +1186,6 @@ describe("getTransactionsByGroup", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(200);
                 expect(response.body.data[0].username).toBe("tokenuser")
                 expect(response.body.data[0].amount).toBe(12.54)
@@ -1206,7 +1204,6 @@ describe("getTransactionsByGroup", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(400);
                 expect(response.body).toStrictEqual({
                     error: "The group doesn't exist"
@@ -1224,7 +1221,6 @@ describe("getTransactionsByGroup", () => {
                 `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "User is not in the group" 
@@ -1242,7 +1238,6 @@ describe("getTransactionsByGroup", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "Mismatch role" 
@@ -1256,7 +1251,6 @@ describe("getTransactionsByGroup", () => {
         request(app)
             .get("/api/groups/group1/transactions")
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "Unauthorized"
@@ -1319,7 +1313,6 @@ describe("getTransactionsByGroupByCategory", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(200);
                 expect(response.body.data[0].username).toBe("tokenuser")
                 expect(response.body.data[0].amount).toBe(12.54)
@@ -1338,7 +1331,6 @@ describe("getTransactionsByGroupByCategory", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(400);
                 expect(response.body).toStrictEqual({
                     error: "The group doesn't exist"
@@ -1356,7 +1348,6 @@ describe("getTransactionsByGroupByCategory", () => {
                 `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "User is not in the group" 
@@ -1374,7 +1365,6 @@ describe("getTransactionsByGroupByCategory", () => {
                 `accessToken=${userToken};refreshToken=${userToken}`
             )
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "Mismatch role" 
@@ -1388,7 +1378,6 @@ describe("getTransactionsByGroupByCategory", () => {
         request(app)
             .get("/api/groups/group1/transactions")
             .then((response) => {
-                console.log(response.body)
                 expect(response.status).toBe(401);
                 expect(response.body).toStrictEqual({
                     error: "Unauthorized"

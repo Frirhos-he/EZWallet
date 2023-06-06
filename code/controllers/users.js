@@ -249,8 +249,14 @@ export const getGroup = async (req, res) => {
  */
 export const addToGroup = async (req, res) => {
     try {
-  
+
       const groupName = req.params.name;
+
+      //Check for missing or empty string parameter
+      let message;
+      if((message = checkMissingOrEmptyParams([groupName])))
+          return res.status(400).json({ error: message });
+
       const group = await Group.findOne({ name: groupName });
       if (!group)
           return res.status(400).json({ error: "The group doesn't exist" })
@@ -267,11 +273,6 @@ export const addToGroup = async (req, res) => {
       }
 
       const memberEmails = req.body.emails
-
-      //Check for missing or empty string parameter
-      let message;
-      if((message = checkMissingOrEmptyParams([groupName])))
-          return res.status(400).json({ error: message });
       
       if(memberEmails == null || memberEmails == undefined)
             return res.status(400).json({ error: "member emails not defined"});     
@@ -310,6 +311,9 @@ export const addToGroup = async (req, res) => {
 
       // Select members to add to the group
       const newMembers = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
+      
+      console.log(newMembers)
+
       if (newMembers.length == 0) 
         return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
 
@@ -359,7 +363,6 @@ export const removeFromGroup = async (req, res) => {
     let message;
     if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
-
     if(memberEmails == null || memberEmails == undefined  )
          return res.status(400).json({ error: "member emails not defined"});     
         

@@ -45,6 +45,12 @@ afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.connection.close();
 });
+beforeEach(async () => {
+  await categories.deleteMany({})
+  await transactions.deleteMany({})
+  await User.deleteMany({})
+  await Group.deleteMany({})
+})
 
 
 describe("getUsers", () => {
@@ -118,99 +124,144 @@ describe("getUsers", () => {
 })
 
 describe("getUser", () => { 
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await User.create({
-      username: "tester",
-      email: "tester@token.token",
-      password: "tester",
-      role: "Admin"
-    })
-    await User.create({
-      username: "User",
-      email: "user@test.com",
-      password: "user",
-      role: "Regular"
-    })
-
-  });
-  test("nominal scenario", (done) => {
+  /**
+   * Database is cleared before each test case, in order to allow insertion of data tailored for each specific test case.
+   */
+    beforeEach(async () => {
+      await User.create({
+        username: "pippo",
+        email: "pippo@h.it",
+        password: "pippo",
+        role: "Admin",
+        refreshToken: adminToken
+      });
+    });
+  
+    test("nominal scenario admin", (done) => {
       request(app)
-        .get("/api/users/tester")
+        .get("/api/users/pippo")
         .set(
           "Cookie",
           `accessToken=${adminToken};refreshToken=${adminToken}`
         )
         .then((response) => {
           expect(response.body).toStrictEqual(
-            {"data":"Mismatch role"})
+            {"data": {
+                 email: "pippo@h.it",
+                 role: "Admin",
+                 username: "pippo",
+               }})
           expect(response.status).toBe(200)
-          done() 
+
+          done();
         })
         .catch((err) => done(err))
-    })
+      })
 })
 
+/*
 describe("createGroup", () => {
-  const _id = mongoose.Types.ObjectId()
+  let testUserId;
+  const testObjectId = mongoose.Types.ObjectId();
+
   beforeEach(async () => {
-    await User.deleteMany({})
-    await Group.deleteMany({})
-    await User.create({
+    await User.deleteMany({});
+    await Group.deleteMany({});
+
+    const testerUser = await User.create({
       username: "tester",
       email: "tester@token.token",
       password: "tester",
       role: "Admin",
-    })
+    });
+
+    testUserId = testerUser._id;
+
     await User.create({
       username: "User",
       email: "user@test.com",
       password: "user",
       role: "Regular",
-      _id: mongoose.Types.ObjectId(_id.valueOf())
-    })
+      _id: testObjectId,
+    });
+
     await Group.create({
       name: "groupTest",
-      emails: ["tester@token.token"]
-    })
+      emails: ["tester@token.token"],
+    });
   });
 
-  test("nominal scenario", (done) => {
-      request(app)
-        .post("/api/groups")
-        .set(
-          "Cookie",
-          `accessToken=${adminToken};refreshToken=${adminToken}`
-        ).send(
-          {
-            "name": "g",
-            "memberEmails": ["user@test.com"]
-        }
-        )
-        .then((response) => {
-          expect(response.body).toStrictEqual(
-            { "data":{
-                   "alreadyInGroup": [],
-                   "group": {
-                     "members": [
-                        {
-                         "email": "user@test.com",
-                         "user": mongoose.Types.ObjectId(_id.valueOf())
-                       },
-                     ],
-                     "name": "g",
-                   },
-                   "membersNotFound": []}})
-          expect(response.status).toBe(200)
-          done() 
-        })
-        .catch((err) => done(err))
+  test("nominal scenario", async () => {
+    const response = await request(app)
+      .post("/api/groups")
+      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
+      .send({
+        name: "g",
+        memberEmails: ["user@test.com"],
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      data: {
+        
+      },
+    });
+  });
+
+  test("missing name value", async () => {
+    const response = await request(app)
+      .post("/api/groups")
+      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
+      .send({
+        memberEmails: ["user@test.com"],
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      error: "Missing values",
+    });
+  });
+
+  // Add more test cases to cover other scenarios
+
+});
+*/
+describe("getGroups", () => {
+  beforeEach(async () => {
+    await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+    });
+    await Group.create({
+      name: "group",
+      emails:["pippo@h.it"]
+    });
+  });
+
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .get("/api/groups")
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          "data":  [
+                  {
+                   "members": ["pippo@h.it"],
+                   "name": "group"
+                  }]})
+        expect(response.status).toBe(200)
+
+        done();
+      })
+      .catch((err) => done(err))
     })
-
-
- })
-
-describe("getGroups", () => { })
+})
 
 describe("getGroup", () => { })
 

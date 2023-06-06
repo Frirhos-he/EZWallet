@@ -113,7 +113,7 @@ export const createGroup = async (req, res) => {
 
         // Retrieve the list of users with their id from memberEmails
         let memberUsers = await User.find({ email: { $in: emailsVect } })
-
+   
         //must add the user that required to create the group
         const cookie = req.cookies
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
@@ -123,14 +123,14 @@ export const createGroup = async (req, res) => {
         alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
         alreadyInGroup = alreadyInGroup.filter(m => emailsVect.includes(m.email))
-
+  
         let foundInGroup = alreadyInGroup.filter(m => m.email == currentUserEmail);
- 
+
         if(foundInGroup.length != 0)
              return  res.status(400).json({ error: 'User who called the Api is in a group'});
 
         memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
-
+ 
         // Retrieve the list of all users
         let allUsers = await User.find({})
         allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
@@ -140,16 +140,16 @@ export const createGroup = async (req, res) => {
 
         // Select members of the group
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email) && !membersNotFound.includes(m.email))
-
+  
         if (members.length == 0) 
           return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
 
         if(!emailsVect.includes(currentUserEmail)){
-          let memberUser = await User.find({ email: currentUserEmail });  
+ 
+          let memberUser = await User.findOne({ email: currentUserEmail });  
           memberUser = Object.assign({}, { email: memberUser.email, user: memberUser._id })
           members.push(memberUser);
         }
-
         // Creating a new group
         const newGroup = new Group({ name, members })
         newGroup.save()
@@ -243,20 +243,25 @@ export const addToGroup = async (req, res) => {
     try {
 
       const groupName = req.params.name;
+      const startIndexAdmin = req.url.indexOf("groups/");
+      const endIndexAdmin = req.url.indexOf("/insert");
 
+      //startIndex < endIndex ensure that startIndex happens before endIndex
+      //startIndex < endIndex ensure that startIndex happens before endIndex
       const group = await Group.findOne({ name: groupName });
       if (!group)
           return res.status(400).json({ error: "The group doesn't exist" })
 
-      if (req.url.indexOf("/groups/group1/insert") >= 0) {   //admin 
+      if (startIndexAdmin >= 0 && endIndexAdmin >= 0 && startIndexAdmin < endIndexAdmin) { //admin 
           const adminAuth = verifyAuth(req, res, { authType: "Admin" })
           if (!adminAuth.flag)
               return res.status(401).json({ error: adminAuth.cause }) 
       }
       else {   //user
-          const groupAuth = verifyAuth(req, res, { authType: "Group", username: group.members })
+          const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
           if(!groupAuth.flag)
               return res.status(401).json({ error: groupAuth.cause }) 
+
       }
 
       const memberEmails = req.body.emails
@@ -591,15 +596,13 @@ export const deleteGroup = async (req, res) => {
     if((message = checkMissingOrEmptyParams([groupName])))
         return res.status(400).json({ error: message });
 
-    
-    
-    const group = await Group.findOne({ name: groupName });
-    if (!group)
-      return res.status(400).json({ error: "The group doesn't exist" })
-
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
         if (!adminAuth.flag)
             return res.status(401).json({ error: " adminAuth: " + adminAuth.cause }) 
+
+            const group = await Group.findOne({ name: groupName });
+            if (!group)
+              return res.status(400).json({ error: "The group doesn't exist" })
 
     // Delete the group
     await Group.deleteOne({ name: groupName });

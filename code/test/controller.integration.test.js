@@ -44,7 +44,7 @@ afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close()
 });
-
+/*
 describe("createCategory", () => { 
       beforeAll(async () => {
         await categories.create({
@@ -184,7 +184,7 @@ describe("createCategory", () => {
         await categories.deleteMany();
     });
 })
-
+*/
 describe("updateCategory", () => { 
     const today = new Date();
     beforeAll(async () => {

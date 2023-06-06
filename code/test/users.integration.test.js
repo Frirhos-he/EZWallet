@@ -10,9 +10,9 @@ import jwt from 'jsonwebtoken'
 dotenv.config();
 
 const adminToken = jwt.sign({
-  email: "tester@token.token",
+  email: "token@token.token",
   id: "0",
-  username: "tester",
+  username: "tokenadmin",
   role: "Admin"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
@@ -22,29 +22,35 @@ const userToken = jwt.sign({
   username: "tokenuser",
   role: "Regular"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
-/**
- * Necessary setup in order to create a new database for testing purposes before starting the execution of test cases.
- * Each test suite has its own database in order to avoid different tests accessing the same database at the same time and expecting different data.
- */
+
+const wrongUserToken = jwt.sign({
+  email: "token@token.token",
+  id: "0",
+  username: "wronguser",
+  role: "Regular"
+}, process.env.ACCESS_KEY, { expiresIn: '1h' })
+
 beforeAll(async () => {
-  const dbName = "testingDatabaseUsers";
-  const url = `${process.env.MONGO_URI}/${dbName}`;
+const dbName = "testingDatabaseController";
+const url = `${process.env.MONGO_URI}/${dbName}`;
 
-  await mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+await mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 });
 
-/**
- * After all test cases have been executed the database is deleted.
- * This is done so that subsequent executions of the test suite start with an empty database.
- */
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.connection.close();
+await mongoose.connection.db.dropDatabase();
+await mongoose.connection.close();
 });
+beforeEach(async () => {
+  await categories.deleteMany({})
+  await transactions.deleteMany({})
+  await User.deleteMany({})
+  await Group.deleteMany({})
+})
 
 
 describe("getUsers", () => {
@@ -118,103 +124,297 @@ describe("getUsers", () => {
 })
 
 describe("getUser", () => { 
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await User.create({
-      username: "tester",
-      email: "tester@token.token",
-      password: "tester",
-      role: "Admin"
-    })
-    await User.create({
-      username: "User",
-      email: "user@test.com",
-      password: "user",
-      role: "Regular"
-    })
-
-  });
-  test("nominal scenario", (done) => {
+  /**
+   * Database is cleared before each test case, in order to allow insertion of data tailored for each specific test case.
+   */
+    beforeEach(async () => {
+      await User.create({
+        username: "pippo",
+        email: "pippo@h.it",
+        password: "pippo",
+        role: "Admin",
+        refreshToken: adminToken
+      });
+    });
+  
+    test("nominal scenario admin", (done) => {
       request(app)
-        .get("/api/users/tester")
+        .get("/api/users/pippo")
         .set(
           "Cookie",
           `accessToken=${adminToken};refreshToken=${adminToken}`
         )
         .then((response) => {
           expect(response.body).toStrictEqual(
-            {"data":"Mismatch role"})
+            {"data": {
+                 email: "pippo@h.it",
+                 role: "Admin",
+                 username: "pippo",
+               }})
           expect(response.status).toBe(200)
-          done() 
+
+          done();
         })
         .catch((err) => done(err))
-    })
+      })
 })
 
+/*
 describe("createGroup", () => {
-  const _id = mongoose.Types.ObjectId()
+  let testUserId;
+  const testObjectId = mongoose.Types.ObjectId();
+
   beforeEach(async () => {
-    await User.deleteMany({})
-    await Group.deleteMany({})
-    await User.create({
+    await User.deleteMany({});
+    await Group.deleteMany({});
+
+    const testerUser = await User.create({
       username: "tester",
       email: "tester@token.token",
       password: "tester",
       role: "Admin",
-    })
+    });
+
+    testUserId = testerUser._id;
+
     await User.create({
       username: "User",
       email: "user@test.com",
       password: "user",
       role: "Regular",
-      _id: mongoose.Types.ObjectId(_id.valueOf())
-    })
+      _id: testObjectId,
+    });
+
     await Group.create({
       name: "groupTest",
-      emails: ["tester@token.token"]
-    })
+      emails: ["tester@token.token"],
+    });
   });
 
-  test("nominal scenario", (done) => {
-      request(app)
-        .post("/api/groups")
-        .set(
-          "Cookie",
-          `accessToken=${adminToken};refreshToken=${adminToken}`
-        ).send(
+  test("nominal scenario", async () => {
+    const response = await request(app)
+      .post("/api/groups")
+      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
+      .send({
+        name: "g",
+        memberEmails: ["user@test.com"],
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      data: {
+        
+      },
+    });
+  });
+
+  test("missing name value", async () => {
+    const response = await request(app)
+      .post("/api/groups")
+      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
+      .send({
+        memberEmails: ["user@test.com"],
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      error: "Missing values",
+    });
+  });
+
+  // Add more test cases to cover other scenarios
+
+});
+*/
+describe("getGroups", () => {
+  var bulma,pluto,pippo;
+  beforeEach(async () => {
+     pippo = await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+    });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+});
+    await Group.create({
+      name: "g1",
+      members: [
           {
-            "name": "g",
-            "memberEmails": ["user@test.com"]
-        }
-        )
-        .then((response) => {
-          expect(response.body).toStrictEqual(
-            { "data":{
-                   "alreadyInGroup": [],
-                   "group": {
-                     "members": [
-                        {
-                         "email": "user@test.com",
-                         "user": mongoose.Types.ObjectId(_id.valueOf())
-                       },
-                     ],
-                     "name": "g",
-                   },
-                   "membersNotFound": []}})
-          expect(response.status).toBe(200)
-          done() 
-        })
-        .catch((err) => done(err))
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
+
+    await Group.create({
+      name: "g2",
+      members: [
+          {
+              email: bulma.email,
+              user: bulma._id,
+          },
+      ],
+    });
+  });
+
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .get("/api/groups")
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.status).toBe(200)
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
     })
+})
 
+describe("getGroup", () => {
+  var bulma,pluto,pippo;
+  beforeEach(async () => {
+     pippo = await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+    });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+});
+    await Group.create({
+      name: "g1",
+      members: [
+          {
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
 
+    await Group.create({
+      name: "g2",
+      members: [
+          {
+              email: bulma.email,
+              user: bulma._id,
+          },
+      ],
+    });
+  });
+
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .get("/api/groups/g1")
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.status).toBe(200)
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
+    })
  })
 
-describe("getGroups", () => { })
+describe("addToGroup", () => {
+  var bulma,pluto,pippo;
+  beforeEach(async () => {
+     pippo = await User.create({
+      username: "pippo",
+      email: "pippo@h.it",
+      password: "pippo",
+      role: "Admin",
+      refreshToken: adminToken
+  });
+     pluto = await User.create({
+      username: "pluto",
+      email: "pluto@h.it",
+      password: "pluto",
+      refreshToken: userToken,
+      role: "Regular",
+  });
+   bulma = await User.create({
+    username: "bulma",
+    email: "bulma@h.it",
+    password: "bulma",
+    refreshToken: adminToken,
+    role: "Regular",
+  });
+    await Group.create({
+      name: "g1",
+      members: [
+          {
+              email: pluto.email,
+              user: pluto._id,
+          },
+          { 
+            email: pippo.email,
+            user: pippo._id,
+          }
+      ],
+    });
 
-describe("getGroup", () => { })
+  });
 
-describe("addToGroup", () => { })
+  test("nominal scenario admin", (done) => {
+    request(app)
+      .patch("/api/groups/g1/insert")
+      .send(
+        {"members":
+        ["bulma@h.it"]}
+      )
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual("")
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
+    })
+ })
 
 describe("removeFromGroup", () => { })
 

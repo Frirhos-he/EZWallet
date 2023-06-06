@@ -156,6 +156,7 @@ export const deleteCategory = async (req, res) => {
         //sort based on the oldest one
         allCategories.sort((a, b) => b.createdAt - a.createdAt);
         const oldestCategory = allCategories[0];
+        console.log(oldestCategory)
         //Updating affected transactions
             updateResult =  await transactions.updateMany(
             { type: { $in: types } },

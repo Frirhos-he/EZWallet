@@ -114,31 +114,37 @@ describe("getUsers", () => {
         .catch((err) => done(err))
     })
   })
-  test("user is called", (done) => {
+
+})
+
+describe("getUser", () => { 
+  beforeEach(async () => {
+    await User.deleteMany({})
+  });
+  test("nominal scenario", (done) => {
     User.create({
       username: "tester",
       email: "test@test.com",
       password: "tester",
     }).then(() => {
       request(app)
-        .get("/api/users")
+        .get("/api/users/tester")
         .set(
-          "Cookie",
-          `accessToken=${userToken};refreshToken=${userToken}`
+          "cookies",
+          `accessToken=${adminToken};refreshToken=${adminToken}`
         )
         .then((response) => {
-          expect(response.status).toBe(401)
           expect(response.body).toStrictEqual(
             {"error":"Mismatch role"})
+          expect(response.status).toBe(200)
+          
         
           done() // Notify Jest that the test is complete
         })
         .catch((err) => done(err))
     })
-  })
+    })
 })
-
-describe("getUser", () => { })
 
 describe("createGroup", () => { })
 

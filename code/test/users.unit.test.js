@@ -1078,6 +1078,36 @@ describe("getGroup", () => {
     expect(mockRes.status).toHaveBeenCalledWith(200)
   })
 
+  test("should return an error if missing or empty parameters", async () => {
+    // Mock input data
+    const mockReq = {
+      cookies: {
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+      params: {
+      }
+    };
+
+    const mockRes = {
+      locals: {
+          refreshedTokenMessage: "",
+      },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+    checkMissingOrEmptyParams.mockReturnValue("Missing parameters")
+
+    await getGroup(mockReq, mockRes)
+    
+    expect(mockRes.status).toHaveBeenCalledWith(400)
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      error: "Missing parameters"
+    });
+  })
+
   test("should return an error if the group doesn't exist", async () => {
     // Mock input data
     const mockReq = {
@@ -1166,13 +1196,19 @@ describe("getGroup", () => {
       json: jest.fn(),
     };
 
-    verifyAuth.mockImplementation(() => { throw Error("myerror")})
-    
-    await getGroups(mockReq, mockRes);
+    checkMissingOrEmptyParams.mockImplementation(() => { throw Error("myerror")})
+
+    jest.spyOn(Group, "findOne").mockResolvedValue(
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      }
+    )
+
+    await getGroup(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({error: "myerror"});
-    //expect(mockRes.json).toHaveProperty("error");            // Additional assertions for the response if needed
   });
 })
 
@@ -1262,7 +1298,6 @@ describe("addToGroup", () => {
     ]
     
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1332,13 +1367,20 @@ describe("addToGroup", () => {
       json: jest.fn(),
     };
 
-    checkMissingOrEmptyParams.mockReturnValue("missing params in body")
+    verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
+
+    jest.spyOn(Group, "findOne").mockResolvedValue(
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      }
+    )
 
     await addToGroup(mockReq, mockRes)
 
     expect(mockRes.status).toHaveBeenCalledWith(400)
     expect(mockRes.json).toHaveBeenCalledWith({ 
-      error: "missing params in body"
+      error: "member emails not defined"
     });
   })
 
@@ -1372,7 +1414,6 @@ describe("addToGroup", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(false)
 
@@ -1459,7 +1500,6 @@ describe("addToGroup", () => {
     ]
     
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1514,7 +1554,6 @@ describe("addToGroup", () => {
     };
 
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1561,7 +1600,6 @@ describe("addToGroup", () => {
     };
     
     verifyAuth.mockReturnValue({flag: true, cause:"authorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1608,7 +1646,6 @@ describe("addToGroup", () => {
     };
 
     verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1655,7 +1692,6 @@ describe("addToGroup", () => {
     };
 
     verifyAuth.mockReturnValue({flag: false, cause:"unauthorized"})
-    checkMissingOrEmptyParams.mockReturnValue(false)
 
     jest.spyOn(Group, "findOne").mockResolvedValue(
       {
@@ -1701,8 +1737,16 @@ describe("addToGroup", () => {
       json: jest.fn(),
     };
 
-    checkMissingOrEmptyParams.mockImplementation(() => { throw Error("myerror")})
+    verifyAuth.mockImplementation(() => { throw Error("myerror")})
     
+    jest.spyOn(Group, "findOne").mockResolvedValue(
+      {
+        name: "group1",
+        members: [{email: "mario.red@email.com"}, {email: "luigi.red@email.com"}]
+      }
+    )
+
+
     await addToGroup(mockReq,mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);

@@ -244,11 +244,6 @@ export const addToGroup = async (req, res) => {
 
       const groupName = req.params.name;
 
-      //Check for missing or empty string parameter
-      let message;
-      if((message = checkMissingOrEmptyParams([groupName])))
-          return res.status(400).json({ error: message });
-
       const group = await Group.findOne({ name: groupName });
       if (!group)
           return res.status(400).json({ error: "The group doesn't exist" })

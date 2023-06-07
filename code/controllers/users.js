@@ -432,7 +432,9 @@ export const removeFromGroup = async (req, res) => {
       updatedGroup.members = updatedGroup.members.map(m => Object.assign({}, {email: m.email}))
 
       let updatedNotInGroup = notInGroup.map(m => Object.assign({}, {email:m.email}))
-      let updatedMembersNotFound = membersNotFound.map(m => Object.assign({}, {email:m.email}))
+      let updatedMembersNotFound = membersNotFound.map(m => Object.assign({}, {email: m}))
+
+        console.log(updatedMembersNotFound)
 
       res.status(200).json({
         data: {

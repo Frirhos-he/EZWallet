@@ -1753,18 +1753,16 @@ describe("removeFromGroup", () => {
     name: "group",
     members: [
       {
-        "email": "admin@h.it",
+        "email": "c@h.it",
         "user": {
           "$oid": "646f05ef5c3ec64b397b687d"
         },
-        "_id": {
-          "$oid": "646fbc575851291a20a32d16"
-        }
       }
   ]
   });
 
     await removeFromGroup(mockReq,mockRes);
+
     expect(mockRes.json).toHaveBeenCalledWith({ 
       data:{
         notInGroup: [],
@@ -2027,27 +2025,27 @@ describe("removeFromGroup", () => {
         emails:["ch@d.it", "ch@c.it"]
       },
       url: "noturl"
-  };
-  const mockRes = {
-    status: jest.fn().mockReturnThis(),
-    json:   jest.fn(),
-    locals: {
-      refreshedTokenMessage: "",
-     }
-  };
-  verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
-  checkMissingOrEmptyParams.mockReturnValue(false)
-  jest.spyOn(User, "find").mockReturnValue(   
-    [] 
-  );
-  jest.spyOn(Group, "findOne").mockReturnValue(   
-    { members: [{email:"ch@d.it"}, {email:"ch@c.it"}] });
+    };
+    const mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json:   jest.fn(),
+      locals: {
+        refreshedTokenMessage: "",
+      }
+    };
+    verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
+    checkMissingOrEmptyParams.mockReturnValue(false)
+    jest.spyOn(User, "find").mockReturnValue(   
+      [] 
+    );
+    jest.spyOn(Group, "findOne").mockReturnValue(   
+      { members: [{email:"ch@d.it"}, {email:"ch@c.it"}] });
 
-  await removeFromGroup(mockReq,mockRes);
-  expect(mockRes.status).toHaveBeenCalledWith(200);
-  expect(mockRes.json).toHaveBeenCalled();
-  expect(mockRes.json).toHaveBeenCalledWith(
-    {  data: {
+    await removeFromGroup(mockReq,mockRes);
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.json).toHaveBeenCalled();
+    expect(mockRes.json).toHaveBeenCalledWith({
+      data: {
          NotInGroup: [],
          group: {
            members:  [

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 jest.mock("jsonwebtoken");
 
-beforeEach (() =>{
+beforeAll (() =>{
     jest.clearAllMocks();
     jest.restoreAllMocks(); 
   })

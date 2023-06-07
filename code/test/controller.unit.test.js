@@ -21,7 +21,7 @@ import { verifyAuth, checkMissingOrEmptyParams, handleAmountFilterParams, handle
 jest.mock('../models/model.js');
 jest.mock('../controllers/utils')
 
-beforeEach (() =>{
+beforeAll (() =>{
   jest.clearAllMocks();
 })
 

@@ -49,7 +49,7 @@ afterAll(async () => {
 
 describe('register', () => {
   beforeAll(async () => {
-    await User.deleteMany();
+    await User.deleteMany({});
     const passwordGen = await bcrypt.hash("testPassword", 12);
     await User.create({
       username: "existing",
@@ -138,11 +138,14 @@ test('Existing email ', (done) => {
           })
           .catch((err) => done(err));
 });
+  afterAll(async () => {
+  await User.deleteMany({});
+});
 });
 
 describe("registerAdmin", () => { 
   beforeAll(async () => {
-    await User.deleteMany();
+    await User.deleteMany({});
     const passwordGen = await bcrypt.hash("testPassword", 12);
     await User.create({
       username: "existing",
@@ -231,11 +234,14 @@ describe("registerAdmin", () => {
             })
             .catch((err) => done(err));
   });
+  afterAll(async () => {
+    await User.deleteMany({});
+  });
 })
 
 describe('login', () => { 
   beforeAll(async () => {
-    await User.deleteMany();
+    await User.deleteMany({});
     const passwordGen = await bcrypt.hash("testPassword", 12);
     await User.create({
       username: "b",
@@ -317,11 +323,14 @@ describe('login', () => {
             })
             .catch((err) => done(err));
   });
+  afterAll(async () => {
+    await User.deleteMany({});
+  });
 });
 
 describe('logout', () => { 
   beforeAll(async () => {
-    await User.deleteMany();
+    await User.deleteMany({});
     await User.create({
       username: "b",
       email: "b@h.it",
@@ -380,5 +389,8 @@ describe('logout', () => {
             })
             .catch((err) => done(err));
           })
+  });
+  afterAll(async () => {
+    await User.deleteMany({});
   });
 });

@@ -11,7 +11,7 @@ jest.mock('jsonwebtoken');
 jest.mock('../models/model.js');
 jest.mock('../controllers/utils');
 
-  beforeEach (() =>{
+  beforeAll (() =>{
     jest.clearAllMocks();
     jest.restoreAllMocks(); 
   })

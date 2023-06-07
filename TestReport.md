@@ -56,35 +56,35 @@ API testing was conducted handling routes incoming requests and cofnirming the e
 
 | Functional Requirements covered |   Test(s) | 
 | ------------------------------- | ----------- | 
-|  FR1    | Manage users |
-| FR11 | register |
-| FR12| login |
-| FR13| logout | 
-| FR14 | registerAdmin |
-| FR15 | getUsers | 
-| FR16 | getUser | 
-| FR17 | deleteUser | 
-| FR2 | Manage groups |
-| FR21 | createGroup |
-| FR22| getGroups |
-| FR23| getGroup |
-| FR24| addToGroup | 
-| FR26| removeFromGroup |
-| FR28| deleteGroup |
-|  FR3   |  Manage  transactions| 
-|FR31| createTransaction| 
-|FR32| getAllTransactions | 
-| FR33| getTransactionsByUser  |
-| FR34| getTransactionsByUserByCategory|
-| FR35| getTransactionsByGroup | 
-| FR36| getTransactionsByGroupByCategory |
-| FR37| deleteTransaction | 
-| FR38| deleteTransactions |
-|  FR4  |  Manage categories |
-| FR41| createCategory | 
-| FR42| updateCategory | 
-| FR43| deleteCategory |
-| FR44 | getCategories | 
+|  FR1 Manage users   |  |
+| FR11 register| <ul><li></li><li></li><li></li><li></li> </ul> |
+| FR12 login|  |
+| FR13 logout|  | 
+| FR14 registerAdmin|  |
+| FR15 getUsers |  | 
+| FR16 getUser|  | 
+| FR17 deleteUser |  | 
+| FR2 Manage groups | |
+| FR21 createGroup |  |
+| FR22 getGroups|  |
+| FR23 getGroup |  |
+| FR24 addToGroup|  | 
+| FR26 removeFromGroup|  |
+| FR28 deleteGroup|  |
+|  FR3   Manage  transactions|  | 
+|FR31 createTransaction| | 
+|FR32 getAllTransactions|  | 
+| FR33 getTransactionsByUser|   |
+| FR34 getTransactionsByUserByCategory| |
+| FR35 getTransactionsByGroup|  | 
+| FR36 getTransactionsByGroupByCategory|  |
+| FR37 deleteTransaction|  | 
+| FR38 deleteTransactions  |
+|  FR4  Manage categories|   |
+| FR41 createCategory |  | 
+| FR42 updateCategory|  | 
+| FR43 deleteCategory|  |
+| FR44 getCategories |  | 
 
 
 

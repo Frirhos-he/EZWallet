@@ -1,4 +1,4 @@
-import { decode } from "jsonwebtoken";
+
 import { Group, User } from "../models/User.js";
 import { transactions } from "../models/model.js";
 import { verifyAuth, checkMissingOrEmptyParams } from "./utils.js";

@@ -869,6 +869,18 @@ describe("getTransactionsByUser", () => {
       type: "investment",
       date: today,
     });
+    await transactions.create({
+      username: "tokenuser",
+      amount: 50,
+      type: "investment",
+      date: today,
+    });
+    await transactions.create({
+      username: "tokenuser",
+      amount: 20,
+      type: "investment",
+      date: today.setDate(today.getDate()-100),
+    });
   });
 
   test("should return all transactions by a specific user", (done) => {
@@ -902,6 +914,23 @@ describe("getTransactionsByUser", () => {
       })
       .catch((err) => done(err));
   });
+
+  test("should return all transactions by a specific user filtered date and amount", (done) => {
+    request(app)
+      .get(`/api/transactions/users/tokenuser/?max=30&from=2023-06-07`)
+      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
+      .then((response) => {
+        console.log(response.body)
+        expect(response.status).toBe(200);
+        expect(response.body.data[0].username).toBe("tokenuser");
+        expect(response.body.data[0].amount).toBe(12.54);
+        expect(response.body.data[0].type).toBe("investment");
+        expect(response.body.data[0].color).toBe("blue");
+        done();
+      })
+      .catch((err) => done(err));
+  });
+
 
   test("should return an error of authentication (user token instead of admin)", (done) => {
     request(app)

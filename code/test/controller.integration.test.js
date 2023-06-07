@@ -46,11 +46,13 @@ afterAll(async () => {
 });
 
 describe("createCategory", () => { 
-      beforeAll(async () => {
-        await categories.create({
-            type: "gym",
-            color: "#FFFFFF",
-        });
+    beforeAll(async () => {
+        await categories.deleteMany().then(async () => {
+            await categories.create({
+                type: "gym",
+                color: "#FFFFFF",
+            });
+        })
     });
     
     test('should create a new category successfully', (done) => {
@@ -188,37 +190,41 @@ describe("createCategory", () => {
 describe("updateCategory", () => { 
     const today = new Date();
     beforeAll(async () => {
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await categories.create({
-            type: "third",
-            color: "yellow",
-        });
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+            await categories.create({
+                type: "third",
+                color: "yellow",
+            });
+        })
 
-        await transactions.create({
-            username: "u",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
-        await transactions.create({
-            username: "u",
-            amount: 12.54,
-            type: "work",
-            date: today,
-        });
-        await transactions.create({
-            username: "a",
-            amount: 12.54,
-            type: "work",
-            date: today,
-        });
+        await transactions.deleteMany().then(async() => {
+            await transactions.create({
+                username: "u",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+            await transactions.create({
+                username: "u",
+                amount: 12.54,
+                type: "work",
+                date: today,
+            });
+            await transactions.create({
+                username: "a",
+                amount: 12.54,
+                type: "work",
+                date: today,
+            });
+        })
     });
 
     test('should update a category successfully', (done) => {
@@ -375,33 +381,37 @@ describe("updateCategory", () => {
 describe("deleteCategory", () => { 
     const today = new Date();
     beforeAll(async () => {
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
+        await categories.deleteMany().then(async () => {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
 
-        await transactions.create({
-            username: "u",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
-        await transactions.create({
-            username: "u",
-            amount: 12.54,
-            type: "work",
-            date: today,
-        });
-        await transactions.create({
-            username: "a",
-            amount: 12.54,
-            type: "work",
-            date: today,
-        });
+        await transactions.deleteMany().then(async () => {
+            await transactions.create({
+                username: "u",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+            await transactions.create({
+                username: "u",
+                amount: 12.54,
+                type: "work",
+                date: today,
+            });
+            await transactions.create({
+                username: "a",
+                amount: 12.54,
+                type: "work",
+                date: today,
+            });
+        })
     });
 
     test('should delete a category successfully', (done) => {
@@ -554,14 +564,16 @@ describe("deleteCategory", () => {
 
 describe("getCategories", () => { 
     beforeAll(async () => {
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
+        await categories.deleteMany().then(async ()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
     });
 
     test('should return all the categories', (done) => {
@@ -610,21 +622,25 @@ describe("getCategories", () => {
 
 describe("createTransaction", () => { 
     beforeAll(async () => {
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
+        await User.deleteMany().then(async () => {
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
         })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
     });
 
     test('should create a new transaction successfully', (done) => {
@@ -816,29 +832,36 @@ describe("createTransaction", () => {
 describe("getAllTransactions", () => {
     const today = new Date();
     beforeAll(async () => {
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
-        })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-       
-        await transactions.deleteMany().then(async () => {
-            await transactions.create({
+        await User.deleteMany().then(async()=> {
+            await User.create({
                 username: "tokenuser",
-                amount: 12.54,
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
+        })
+
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
                 type: "investment",
-                date: today,
+                color: "blue",
             });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
+       
+        await transactions.deleteMany().then(async()=>{
+            await transactions.deleteMany().then(async () => {
+                await transactions.create({
+                    username: "tokenuser",
+                    amount: 12.54,
+                    type: "investment",
+                    date: today,
+                });
+            })
         })
     }); 
     
@@ -900,27 +923,33 @@ describe("getAllTransactions", () => {
 describe("getTransactionsByUser", () => { 
     const today = new Date();
     beforeAll(async () => {
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
+        await User.deleteMany().then(async()=> {
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
         })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
+        await transactions.deleteMany().then(async()=> {
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+        })
     }); 
     
     test('should return all transactions by a specific user', (done) => {
@@ -1015,27 +1044,33 @@ describe("getTransactionsByUser", () => {
 describe("getTransactionsByUserByCategory", () => { 
     const today = new Date();
     beforeAll(async () => {
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
+        await User.deleteMany().then(async()=> {
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
         })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
+        await transactions.deleteMany().then(async()=> {
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+        })
     }); 
     
     test('should return all transactions by a specific user', (done) => {
@@ -1148,36 +1183,46 @@ describe("getTransactionsByGroup", () => {
     const today = new Date();
     beforeAll(async () => {
         let _id = null
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
-        }).then(async () => {
-            await User.findOne({username: "tokenuser"})
-            .then((o) => _id = o._id)
+        
+        await User.deleteMany().then(async ()=>{
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
+            .then(async () => {await User.findOne({username: "tokenuser"})
+            .then((o) => _id = o._id)})
         })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
+        
+        await categories.deleteMany().then(async ()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
 
-        await Group.create({
-            name: "group1",
-            members : [
-                { email: "token@token.token", user: _id }
-            ]
+        await transactions.deleteMany().then(async()=>{
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+        })
+
+        await Group.deleteMany().then(async()=> {
+            await Group.create({
+                name: "group1",
+                members : [
+                    { email: "token@token.token", user: _id }
+                ]
+            })
         })
     }); 
     
@@ -1275,36 +1320,46 @@ describe("getTransactionsByGroupByCategory", () => {
     const today = new Date();
     beforeAll(async () => {
         let _id = null
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.com",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
-        }).then(async () => {
-            await User.findOne({username: "tokenuser"})
-            .then((o) => _id = o._id)
+        
+        await User.deleteMany().then(async ()=>{
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.com",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
+            .then(async () => {await User.findOne({username: "tokenuser"})
+            .then((o) => _id = o._id)})
         })
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
+        
+        await categories.deleteMany().then(async ()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
+        })
 
-        await Group.create({
-            name: "group1",
-            members : [
-                { email: "token@token.token", user: _id }
-            ]
+        await transactions.deleteMany().then(async()=>{
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+        })
+
+        await Group.deleteMany().then(async()=> {
+            await Group.create({
+                name: "group1",
+                members : [
+                    { email: "token@token.token", user: _id }
+                ]
+            })
         })
     }); 
     
@@ -1404,40 +1459,46 @@ describe("deleteTransaction", () => {
     let transaction2 = "";
     
     beforeAll(async () => {
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.token",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
         })
-        await User.create({
-            username: "tokenadmin",
-            email: "admin@admin.admin",
-            password: "token",
-            refreshToken: adminToken,
-            role: "Regular"
+        await User.deleteMany().then(async()=> {
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.token",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
+            await User.create({
+                username: "tokenadmin",
+                email: "admin@admin.admin",
+                password: "token",
+                refreshToken: adminToken,
+                role: "Regular"
+            })
         })
-        transaction1 = await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
-        transaction2 = await transactions.create({
-            username: "tokenuser",
-            amount: 14213,
-            type: "work",
-            date: today,
-        });
+        await transactions.deleteMany().then(async()=> {
+            transaction1 = await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+            transaction2 = await transactions.create({
+                username: "tokenuser",
+                amount: 14213,
+                type: "work",
+                date: today,
+            });
+        })
     }); 
     
     test('should successfully delete a transaction of a specific user', (done) => {
@@ -1574,45 +1635,51 @@ describe("deleteTransactions", () => {
     let transaction2 = "";
     
     beforeAll(async () => {
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
+        await transactions.deleteMany().then(async()=> {
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            })
+            .then(() => transactions.findOne({amount: 12.54}))
+            .then(o => transaction1 = o._id);
+    
+            await transactions.create({
+                username: "tokenuser",
+                amount: 14213,
+                type: "work",
+                date: today,
+            })        
+            .then(() => transactions.findOne({amount: 14213}))
+            .then(o => transaction2 = o._id);
         })
-        .then(() => transactions.findOne({amount: 12.54}))
-        .then(o => transaction1 = o._id);
 
-        await transactions.create({
-            username: "tokenuser",
-            amount: 14213,
-            type: "work",
-            date: today,
-        })        
-        .then(() => transactions.findOne({amount: 14213}))
-        .then(o => transaction2 = o._id);
-
-        await categories.create({
-            type: "investment",
-            color: "blue",
-        });
-        await categories.create({
-            type: "work",
-            color: "red",
-        });
-        await User.create({
-            username: "tokenuser",
-            email: "token@token.token",
-            password: "token",
-            refreshToken: userToken,
-            role: "Regular"
+        await categories.deleteMany().then(async()=> {
+            await categories.create({
+                type: "investment",
+                color: "blue",
+            });
+            await categories.create({
+                type: "work",
+                color: "red",
+            });
         })
-        await User.create({
-            username: "tokenadmin",
-            email: "admin@admin.admin",
-            password: "token",
-            refreshToken: adminToken,
-            role: "Regular"
+        await User.deleteMany().then(async()=> {
+            await User.create({
+                username: "tokenuser",
+                email: "token@token.token",
+                password: "token",
+                refreshToken: userToken,
+                role: "Regular"
+            })
+            await User.create({
+                username: "tokenadmin",
+                email: "admin@admin.admin",
+                password: "token",
+                refreshToken: adminToken,
+                role: "Regular"
+            })
         })
     }); 
     

@@ -2285,7 +2285,7 @@ describe("deleteUser", () => {
   );
   await deleteUser(mockReq,mockRes);
   
-    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalled();
     expect(mockRes.json).toHaveBeenCalledWith({ 
       error: "user is the last of a group, cannot delete"

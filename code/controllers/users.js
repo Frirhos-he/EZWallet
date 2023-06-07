@@ -210,7 +210,7 @@ export const getGroup = async (req, res) => {
       if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
         
-      let group = await Group.findOne({ name: groupName }).lean();
+      let group = await Group.findOne({ name: groupName });
       if (!group)
         return res.status(400).json({ error: "The group doesn't exist" })
 
@@ -223,9 +223,11 @@ export const getGroup = async (req, res) => {
               return res.status(401).json({ error: groupAuth.cause }) 
       }
 
+      let updatedMembers = group.members.map(m => Object.assign({}, {email:m.email, user:m.user}))
+
       group = {
         name: group.name,
-        members: group.members.map(({ _id, ...rest }) => rest)
+        members: updatedMembers
       };
       res.status(200).json({ data: group , refreshedTokenMessage: res.locals.refreshedTokenMessage })      
     } catch (err) {

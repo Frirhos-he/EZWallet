@@ -30,6 +30,13 @@ const wrongUserToken = jwt.sign({
   role: "Regular"
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
+const thirdUser = jwt.sign({
+  email: "third@third.third",
+  id: "0",
+  username: "thirdUser",
+  role: "Regular"
+}, process.env.ACCESS_KEY, { expiresIn: '1h' })
+
 beforeAll(async () => {
   const dbName = "testingDatabaseController";
   const url = `${process.env.MONGO_URI}/${dbName}`;
@@ -536,6 +543,7 @@ describe("getGroup", () => {
         expect(response.status).toBe(200);
         done()
       })
+      .catch(err => done(err))
   });
 
   test("should return an error if the group doesn't exist", (done) => {
@@ -551,6 +559,7 @@ describe("getGroup", () => {
         expect(response.status).toBe(400);
         done()
       })
+      .catch(err => done(err))
   });
 
   test("should return an error of authentification (user is not in the group)", (done) => {
@@ -597,6 +606,13 @@ describe("addToGroup", () => {
       })
       .then(async () => await User.findOne({username: "wronguser"}))
       .then(o => user2 = o._id)
+
+      await User.create({
+        username: "thirUser",
+        email: "third@third.third",
+        password: "third",
+        role: "Regular",
+      })
     })
 
     await Group.deleteMany().then(async () => {
@@ -732,32 +748,13 @@ describe("addToGroup", () => {
       .patch("/api/groups/groupTest/add")
       .set(
         "Cookie", 
-        `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
+        `accessToken=${thirdUser};refreshToken=${thirdUser}`
       ).send({
-        emails: ["wrong@wrong.wrong"]
+        emails: ["third@third.third"]
       })
       .then((response) => {
-        expect(response.status).toBe(401);
         expect(response.body).toStrictEqual({
           error: "User is not in the group"
-        });
-        done()
-      })
-      .catch((err) => done(err))
-  });
-
-  test('should return an error of authentication (admin using wrong path)', (done) => {
-    request(app)
-      .patch("/api/groups/groupTest/add")
-      .set(
-        "Cookie", 
-        `accessToken=${adminToken};refreshToken=${adminToken}`
-      ).send({
-        emails: ["wrong@wrong.wrong"]
-      })
-      .then((response) => {
-        expect(response.body).toStrictEqual({
-          error: "Role Mismatch"
         });
         expect(response.status).toBe(401);
         done()

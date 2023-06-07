@@ -112,15 +112,11 @@ describe("getUsers", () => {
         .catch((err) => done(err))
     })
   })
-  afterEach(async () => {
-    await Group.deleteMany()
-    await User.deleteMany()
 
   afterAll(async () => {
     await User.deleteMany()
   })
 
-})
 })
 
 describe("getUser", () => { 

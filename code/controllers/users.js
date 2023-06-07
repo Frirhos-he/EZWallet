@@ -418,6 +418,19 @@ export const removeFromGroup = async (req, res) => {
           .status(400)
           .json({ error: "All the members either don't exist or are not in the group" });
 
+      let membersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+      let deleteMembers = membersInGroup.members.map(u => u.email);
+      deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))
+
+      if(deleteMembers.length === membersInGroup.members.length ){
+        if(deleteMembers.length == 1){
+          return res.status(400).json({ error: 'if the group only has one member ' })
+        }
+        const firstUser = deleteMembers.shift();        // to delete the first member of the group
+        memberEmails = memberEmails.filter(x=> x != firstUser)
+      }
+
+
       // Remove the specified users from the group
       let updatedGroup = await Group.findOneAndUpdate(
         { name: groupName },

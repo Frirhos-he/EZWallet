@@ -391,7 +391,7 @@ describe("createGroup", () => {
           name: "newgroup",
           members: [{ email: "email1@gmail.com", user: "0"}, { email: "creator@gmail.com", user: "10" }]
         },
-        alreadyInGroup: foundInGroup[0].members,
+        alreadyInGroup: [Object.assign({}, {email: foundInGroup[0].members[0].email})],
         membersNotFound: ["notexisting@gmail.com"]
       },
       refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
@@ -940,11 +940,11 @@ describe("getGroups", () => {
 
     await getGroups(mockReq, mockRes)
 
-    expect(mockRes.status).toHaveBeenCalledWith(200)
     expect(mockRes.json).toHaveBeenCalledWith({ 
       data: groups,
       refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
     });
+    expect(mockRes.status).toHaveBeenCalledWith(200)
   })
 
   test('should return an error of authentication', async () => {

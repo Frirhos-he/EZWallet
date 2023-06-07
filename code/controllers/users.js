@@ -348,7 +348,7 @@ export const addToGroup = async (req, res) => {
 export const removeFromGroup = async (req, res) => {
     try {
       const groupName = req.params.name;
-      const memberEmails = req.body.emails;
+      let memberEmails = req.body.emails;
 
       let message;
       if((message = checkMissingOrEmptyParams([groupName])))
@@ -428,6 +428,7 @@ export const removeFromGroup = async (req, res) => {
         }
         const firstUser = deleteMembers.shift();        // to delete the first member of the group
         memberEmails = memberEmails.filter(x=> x != firstUser)
+        console.log("firstUser")
       }
 
 

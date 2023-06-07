@@ -2024,7 +2024,7 @@ describe("removeFromGroup", () => {
     error: "All the members either don't exist or are not in the group" })
   })
   
-  test('if the group has same number to delete', async () => {
+  test('if the group has same number members to delete, 200 but leave just one', async () => {
     const mockReq = {
       params: {
         name: "group"
@@ -2044,27 +2044,28 @@ describe("removeFromGroup", () => {
     verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
     checkMissingOrEmptyParams.mockReturnValue(false)
     jest.spyOn(User, "find").mockReturnValue(   
-      [] 
+      [{email:"ch@d.it"}, {email:"ch@c.it"}] 
     );
     jest.spyOn(Group, "findOne").mockReturnValue(   
-      { members: [{email:"ch@d.it"}, {email:"ch@c.it"}] });
-
+      { name:"group",members: [{email:"ch@d.it"}, {email:"ch@c.it"}] });
+      jest.spyOn(Group, "findOneAndUpdate").mockReturnValue(   
+        { name:"group",members: [ {email:"ch@c.it"}] });
+  
     await removeFromGroup(mockReq,mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(200);
     expect(mockRes.json).toHaveBeenCalled();
     expect(mockRes.json).toHaveBeenCalledWith({
       data: {
-         NotInGroup: [],
+         notInGroup: [],
          group: {
            members:  [
-             "ch@d.it",
+            {email:
+             "ch@c.it"},
            ],
            name: "group",
          },
          membersNotFound: [
-           "ch@d.it",
-           "ch@c.it",
-         ],
+         ]
        },
        refreshedTokenMessage: ""
   })
@@ -2090,7 +2091,7 @@ describe("removeFromGroup", () => {
   verifyAuth.mockReturnValue({flag: true, cause:"Authorized"})
   checkMissingOrEmptyParams.mockReturnValue(false)
   jest.spyOn(User, "find").mockReturnValue(   
-    [] 
+    [{email:"ch@s.it"}] 
   );
   jest.spyOn(Group, "findOne").mockReturnValue(   
     { members: [{email:"ch@s.it"}] });

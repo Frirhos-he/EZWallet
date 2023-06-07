@@ -1179,7 +1179,7 @@ describe("getTransactionsByUserByCategory", () => {
     });
 })
 
-describe("getTransactionsByGroup", () => { 
+describe("getTransactionsByGroup",   () => { 
     const today = new Date();
     beforeAll(async () => {
         let _id = null

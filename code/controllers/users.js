@@ -513,24 +513,23 @@ export const removeFromGroup = async (req, res) => {
           !group.members.map((u) => u.email).includes(m.email) &&
           !membersNotFound.includes(m.email)
       );
-  
-      if (notInGroup.length + membersNotFound === memberEmails.length)
+
+      if ((notInGroup.length + membersNotFound.length) === memberEmails.length)
         return res
-          .status(401)
+          .status(400)
           .json({ message: "All the members either don't exist or are not in the group" });
-  
+
       // Remove the specified users from the group
       let updatedGroup = await Group.findOneAndUpdate(
         { name: groupName },
         { $pull: { members: { email: { $in: memberEmails } } } },
         { new: true }
       );
-  
       updatedGroup = Object.assign(
         {},
         { name: updatedGroup.name, members: updatedGroup.members }
       );
-  
+
       updatedGroup.members = updatedGroup.members.map(m => Object.assign({}, {email: m.email, user: m.user}))
 
       res.status(200).json({

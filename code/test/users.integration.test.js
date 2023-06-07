@@ -123,15 +123,17 @@ describe("getUser", () => {
   /**
    * Database is cleared before each test case, in order to allow insertion of data tailored for each specific test case.
    */
-    beforeEach(async () => {
-      await User.deleteMany({})
-      await User.create({
-        username: "tokenuser",
-        email: "token@token.token",
-        password: "token",
-        role: "Regular",
-        refreshToken: userToken
-      });
+    beforeAll(async () => {
+      await User.deleteMany({}).then(async () =>{
+        await User.create({
+          username: "tokenuser",
+          email: "token@token.token",
+          password: "token",
+          role: "Regular",
+          refreshToken: userToken
+        });
+      })
+
     });
   
     test("should retrieve infos of a specific users", (done) => {
@@ -201,34 +203,37 @@ describe("createGroup", () => {
   let user1 = "";
   let user2 = "";
 
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await User.create({
-      username: "tokenuser",
-      email: "token@token.token",
-      password: "token",
-      role: "Regular",
-    })    
-    .then(async () => await User.findOne({username: "tokenuser"}))
-    .then(o => user1 = o._id)
-
-    await User.create({
-      username: "wronguser",
-      email: "wrong@wrong.wrong",
-      password: "token",
-      role: "Regular",
+  beforeAll(async () => {
+    await User.deleteMany().then(async () => {
+      await User.create({
+        username: "tokenuser",
+        email: "token@token.token",
+        password: "token",
+        role: "Regular",
+      })    
+      .then(async () => await User.findOne({username: "tokenuser"}))
+      .then(o => user1 = o._id)
+  
+      await User.create({
+        username: "wronguser",
+        email: "wrong@wrong.wrong",
+        password: "token",
+        role: "Regular",
+      })
+      .then(async () => await User.findOne({username: "wronguser"}))
+      .then(o => user2 = o._id)
     })
-    .then(async () => await User.findOne({username: "wronguser"}))
-    .then(o => user2 = o._id)
 
-    await Group.create({
-      name: "groupTest",
-      members: [{email: "token@token.token", user: user1}],
-    });
+    await Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "groupTest",
+        members: [{email: "token@token.token", user: user1}],
+      });
+    })
   });
 
-  test("should create a group successfully", async () => {
-    await request(app)
+  test("should create a group successfully", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -249,11 +254,12 @@ describe("createGroup", () => {
             membersNotFound: ["missing@missing.missing"]
           },
         });
+        done()
       })
   });
 
-  test("should return an error if the body is incomplete", async () => {
-    await request(app)
+  test("should return an error if the body is incomplete", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -266,11 +272,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: 'Missing values'
         });
+        done()
       })
   });
 
-  test("should return an error if the name in the body is an empty string", async () => {
-    await request(app)
+  test("should return an error if the name in the body is an empty string", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -284,11 +291,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: "Empty string values"
         });
+        done()
       })
   });
 
-  test("should return an error when there's already a group with the same name", async () => {
-    await request(app)
+  test("should return an error when there's already a group with the same name", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -302,11 +310,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: 'There is already an existing gruop with the same name'
         });
+        done()
       })
   });
 
-  test("should return an error if all members are already in a group or don't exist", async () => {
-    await request(app)
+  test("should return an error if all members are already in a group or don't exist", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -320,11 +329,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: 'All the members have emails that don\'t exist or are already inside anothre group'
         });
+        done()
       })
   });
 
-  test("should return an error if the user who calls the api is already in a group", async () => {
-    await request(app)
+  test("should return an error if the user who calls the api is already in a group", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -338,11 +348,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: 'User who called the Api is in a group'
         });
+        done()
       })
   });
 
-  test("should return an error if an email is invalid", async () => {
-    await request(app)
+  test("should return an error if an email is invalid", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -356,11 +367,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: "Invalid email format"
         });
+        done()
       })
   });
 
-  test("should return an error if an email is an empty string", async () => {
-    await request(app)
+  test("should return an error if an email is an empty string", (done) => {
+    request(app)
       .post("/api/groups")
       .set(
         "Cookie", 
@@ -374,11 +386,12 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: "Empty email"
         });
+        done()
       })
   });
 
-  test('should return an error of authentication (missing token)', async () => {
-    await request(app)
+  test('should return an error of authentication (missing token)', (done) => {
+    request(app)
       .post("/api/groups")
       .send({
         name: "group1",
@@ -388,6 +401,7 @@ describe("createGroup", () => {
         expect(response.body).toStrictEqual({
           error: "Unauthorized"
         });
+        done()
       })
   });
 
@@ -403,32 +417,36 @@ describe("getGroups", () => {
   let user2 = "";
 
   beforeAll(async () => {
-    await User.create({
-      username: "tokenuser",
-      email: "token@token.token",
-      password: "token",
-      role: "Regular",
-    })    
-    .then(async () => await User.findOne({username: "tokenuser"}))
-    .then(o => user1 = o._id)
-
-    await User.create({
-      username: "wronguser",
-      email: "wrong@wrong.wrong",
-      password: "token",
-      role: "Regular",
+    await User.deleteMany().then(async () => {
+      await User.create({
+        username: "tokenuser",
+        email: "token@token.token",
+        password: "token",
+        role: "Regular",
+      })    
+      .then(async () => await User.findOne({username: "tokenuser"}))
+      .then(o => user1 = o._id)
+  
+      await User.create({
+        username: "wronguser",
+        email: "wrong@wrong.wrong",
+        password: "token",
+        role: "Regular",
+      })
+      .then(async () => await User.findOne({username: "wronguser"}))
+      .then(o => user2 = o._id)
     })
-    .then(async () => await User.findOne({username: "wronguser"}))
-    .then(o => user2 = o._id)
 
-    await Group.create({
-      name: "groupTest",
-      members: [{email: "token@token.token", user: user1}],
-    });
+    await Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "groupTest",
+        members: [{email: "token@token.token", user: user1}],
+      });
+    })
   });
 
-  test("should retrieve list of all groups", async () => {
-    await request(app)
+  test("should retrieve list of all groups", (done) => {
+    request(app)
       .get("/api/groups")
       .set(
         "Cookie", 
@@ -442,12 +460,13 @@ describe("getGroups", () => {
             },
           ]
         });
+        done()
         expect(response.status).toBe(200);
       })
   });
 
-  test("should return an error of authentification (user token)", async () => {
-    await request(app)
+  test("should return an error of authentification (user token)", (done) => {
+    request(app)
       .get("/api/groups")
       .set(
         "Cookie", 
@@ -457,6 +476,7 @@ describe("getGroups", () => {
         expect(response.body).toStrictEqual({
           error: "Mismatch role"
         });
+        done()
       })
   });
 
@@ -471,32 +491,36 @@ describe("getGroup", () => {
   let user2 = "";
 
   beforeAll(async () => {
-    await User.create({
-      username: "tokenuser",
-      email: "token@token.token",
-      password: "token",
-      role: "Regular",
-    })    
-    .then(async () => await User.findOne({username: "tokenuser"}))
-    .then(o => user1 = o._id)
-
-    await User.create({
-      username: "wronguser",
-      email: "wrong@wrong.wrong",
-      password: "token",
-      role: "Regular",
+    await User.deleteMany().then(async () => {
+      await User.create({
+        username: "tokenuser",
+        email: "token@token.token",
+        password: "token",
+        role: "Regular",
+      })    
+      .then(async () => await User.findOne({username: "tokenuser"}))
+      .then(o => user1 = o._id)
+  
+      await User.create({
+        username: "wronguser",
+        email: "wrong@wrong.wrong",
+        password: "token",
+        role: "Regular",
+      })
+      .then(async () => await User.findOne({username: "wronguser"}))
+      .then(o => user2 = o._id)
     })
-    .then(async () => await User.findOne({username: "wronguser"}))
-    .then(o => user2 = o._id)
 
-    await Group.create({
-      name: "groupTest",
-      members: [{email: "token@token.token", user: user1}],
-    });
+    await Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "groupTest",
+        members: [{email: "token@token.token", user: user1}],
+      });
+    })
   });
 
-  test("should return the group passed in the url", async () => {
-    await request(app)
+  test("should return the group passed in the url", (done) => {
+    request(app)
       .get("/api/groups/groupTest")
       .set(
         "Cookie", 
@@ -510,11 +534,12 @@ describe("getGroup", () => {
             },
         });
         expect(response.status).toBe(200);
+        done()
       })
   });
 
-  test("should return an error if the group doesn't exist", async () => {
-    await request(app)
+  test("should return an error if the group doesn't exist", (done) => {
+    request(app)
       .get("/api/groups/groupnotfound")
       .set(
         "Cookie", 
@@ -524,11 +549,12 @@ describe("getGroup", () => {
           error: "The group doesn't exist"
         });
         expect(response.status).toBe(400);
+        done()
       })
   });
 
-  test("should return an error of authentification (user is not in the group)", async () => {
-    await request(app)
+  test("should return an error of authentification (user is not in the group)", (done) => {
+    request(app)
       .get("/api/groups/groupTest")
       .set(
         "Cookie", 
@@ -538,6 +564,7 @@ describe("getGroup", () => {
         expect(response.body).toStrictEqual({
           error: "User is not in the group"
         });
+        done()
       })
   });
 
@@ -549,59 +576,64 @@ describe("getGroup", () => {
 
 describe("removeFromGroup", () => {
   var bulma,pluto,pippo,goku;
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await Group.deleteMany({})
-     pippo = await User.create({
-      username: "pippo",
-      email: "pippo@h.it",
-      password: "pippo",
-      role: "Admin",
-      refreshToken: adminToken
-  });
-     pluto = await User.create({
-      username: "pluto",
-      email: "pluto@h.it",
-      password: "pluto",
-      refreshToken: userToken,
-      role: "Regular",
-  });
-   bulma = await User.create({
-    username: "bulma",
-    email: "bulma@h.it",
-    password: "bulma",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-  goku = await User.create({
-    username: "goku",
-    email: "goku@h.it",
-    password: "goku",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-  await Group.create({
-    name: "g1",
-    members: [
-        {
-            email: pluto.email,
-            user: pluto._id,
-        },
-        { 
-          email: pippo.email,
-          user: pippo._id,
-        }
-    ]
-  });
-  await Group.create({
-    name: "g2",
-    members: [
-        {
-            email: bulma.email,
-            user: bulma._id,
-        }
-    ]
-  });
+  beforeAll(async () => {
+    
+    await User.deleteMany().then(async () => {
+      pippo = await User.create({
+        username: "pippo",
+        email: "pippo@h.it",
+        password: "pippo",
+        role: "Admin",
+        refreshToken: adminToken
+      });
+      pluto = await User.create({
+          username: "pluto",
+          email: "pluto@h.it",
+          password: "pluto",
+          refreshToken: userToken,
+          role: "Regular",
+      });
+      bulma = await User.create({
+        username: "bulma",
+        email: "bulma@h.it",
+        password: "bulma",
+        refreshToken: adminToken,
+        role: "Regular",
+      });
+      goku = await User.create({
+        username: "goku",
+        email: "goku@h.it",
+        password: "goku",
+        refreshToken: adminToken,
+        role: "Regular",
+      })
+    })
+
+    Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "g1",
+        members: [
+            {
+                email: pluto.email,
+                user: pluto._id,
+            },
+            { 
+              email: pippo.email,
+              user: pippo._id,
+            }
+        ]
+      });
+      await Group.create({
+        name: "g2",
+        members: [
+            {
+                email: bulma.email,
+                user: bulma._id,
+            }
+        ]
+      });
+    })
+  
   })
   test("nominal scenario admin", (done) => {
     request(app)
@@ -628,60 +660,64 @@ describe("removeFromGroup", () => {
 
 describe("deleteUser", () => {
   var bulma,pluto,pippo,goku;
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await Group.deleteMany({})
-     pippo = await User.create({
-      username: "pippo",
-      email: "pippo@h.it",
-      password: "pippo",
-      role: "Admin",
-      refreshToken: adminToken
-  });
-     pluto = await User.create({
-      username: "pluto",
-      email: "pluto@h.it",
-      password: "pluto",
-      refreshToken: userToken,
+  beforeAll(async () => {
+    await User.deleteMany().then(async () => {
+      pippo = await User.create({
+        username: "pippo",
+        email: "pippo@h.it",
+        password: "pippo",
+        role: "Admin",
+        refreshToken: adminToken
+    });
+      pluto = await User.create({
+        username: "pluto",
+        email: "pluto@h.it",
+        password: "pluto",
+        refreshToken: userToken,
+        role: "Regular",
+    });
+    bulma = await User.create({
+      username: "bulma",
+      email: "bulma@h.it",
+      password: "bulma",
+      refreshToken: adminToken,
       role: "Regular",
-  });
-   bulma = await User.create({
-    username: "bulma",
-    email: "bulma@h.it",
-    password: "bulma",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-  goku = await User.create({
-    username: "goku",
-    email: "goku@h.it",
-    password: "goku",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-  await Group.create({
-    name: "g1",
-    members: [
-        {
-            email: pluto.email,
-            user: pluto._id,
-        },
-        { 
-          email: pippo.email,
-          user: pippo._id,
-        }
-    ]
-  });
-  await Group.create({
-    name: "g2",
-    members: [
-        {
-            email: bulma.email,
-            user: bulma._id,
-        }
-    ]
-  });
+    });
+    goku = await User.create({
+      username: "goku",
+      email: "goku@h.it",
+      password: "goku",
+      refreshToken: adminToken,
+      role: "Regular",
+    });
+    })
+    
+    await Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "g1",
+        members: [
+            {
+                email: pluto.email,
+                user: pluto._id,
+            },
+            { 
+              email: pippo.email,
+              user: pippo._id,
+            }
+        ]
+      });
+      await Group.create({
+        name: "g2",
+        members: [
+            {
+                email: bulma.email,
+                user: bulma._id,
+            }
+        ]
+      });
+    })
   })
+  
   test("nominal scenario admin", (done) => {
     request(app)
       .delete("/api/users")
@@ -702,8 +738,9 @@ describe("deleteUser", () => {
         done();
       })
       .catch((err) => done(err))
-    })
-    test("user in a group alone", (done) => {
+  })
+  
+  test("user in a group alone", (done) => {
       request(app)
         .delete("/api/users")
         .send(
@@ -721,7 +758,8 @@ describe("deleteUser", () => {
           done();
         })
         .catch((err) => done(err))
-      })
+  })
+
   test("missing params admin", (done) => {
       request(app)
         .delete("/api/users")
@@ -739,7 +777,8 @@ describe("deleteUser", () => {
           done();
         })
         .catch((err) => done(err))
-      })
+  })
+
   test("not admin", (done) => {
         request(app)
           .delete("/api/users")
@@ -757,7 +796,8 @@ describe("deleteUser", () => {
             done();
           })
           .catch((err) => done(err))
-        })
+  })
+
   test("email wrong format ", (done) => {
           request(app)
             .delete("/api/users")
@@ -775,67 +815,77 @@ describe("deleteUser", () => {
               done();
             })
             .catch((err) => done(err))
-          })
-          test("email doens't exists ", (done) => {
-            request(app)
-              .delete("/api/users")
-              .send(
-                  {"email": "b@h.it"}
-              )
-              .set(
-                "Cookie",
-                `accessToken=${adminToken};refreshToken=${adminToken}`
-              )
-              .then((response) => {
-                expect(response.status).toBe(400)
-                expect(response.body).toStrictEqual({"error": "The user doesn't exist"})
-                //TODO
-                done();
-              })
-              .catch((err) => done(err))
-            })
+  })
+
+  test("email doens't exists ", (done) => {
+    request(app)
+      .delete("/api/users")
+      .send(
+          {"email": "b@h.it"}
+      )
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.status).toBe(400)
+        expect(response.body).toStrictEqual({"error": "The user doesn't exist"})
+        //TODO
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  afterAll(async() => {
+    User.deleteMany()
+    Group.deleteMany()
+  })
  })
 
 describe("deleteGroup", () => { 
   var bulma,pluto,pippo;
-  beforeEach(async () => {
-    await User.deleteMany({})
-    await Group.deleteMany({})
-     pippo = await User.create({
-      username: "pippo",
-      email: "pippo@h.it",
-      password: "pippo",
-      role: "Admin",
-      refreshToken: adminToken
-  });
-     pluto = await User.create({
-      username: "pluto",
-      email: "pluto@h.it",
-      password: "pluto",
-      refreshToken: userToken,
-      role: "Regular",
-  });
-   bulma = await User.create({
-    username: "bulma",
-    email: "bulma@h.it",
-    password: "bulma",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-    await Group.create({
-      name: "g1",
-      members: [
-          {
-              email: pluto.email,
-              user: pluto._id,
-          },
-          { 
-            email: pippo.email,
-            user: pippo._id,
-          }
-      ],
-    });
+  beforeAll(async () => {
+    await User.deleteMany().then(async () => {
+      pippo = await User.create({
+        username: "pippo",
+        email: "pippo@h.it",
+        password: "pippo",
+        role: "Admin",
+        refreshToken: adminToken
+      });
+       pluto = await User.create({
+        username: "pluto",
+        email: "pluto@h.it",
+        password: "pluto",
+        refreshToken: userToken,
+        role: "Regular",
+      });
+      bulma = await User.create({
+        username: "bulma",
+        email: "bulma@h.it",
+        password: "bulma",
+        refreshToken: adminToken,
+        role: "Regular",
+      });
+    })
+    
+    await Group.deleteMany().then(async()=> {
+      await Group.create({
+        name: "g1",
+        members: [
+            {
+                email: pluto.email,
+                user: pluto._id,
+            },
+            { 
+              email: pippo.email,
+              user: pippo._id,
+            }
+        ],
+      });
+    })
   })
+  
   test("nominal scenario admin", (done) => {
     request(app)
       .delete("/api/groups")
@@ -852,7 +902,8 @@ describe("deleteGroup", () => {
         done();
       })
       .catch((err) => done(err))
-    })
+  })
+  
   test("missing params admin", (done) => {
       request(app)
         .delete("/api/groups")
@@ -870,47 +921,50 @@ describe("deleteGroup", () => {
           done();
         })
         .catch((err) => done(err))
-      })
-    test(" not admin", (done) => {
+  })
+    
+  test("not admin", (done) => {
+      request(app)
+        .delete("/api/groups")
+        .send(
+            {"name":"group"}
+        )
+        .set(
+          "Cookie",
+          `accessToken=${userToken};refreshToken=${userToken}`
+        )
+        .then((response) => {
+          expect(response.status).toBe(401)
+          expect(response.body).toStrictEqual({ error: "Mismatch role"})
+          //TODO
+          done();
+        })
+        .catch((err) => done(err))
+  })
+  
+  test("group doesn't exist", (done) => {
         request(app)
-          .delete("/api/groups")
-          .send(
-              {"name":"group"}
-          )
-          .set(
-            "Cookie",
-            `accessToken=${userToken};refreshToken=${userToken}`
-          )
+        .delete("/api/groups")
+        .send(
+            {"name":"g2"}
+        )
+        .set(
+          "Cookie",
+          `accessToken=${adminToken};refreshToken=${adminToken}`
+        )
           .then((response) => {
-            expect(response.status).toBe(401)
-            expect(response.body).toStrictEqual({ error: "Mismatch role"})
+            expect(response.body).toStrictEqual({ error: "The group doesn't exist"} )
+            expect(response.status).toBe(400)
+
             //TODO
             done();
           })
           .catch((err) => done(err))
-        })
-    test("group doesn't exist", (done) => {
-          request(app)
-          .delete("/api/groups")
-          .send(
-              {"name":"g2"}
-          )
-          .set(
-            "Cookie",
-            `accessToken=${adminToken};refreshToken=${adminToken}`
-          )
-            .then((response) => {
-              expect(response.body).toStrictEqual({ error: "The group doesn't exist"} )
-              expect(response.status).toBe(400)
-  
-              //TODO
-              done();
-            })
-            .catch((err) => done(err))
-          })
-    afterAll(async () => {
-      await Group.deleteMany()
-      await User.deleteMany()
+  })
 
-    })
+  afterAll(async () => {
+    await Group.deleteMany()
+    await User.deleteMany()
+
+  })
 })

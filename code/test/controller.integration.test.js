@@ -831,12 +831,15 @@ describe("getAllTransactions", () => {
             type: "work",
             color: "red",
         });
-        await transactions.create({
-            username: "tokenuser",
-            amount: 12.54,
-            type: "investment",
-            date: today,
-        });
+       
+        await transactions.deleteMany().then(async () => {
+            await transactions.create({
+                username: "tokenuser",
+                amount: 12.54,
+                type: "investment",
+                date: today,
+            });
+        })
     }); 
     
     test('should return all transactions by all users', (done) => {

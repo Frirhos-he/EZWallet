@@ -413,7 +413,7 @@ export const removeFromGroup = async (req, res) => {
           !membersNotFound.includes(m.email)
       );
 
-      if ((notInGroup.length + membersNotFound.length) === memberEmails.length)
+      if ((notInGroup.length + membersNotFound.length) >= memberEmails.length)
         return res
           .status(400)
           .json({ error: "All the members either don't exist or are not in the group" });

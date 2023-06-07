@@ -425,13 +425,20 @@ export const removeFromGroup = async (req, res) => {
             // Select the memberEmails email that are not in the group already
             let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
             
-            membersInGroup.members = membersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
+            
+            
+            
+            let modifiedMembersInGroup = { ...membersInGroup };
+            console.log(modifiedMembersInGroup.members+"  dwd")
+            modifiedMembersInGroup.members = modifiedMembersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
+
             const groupModel = new Group(membersInGroup)  //convert back to mongoose //added for testing TODO
             //Update modification on member array
             const updatedGroup = await groupModel.save();
 
             //Select the users left in the group
             let newMembersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+            console.log(newMembersInGroup + "  " +groupName)
                 newMembersInGroup = newMembersInGroup.members.map(u => u.email);
 
             res.status(200).json({ data: {group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound }, refreshedTokenMessage: res.locals.refreshedTokenMessage})

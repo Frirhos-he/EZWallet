@@ -389,7 +389,7 @@ describe("createGroup", () => {
       data: {
         group: {
           name: "newgroup",
-          members: [{ email: "email1@gmail.com", user: "0"}, { email: "creator@gmail.com", user: "10" }]
+          members: [{ email: "email1@gmail.com"}, { email: "creator@gmail.com" }]
         },
         alreadyInGroup: [Object.assign({}, {email: foundInGroup[0].members[0].email})],
         membersNotFound: ["notexisting@gmail.com"]
@@ -1299,14 +1299,14 @@ describe("addToGroup", () => {
         group: {
           name: "group1",
           members:[
-            { email: "mario.red@email.com", user: "5" }, 
-            { email: "luigi.red@email.com", user: "6" },
-            { email: "toadd1@gmail.com", user: "3" },
-            { email: "toadd2@gmail.com", user: "4" },
+            { email: "mario.red@email.com"}, 
+            { email: "luigi.red@email.com" },
+            { email: "toadd1@gmail.com" },
+            { email: "toadd2@gmail.com"},
           ]
         },
-        alreadyInGroup: foundInGroup[0].members,
-        membersNotFound: ["notexisting@gmail.com"]
+        alreadyInGroup: [Object.assign({}, {email: foundInGroup[0].members[0].email})],
+        membersNotFound: [{email: "notexisting@gmail.com"}]
       },
       refreshedTokenMessage: mockRes.locals.refreshedTokenMessage
     });

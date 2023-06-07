@@ -231,7 +231,7 @@ export const getGroup = async (req, res) => {
         name: group.name,
         members: updatedMembers
       };
-      res.status(200).json({ data: group , refreshedTokenMessage: res.locals.refreshedTokenMessage })      
+      res.status(200).json({ data: {group: group} , refreshedTokenMessage: res.locals.refreshedTokenMessage })      
     } catch (err) {
         res.status(400).json({ error: err.message })
     }

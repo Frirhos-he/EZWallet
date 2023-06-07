@@ -572,7 +572,7 @@ describe("getGroup", () => {
     await User.deleteMany()
     await Group.deleteMany()
   })
- })
+})
 
 describe("removeFromGroup", () => {
   var bulma,pluto,pippo,goku;
@@ -609,7 +609,7 @@ describe("removeFromGroup", () => {
       })
     })
 
-    Group.deleteMany().then(async () => {
+    await Group.deleteMany().then(async () => {
       await Group.create({
         name: "g1",
         members: [
@@ -635,6 +635,7 @@ describe("removeFromGroup", () => {
     })
   
   })
+  
   test("nominal scenario admin", (done) => {
     request(app)
       .patch("/api/groups/g1/pull")
@@ -645,18 +646,26 @@ describe("removeFromGroup", () => {
         `accessToken=${adminToken};refreshToken=${adminToken}`
       )
       .then((response) => {
-        expect(response.body).toStrictEqual(
-          {"data": {
-                 "deletedFromGroup": false,
-                 "deletedTransactions": 0,
-               }})
+        expect(response.body).toStrictEqual({
+          data: {
+            group: {
+              name: "g1",
+              members: [
+                  { 
+                    email: pippo.email,
+                    user: pippo._id.toString(),
+                  }
+              ]
+            },
+            membersNotFound: [],
+            notInGroup: [],
+          }
+        })
         expect(response.status).toBe(200)
-
-        //TODO
         done();
       })
       .catch((err) => done(err))})
- })
+})
 
 describe("deleteUser", () => {
   var bulma,pluto,pippo,goku;
@@ -754,7 +763,6 @@ describe("deleteUser", () => {
           expect(response.status).toBe(400)
           expect(response.body).toStrictEqual(
             {"error": "user is the last of a group, cannot delete"})
-          //TODO
           done();
         })
         .catch((err) => done(err))
@@ -840,7 +848,7 @@ describe("deleteUser", () => {
     User.deleteMany()
     Group.deleteMany()
   })
- })
+})
 
 describe("deleteGroup", () => { 
   var bulma,pluto,pippo;

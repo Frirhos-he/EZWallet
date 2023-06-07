@@ -1749,9 +1749,19 @@ describe("removeFromGroup", () => {
     [{ email: "c@h.it", _id:"cc" }, { email: "b@h.it", _id:"cc" }] 
   );
   
-  Group.prototype.save.mockResolvedValue({
-    name: "newgroup",
-    memberEmails: ["email1@gmail.com"]
+  jest.spyOn(Group,"findOneAndUpdate").mockResolvedValue({
+    name: "group",
+   members: [
+    {
+      "email": "admin@h.it",
+      "user": {
+        "$oid": "646f05ef5c3ec64b397b687d"
+      },
+      "_id": {
+        "$oid": "646fbc575851291a20a32d16"
+      }
+    }
+  ]
   });
 
   await removeFromGroup(mockReq,mockRes);
@@ -1759,13 +1769,15 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ 
     data:{
-         NotInGroup: [
-         "a@h.it",
+         notInGroup: [
          ],
          group:  {
-           members: [
-             "c@h.it",
-           ],
+           members:  [{
+                       "email": "admin@h.it",
+                       "user": {
+                        "$oid": "646f05ef5c3ec64b397b687d",
+                        }
+                     }],
            name: "group",
          },
          membersNotFound: [

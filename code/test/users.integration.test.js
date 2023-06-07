@@ -31,28 +31,26 @@ const wrongUserToken = jwt.sign({
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
 beforeAll(async () => {
-const dbName = "testingDatabaseController";
-const url = `${process.env.MONGO_URI}/${dbName}`;
+  const dbName = "testingDatabaseController";
+  const url = `${process.env.MONGO_URI}/${dbName}`;
 
-await mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
 });
 
 afterAll(async () => {
-await mongoose.connection.db.dropDatabase();
-await mongoose.connection.close();
+  await mongoose.connection.db.dropDatabase();
+  await mongoose.connection.close();
 });
 
 describe("getUsers", () => {
-  /**
-   * Database is cleared before each test case, in order to allow insertion of data tailored for each specific test case.
-   */
+
   beforeEach(async () => {
-    await User.deleteMany({})
-  });
+    await User.deleteMany()
+  })
 
   test("should return empty list if there are no users", (done) => {
     request(app)
@@ -118,7 +116,11 @@ describe("getUsers", () => {
     await Group.deleteMany()
     await User.deleteMany()
 
+  afterAll(async () => {
+    await User.deleteMany()
   })
+
+})
 })
 
 describe("getUser", () => { 
@@ -193,10 +195,9 @@ describe("getUser", () => {
         })
         .catch((err) => done(err))
     })
-    afterEach(async () => {
-      await Group.deleteMany()
-      await User.deleteMany()
 
+    afterAll(async () => {
+       await User.deleteMany()
     })
 })
 
@@ -402,10 +403,9 @@ describe("createGroup", () => {
       })
   });
 
-  afterEach(async () => {
-  await Group.deleteMany()
-   await User.deleteMany()
-
+  afterAll(async () => {
+    await User.deleteMany()
+    await Group.deleteMany()
   })
 
 });
@@ -459,10 +459,9 @@ describe("getGroups", () => {
       })
   });
 
-  afterEach(async () => {
-    await Group.deleteMany()
+  afterAll(async () => {
     await User.deleteMany()
-
+    await Group.deleteMany()
   })
 })
 
@@ -531,45 +530,45 @@ describe("getGroup", () => {
     })
  })
 
-describe("addToGroup", () => {
-  var bulma,pluto,pippo;
-  beforeEach(async () => {
-     pippo = await User.create({
+ describe("addToGroup", () => {
+   var bulma,pluto,pippo;
+   beforeEach(async () => {
+      pippo = await User.create({
       username: "pippo",
-      email: "pippo@h.it",
-      password: "pippo",
-      role: "Admin",
-      refreshToken: adminToken
-  });
-     pluto = await User.create({
-      username: "pluto",
-      email: "pluto@h.it",
-      password: "pluto",
-      refreshToken: userToken,
-      role: "Regular",
-  });
-   bulma = await User.create({
-    username: "bulma",
-    email: "bulma@h.it",
-    password: "bulma",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-    await Group.create({
-      name: "g1",
-      members: [
-          {
-              email: pluto.email,
-              user: pluto._id,
-          },
-          { 
-            email: pippo.email,
-            user: pippo._id,
-          }
-      ],
-    });
+       email: "pippo@h.it",
+       password: "pippo",
+       role: "Admin",
+       refreshToken: adminToken
+   });
+      pluto = await User.create({
+       username: "pluto",
+       email: "pluto@h.it",
+       password: "pluto",
+       refreshToken: userToken,
+       role: "Regular",
+   });
+    bulma = await User.create({
+     username: "bulma",
+     email: "bulma@h.it",
+     password: "bulma",
+     refreshToken: adminToken,
+     role: "Regular",
+   });
+     await Group.create({
+       name: "g1",
+       members: [
+           {
+               email: pluto.email,
+               user: pluto._id,
+           },
+           { 
+             email: pippo.email,
+             user: pippo._id,
+           }
+       ],
+     });
 
-  });
+   });
 
   test("nominal scenario admin", (done) => {
     request(app)

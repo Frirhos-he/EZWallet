@@ -2017,7 +2017,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.status).toHaveBeenCalledWith(400);
   expect(mockRes.json).toHaveBeenCalled();
   expect(mockRes.json).toHaveBeenCalledWith({ 
-    error: "All the members have emails that don\'t exist or are not in the group" })
+    error: "All the members either don't exist or are not in the group" })
   })
   test('if the group has same number to delete', async () => {
     const mockReq = {

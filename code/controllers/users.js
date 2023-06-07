@@ -521,7 +521,7 @@ export const removeFromGroup = async (req, res) => {
       if ((notInGroup.length + membersNotFound.length) === memberEmails.length)
         return res
           .status(400)
-          .json({ message: "All the members either don't exist or are not in the group" });
+          .json({ error: "All the members either don't exist or are not in the group" });
 
       // Remove the specified users from the group
       let updatedGroup = await Group.findOneAndUpdate(

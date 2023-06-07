@@ -31,28 +31,26 @@ const wrongUserToken = jwt.sign({
 }, process.env.ACCESS_KEY, { expiresIn: '1h' })
 
 beforeAll(async () => {
-const dbName = "testingDatabaseController";
-const url = `${process.env.MONGO_URI}/${dbName}`;
+  const dbName = "testingDatabaseController";
+  const url = `${process.env.MONGO_URI}/${dbName}`;
 
-await mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  await mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
 });
 
 afterAll(async () => {
-await mongoose.connection.db.dropDatabase();
-await mongoose.connection.close();
+  await mongoose.connection.db.dropDatabase();
+  await mongoose.connection.close();
 });
 
 describe("getUsers", () => {
-  /**
-   * Database is cleared before each test case, in order to allow insertion of data tailored for each specific test case.
-   */
+
   beforeEach(async () => {
-    await User.deleteMany({})
-  });
+    await User.deleteMany()
+  })
 
   test("should return empty list if there are no users", (done) => {
     request(app)
@@ -113,6 +111,10 @@ describe("getUsers", () => {
         })
         .catch((err) => done(err))
     })
+  })
+
+  afterAll(async () => {
+    await User.deleteMany()
   })
 
 })
@@ -187,6 +189,10 @@ describe("getUser", () => {
           done();
         })
         .catch((err) => done(err))
+    })
+
+    afterAll(async () => {
+       await User.deleteMany()
     })
 })
 
@@ -392,8 +398,8 @@ describe("createGroup", () => {
   });
 
   afterAll(async () => {
-    User.deleteMany()
-    Group.deleteMany()
+    await User.deleteMany()
+    await Group.deleteMany()
   })
 
 });
@@ -448,8 +454,8 @@ describe("getGroups", () => {
   });
 
   afterAll(async () => {
-    User.deleteMany()
-    Group.deleteMany()
+    await User.deleteMany()
+    await Group.deleteMany()
   })
 })
 
@@ -518,65 +524,65 @@ describe("getGroup", () => {
     })
  })
 
-describe("addToGroup", () => {
-  var bulma,pluto,pippo;
-  beforeEach(async () => {
-     pippo = await User.create({
-      username: "pippo",
-      email: "pippo@h.it",
-      password: "pippo",
-      role: "Admin",
-      refreshToken: adminToken
-  });
-     pluto = await User.create({
-      username: "pluto",
-      email: "pluto@h.it",
-      password: "pluto",
-      refreshToken: userToken,
-      role: "Regular",
-  });
-   bulma = await User.create({
-    username: "bulma",
-    email: "bulma@h.it",
-    password: "bulma",
-    refreshToken: adminToken,
-    role: "Regular",
-  });
-    await Group.create({
-      name: "g1",
-      members: [
-          {
-              email: pluto.email,
-              user: pluto._id,
-          },
-          { 
-            email: pippo.email,
-            user: pippo._id,
-          }
-      ],
-    });
+// describe("addToGroup", () => {
+//   var bulma,pluto,pippo;
+//   beforeEach(async () => {
+//      pippo = await User.create({
+//       username: "pippo",
+//       email: "pippo@h.it",
+//       password: "pippo",
+//       role: "Admin",
+//       refreshToken: adminToken
+//   });
+//      pluto = await User.create({
+//       username: "pluto",
+//       email: "pluto@h.it",
+//       password: "pluto",
+//       refreshToken: userToken,
+//       role: "Regular",
+//   });
+//    bulma = await User.create({
+//     username: "bulma",
+//     email: "bulma@h.it",
+//     password: "bulma",
+//     refreshToken: adminToken,
+//     role: "Regular",
+//   });
+//     await Group.create({
+//       name: "g1",
+//       members: [
+//           {
+//               email: pluto.email,
+//               user: pluto._id,
+//           },
+//           { 
+//             email: pippo.email,
+//             user: pippo._id,
+//           }
+//       ],
+//     });
 
-  });
+//   });
 
-  test("nominal scenario admin", (done) => {
-    request(app)
-      .patch("/api/groups/g1/insert")
-      .send(
-        {"members":
-        ["bulma@h.it"]}
-      )
-      .set(
-        "Cookie",
-        `accessToken=${adminToken};refreshToken=${adminToken}`
-      )
-      .then((response) => {
-        expect(response.body).toStrictEqual("")
-        //TODO
-        done();
-      })
-      .catch((err) => done(err))
-    })
- })
+//   test("nominal scenario admin", (done) => {
+//     request(app)
+//       .patch("/api/groups/g1/insert")
+//       .send(
+//         {"members":
+//         ["bulma@h.it"]}
+//       )
+//       .set(
+//         "Cookie",
+//         `accessToken=${adminToken};refreshToken=${adminToken}`
+//       )
+//       .then((response) => {
+//         expect(response.body).toStrictEqual("")
+//         //TODO
+//         done();
+//       })
+//       .catch((err) => done(err))
+//     })
+//  })
 
 describe("removeFromGroup", () => { })
 

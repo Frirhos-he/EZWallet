@@ -536,11 +536,12 @@ describe("getGroup", () => {
         `accessToken=${adminToken};refreshToken=${adminToken}`
       ).then((response) => {
         expect(response.body).toStrictEqual({
-          data: 
-            {
+          data: {
+            group: {
               name: "groupTest",
               members: [{email: "token@token.token"}],
             },
+          }
         });
         expect(response.status).toBe(200);
         done()
@@ -639,7 +640,7 @@ describe("addToGroup", () => {
           data: {
               group: {
                 name: "groupTest",
-                members: [{email: "token@token.token", user: user1.toString()}, {email: "wrong@wrong.wrong", user: user2.toString()}]
+                members: [{email: "token@token.token"}, {email: "wrong@wrong.wrong"}]
               },
               alreadyInGroup: [],
               membersNotFound: []

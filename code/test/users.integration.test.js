@@ -255,9 +255,9 @@ describe("createGroup", () => {
           data: {
             group: {
               name: "group1",
-              members: [{email: "wrong@wrong.wrong", user: user2.toString()}]
+              members: [{email: "wrong@wrong.wrong"}]
             },
-            alreadyInGroup: [{email: "token@token.token", user: user1.toString()}],
+            alreadyInGroup: [{email: "token@token.token"}],
             membersNotFound: ["missing@missing.missing"]
           },
         });
@@ -463,13 +463,14 @@ describe("getGroups", () => {
           data: [
             {
               name: "groupTest",
-              members: [{email: "token@token.token", user: user1.toString()}],
+              members: [{email: "token@token.token"}],
             },
           ]
         });
-        done()
         expect(response.status).toBe(200);
+        done()
       })
+      .catch(err => done(err))
   });
 
   test("should return an error of authentification (user token)", (done) => {
@@ -485,6 +486,7 @@ describe("getGroups", () => {
         });
         done()
       })
+      .catch(err => done(err))
   });
 
   afterAll(async () => {
@@ -537,7 +539,7 @@ describe("getGroup", () => {
           data: 
             {
               name: "groupTest",
-              members: [{email: "token@token.token", user: user1.toString()}],
+              members: [{email: "token@token.token"}],
             },
         });
         expect(response.status).toBe(200);
@@ -866,7 +868,6 @@ describe("removeFromGroup", () => {
               members: [
                   { 
                     email: pippo.email,
-                    user: pippo._id.toString(),
                   }
               ]
             },

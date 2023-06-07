@@ -574,6 +574,222 @@ describe("getGroup", () => {
   })
 })
 
+describe("addToGroup", () => {
+  let user1 = "";
+  let user2 = "";
+
+  beforeAll(async () => {
+    await User.deleteMany().then(async () => {
+      await User.create({
+        username: "tokenuser",
+        email: "token@token.token",
+        password: "token",
+        role: "Regular",
+      })    
+      .then(async () => await User.findOne({username: "tokenuser"}))
+      .then(o => user1 = o._id)
+  
+      await User.create({
+        username: "wronguser",
+        email: "wrong@wrong.wrong",
+        password: "token",
+        role: "Regular",
+      })
+      .then(async () => await User.findOne({username: "wronguser"}))
+      .then(o => user2 = o._id)
+    })
+
+    await Group.deleteMany().then(async () => {
+      await Group.create({
+        name: "groupTest",
+        members: [{email: "token@token.token", user: user1}],
+      });
+    })
+  });
+
+  test("should add to the group the members passed in the body", (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: ["wrong@wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          data: {
+              group: {
+                name: "groupTest",
+                members: [{email: "token@token.token", user: user1.toString()}, {email: "wrong@wrong.wrong", user: user2.toString()}]
+              },
+              alreadyInGroup: [],
+              membersNotFound: []
+          },
+        });
+        expect(response.status).toBe(200);
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test("should return an error if the body doesn't contain all attributes", (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "member emails not defined"
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test("should return an error if the group doesn't exist", (done) => {
+    request(app)
+      .patch("/api/groups/wrongGroup/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: ["wrong@wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "The group doesn't exist"
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test("should return an error if all the emails are already in group or not existing", (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: ["token@token.token"]
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: 'All the members have emails that don\'t exist or are already inside anothre group'
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test("should return an error if at least one email is invalid (fromat)", (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: ["wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Invalid email format" 
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test("should return an error if at least one email is an empty string", (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: [""]
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Empty email" 
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test('should return an error of authentication (user is not in the group)', (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/add")
+      .set(
+        "Cookie", 
+        `accessToken=${wrongUserToken};refreshToken=${wrongUserToken}`
+      ).send({
+        emails: ["wrong@wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.status).toBe(401);
+        expect(response.body).toStrictEqual({
+          error: "User is not in the group"
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test('should return an error of authentication (admin using wrong path)', (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/add")
+      .set(
+        "Cookie", 
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      ).send({
+        emails: ["wrong@wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "Role Mismatch"
+        });
+        expect(response.status).toBe(401);
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  test('should return an error of authentication (user using wrong path)', (done) => {
+    request(app)
+      .patch("/api/groups/groupTest/insert")
+      .set(
+        "Cookie", 
+        `accessToken=${userToken};refreshToken=${userToken}`
+      ).send({
+        emails: ["wrong@wrong.wrong"]
+      })
+      .then((response) => {
+        expect(response.status).toBe(401);
+        expect(response.body).toStrictEqual({
+          error: "Mismatch role"
+        });
+        done()
+      })
+      .catch((err) => done(err))
+  });
+
+  afterAll(async () => {
+    await User.deleteMany()
+    await Group.deleteMany()
+  })
+})
+
 describe("removeFromGroup", () => {
   var bulma,pluto,pippo,goku;
   beforeAll(async () => {

@@ -319,7 +319,7 @@ export const addToGroup = async (req, res) => {
         { new: true }
       )
 
-      updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members })
+      updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members.map(m => Object.assign({}, {email:m.email, user:m.user})) })
 
       return res.status(200).json({ 
         data: {

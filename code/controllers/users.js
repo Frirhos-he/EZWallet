@@ -346,103 +346,106 @@ export const addToGroup = async (req, res) => {
 }
 
 export const removeFromGroup = async (req, res) => {
-  try {
+    try {
+      const groupName = req.params.name;
+      const memberEmails = req.body.emails;
 
-    const groupName = req.params.name;
-    const memberEmails = req.body.emails;
-        //Check for missing or empty string parameter
-    let message;
-    if((message = checkMissingOrEmptyParams([groupName])))
-          return res.status(400).json({ error: message });
-    if(memberEmails == null || memberEmails == undefined  )
-         return res.status(400).json({ error: "member emails not defined"});     
-      
-    const group = await Group.findOne({ name: groupName });
+      let message;
+      if((message = checkMissingOrEmptyParams([groupName])))
+            return res.status(400).json({ error: message });
+      if(memberEmails == null || memberEmails == undefined  )
+          return res.status(400).json({ error: "member emails not defined"});     
+          
+      const group = await Group.findOne({ name: groupName });
       if (!group)
-        return res.status(400).json({ error: "The group doesn't exist" })
+          return res.status(400).json({ error: "The group doesn't exist" })
 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
 
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
-
-    // Iterate over each email in the vector
-    for (const email of memberEmails) {
-      // Check if the email is empty
-      if (email.trim() === "") {
-          return res.status(400).json({ error: "Empty email" });
+      // Iterate over each email in the vector
+      for (const email of memberEmails) {
+        // Check if the email is empty
+        if (email.trim() === "") {
+            return res.status(400).json({ error: "Empty email" });
+        }
+        
+        // Check if the email is in a valid format
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Invalid email format" });
+        }
       }
 
-      // Check if the email is in a valid format
-      if (!emailRegex.test(email)) {
-          return res.status(400).json({ error: "Invalid email format" });
-      }
-    }
+      const startIndexAdmin = req.url.indexOf("groups/");
+      const endIndexAdmin = req.url.indexOf("/pull");
+      //startIndex < endIndex ensure that startIndex happens before endIndex
 
-    const startIndexAdmin = req.url.indexOf("groups/");
-    const endIndexAdmin = req.url.indexOf("/pull");
-    //startIndex < endIndex ensure that startIndex happens before endIndex
-
-    if (startIndexAdmin >= 0 && endIndexAdmin >= 0 && startIndexAdmin < endIndexAdmin) { //admin 
-      const adminAuth = verifyAuth(req, res, { authType: "Admin" })
-      if (!adminAuth.flag)
-          return res.status(401).json({ error:" adminAuth: " + adminAuth.cause }) 
+      if (startIndexAdmin >= 0 && endIndexAdmin >= 0 && startIndexAdmin < endIndexAdmin) { //admin 
+        const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+        if (!adminAuth.flag)
+            return res.status(401).json({ error:" adminAuth: " + adminAuth.cause }) 
       } else {    //user of the group    
-      const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
-       if(!groupAuth.flag)
-          return res.status(401).json({ error: "groupAuth: " + groupAuth.cause })       
+        const groupAuth = verifyAuth(req, res, { authType: "Group", members: group.members })
+        if(!groupAuth.flag)
+            return res.status(401).json({ error: "groupAuth: " + groupAuth.cause })       
       }
-            // Retrieve the list of all users
-            let allUsers = await User.find({})
-            allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
+  
+      // Retrieve the list of users with their id from memberEmails
+      let memberUsers = await User.find({ email: { $in: memberEmails } });
+      memberUsers = memberUsers.map((v) =>
+        Object.assign({}, { email: v.email, user: v._id })
+      );
+  
+      // Retrieve the list of all users
+      let allUsers = await User.find({});
+      allUsers = allUsers.map((v) =>
+        Object.assign({}, { email: v.email, user: v._id })
+      );
+  
+      // Select not existing members
+      const membersNotFound = memberEmails.filter(
+        (e) => !allUsers.map((u) => u.email).includes(e)
+      );
+  
+      // Select members not in the group
+      const notInGroup = memberUsers.filter(
+        (m) =>
+          !group.members.map((u) => u.email).includes(m.email) &&
+          !membersNotFound.includes(m.email)
+      );
 
-            // Select not existing members
-            const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
- 
-            // Select members already in the group that will be deleted
-            let deleteMembers = await Group.findOne({name: groupName}, {members: 1, _id: 0})
+      if ((notInGroup.length + membersNotFound.length) === memberEmails.length)
+        return res
+          .status(400)
+          .json({ error: "All the members either don't exist or are not in the group" });
 
-            deleteMembers = deleteMembers.members.map(u => u.email);
+      // Remove the specified users from the group
+      let updatedGroup = await Group.findOneAndUpdate(
+        { name: groupName },
+        { $pull: { members: { email: { $in: memberEmails } } } },
+        { new: true }
+      );
+      updatedGroup = Object.assign(
+        {},
+        { name: updatedGroup.name, members: updatedGroup.members }
+      );
+  
+      updatedGroup.members = updatedGroup.members.map(m => Object.assign({}, {email: m.email}))
 
-            deleteMembers = deleteMembers.filter(m => memberEmails.includes(m))
-            if (deleteMembers.length == 0) 
-              return res.status(400).json({ error: 'All the members have emails that don\'t exist or are not in the group' })
+      let updatedNotInGroup = notInGroup.map(m => Object.assign({}, {email:m.email}))
+      let updatedMembersNotFound = membersNotFound.map(m => Object.assign({}, {email:m.email}))
 
-            //Select emails on group
-            let membersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 1})
-
-            //check if the members to be delated are all of the group
-            if(deleteMembers.length === membersInGroup.members.length ){
-              if(deleteMembers.length == 1){
-                return res.status(400).json({ error: 'if the group only has one member ' })
-              }
-              const firstUser = deleteMembers.shift();        // to delete the first member of the group
-            }
-
-            // Select the memberEmails email that are not in the group already
-            let NotInGroup = memberEmails.filter(m => !membersInGroup.members.map(u => u.email).includes(m));
-            
-            
-            
-            
-            let modifiedMembersInGroup = { ...membersInGroup };
-            console.log(modifiedMembersInGroup.members+"  dwd")
-            modifiedMembersInGroup.members = modifiedMembersInGroup.members.filter(member => !deleteMembers.includes(member.email) );
-
-            const groupModel = new Group(membersInGroup)  //convert back to mongoose //added for testing TODO
-            //Update modification on member array
-            const updatedGroup = await groupModel.save();
-
-            //Select the users left in the group
-            let newMembersInGroup = await Group.findOne({name: groupName}, {members: 1, _id: 0})
-            console.log(newMembersInGroup + "  " +groupName)
-                newMembersInGroup = newMembersInGroup.members.map(u => u.email);
-
-            res.status(200).json({ data: {group: {name: groupName, members:newMembersInGroup}, NotInGroup: NotInGroup, membersNotFound: membersNotFound }, refreshedTokenMessage: res.locals.refreshedTokenMessage})
-  } catch (err) {
-      res.status(400).json({ error: err.message })
-  }
+      res.status(200).json({
+        data: {
+          group: updatedGroup,
+          notInGroup: updatedNotInGroup,
+          membersNotFound: updatedMembersNotFound,
+        }, 
+        refreshedTokenMessage: res.locals.refreshedTokenMessage
+      });
+    } catch (err) {
+      res.status(400).json({error: err.message});
+    }
 }
-
 
 /**
  * Delete a user

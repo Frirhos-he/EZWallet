@@ -1751,40 +1751,39 @@ describe("removeFromGroup", () => {
   
   jest.spyOn(Group,"findOneAndUpdate").mockResolvedValue({
     name: "group",
-   members: [
-    {
-      "email": "admin@h.it",
-      "user": {
-        "$oid": "646f05ef5c3ec64b397b687d"
-      },
-      "_id": {
-        "$oid": "646fbc575851291a20a32d16"
+    members: [
+      {
+        "email": "admin@h.it",
+        "user": {
+          "$oid": "646f05ef5c3ec64b397b687d"
+        },
+        "_id": {
+          "$oid": "646fbc575851291a20a32d16"
+        }
       }
-    }
   ]
   });
 
-  await removeFromGroup(mockReq,mockRes);
-  expect(mockRes.status).toHaveBeenCalledWith(200);
-  expect(mockRes.json).toHaveBeenCalled();
-  expect(mockRes.json).toHaveBeenCalledWith({ 
-    data:{
-         notInGroup: [
-         ],
-         group:  {
-           members:  [{
-                       "email": "admin@h.it",
-                       "user": {
-                        "$oid": "646f05ef5c3ec64b397b687d",
-                        }
-                     }],
-           name: "group",
-         },
-         membersNotFound: [
-           "a@h.it",
-         ],
-       },refreshedTokenMessage: ""});
+    await removeFromGroup(mockReq,mockRes);
+    expect(mockRes.json).toHaveBeenCalledWith({ 
+      data:{
+        notInGroup: [],
+        group: {
+          members:  [
+            { "email": "c@h.it"}
+          ],
+          name: "group",
+        },
+        membersNotFound: [
+          {email:"a@h.it"},
+        ],
+      },
+      refreshedTokenMessage: ""
+    })
+    expect(mockRes.status).toHaveBeenCalledWith(200);
+    expect(mockRes.json).toHaveBeenCalled();
   })
+  
   test('The group doesn t exist', async () => {
     const mockReq = {
       params: {

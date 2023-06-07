@@ -80,6 +80,7 @@ describe("createCategory", () => {
             type: "investment",
             color: "blue",
           },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();
@@ -234,6 +235,7 @@ describe("updateCategory", () => {
             message: "Category successfully updated",
             count: 1,
           },
+          refreshedTokenMessage: ""
         });
         done();
       })
@@ -396,6 +398,7 @@ describe("deleteCategory", () => {
         expect(response.status).toBe(200);
         expect(response.body).toStrictEqual({
           data: { message: "Categories deleted", count: 2 },
+          refreshedTokenMessage: ""
         });
         done();
       })
@@ -537,6 +540,7 @@ describe("getCategories", () => {
               color: "red",
             },
           ],
+          refreshedTokenMessage: ""
         });
         done();
       })
@@ -596,6 +600,7 @@ describe("createTransaction", () => {
         expect(response.body.data.username).toBe("tokenuser");
         expect(response.body.data.amount).toBe(43.2);
         expect(response.body.data.type).toBe("investment");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -802,6 +807,7 @@ describe("getAllTransactions", () => {
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");
         expect(response.body.data[0].color).toBe("blue");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -893,6 +899,7 @@ describe("getTransactionsByUser", () => {
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");
         expect(response.body.data[0].color).toBe("blue");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -920,7 +927,6 @@ describe("getTransactionsByUser", () => {
       .get(`/api/transactions/users/tokenuser/?max=30&from=2023-06-07`)
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
       .then((response) => {
-        console.log(response.body)
         expect(response.status).toBe(200);
         expect(response.body.data[0].username).toBe("tokenuser");
         expect(response.body.data[0].amount).toBe(12.54);
@@ -1019,6 +1025,7 @@ describe("getTransactionsByUserByCategory", () => {
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");
         expect(response.body.data[0].color).toBe("blue");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -1152,6 +1159,7 @@ describe("getTransactionsByGroup", () => {
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");
         expect(response.body.data[0].color).toBe("blue");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -1272,6 +1280,7 @@ describe("getTransactionsByGroupByCategory", () => {
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");
         expect(response.body.data[0].color).toBe("blue");
+        expect(response.body.refreshedTokenMessage).toBe("")
         done();
       })
       .catch((err) => done(err));
@@ -1399,6 +1408,7 @@ describe("deleteTransaction", () => {
         expect(response.status).toBe(200);
         expect(response.body).toStrictEqual({
           data: { message: "Transaction deleted" },
+          refreshedTokenMessage: ""
         });
         done();
       })
@@ -1497,7 +1507,7 @@ describe("deleteTransaction", () => {
   });
 });
 
-describe("deleteTransactions", () => {
+describe("deleteTransactions", () => {1
   const today = new Date();
   let transaction1 = "";
   let transaction2 = "";
@@ -1555,6 +1565,7 @@ describe("deleteTransactions", () => {
       .then((response) => {
         expect(response.body).toStrictEqual({
           data: { message: "Transactions deleted" },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();

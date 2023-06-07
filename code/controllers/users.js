@@ -22,6 +22,8 @@ export const getUsers = async (req, res) => {
       const users = await User.find();
       const userObject = users.map(v => Object.assign({}, { username: v.username, email: v.email, role: v.role }))
       
+      res.locals.refreshedTokenMessage = ""
+
       res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -50,6 +52,8 @@ export const getUser = async (req, res) => {
         if (!user) return res.status(400).json({ error: "User not found" })
       
       const userObject = Object.assign({}, { username: user.username, email: user.email, role: user.role })
+
+      res.locals.refreshedTokenMessage = ""
 
       res.status(200).json({ data: userObject , refreshedTokenMessage: res.locals.refreshedTokenMessage })
     } catch (error) {
@@ -149,6 +153,9 @@ export const createGroup = async (req, res) => {
 
         let updatedMembers = members.map(m => Object.assign({}, {email: m.email}))
         let updatedAlreadyInGroup = alreadyInGroup.map(m => Object.assign({}, {email: m.email}))
+        
+        res.locals.refreshedTokenMessage = ""
+
         // Creating a new group
         const newGroup = new Group({ name, members })
         newGroup.save()
@@ -180,6 +187,8 @@ export const getGroups = async (req, res) => {
       const adminAuth = verifyAuth(req, res, { authType: "Admin" })
       if (!adminAuth.flag)
           return res.status(401).json({ error: adminAuth.cause }) 
+
+          res.locals.refreshedTokenMessage = ""
 
       let groups = await Group.find({})
       groups = groups.map(v => {
@@ -226,6 +235,8 @@ export const getGroup = async (req, res) => {
       }
 
       let updatedMembers = group.members.map(m => Object.assign({}, {email:m.email}))
+
+      res.locals.refreshedTokenMessage = ""
 
       group = {
         name: group.name,
@@ -326,6 +337,8 @@ export const addToGroup = async (req, res) => {
       )
 
       updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members.map(m => Object.assign({}, {email:m.email})) })
+
+      res.locals.refreshedTokenMessage = ""
 
       return res.status(200).json({ 
         data: {
@@ -446,6 +459,8 @@ export const removeFromGroup = async (req, res) => {
       let updatedNotInGroup = notInGroup.map(m => Object.assign({}, {email:m.email}))
       let updatedMembersNotFound = membersNotFound.map(m => Object.assign({}, {email: m}))
 
+      res.locals.refreshedTokenMessage = ""
+
       res.status(200).json({
         data: {
           group: updatedGroup,
@@ -528,6 +543,8 @@ export const deleteUser = async (req, res) => {
       { $pull: { members: { email: userEmail } } }
     );
 
+    res.locals.refreshedTokenMessage = ""
+
     res.status(200).json({
       data: {
         deletedTransactions: transactionCount,
@@ -552,20 +569,27 @@ export const deleteGroup = async (req, res) => {
     const groupName = req.body.name;
 
     let message;
-    if((message = checkMissingOrEmptyParams([groupName])))
-        return res.status(400).json({ error: message });
+    if ((message = checkMissingOrEmptyParams([groupName])))
+      return res.status(400).json({ error: message });
 
-    const adminAuth = verifyAuth(req, res, { authType: "Admin" })
+    const adminAuth = verifyAuth(req, res, { authType: "Admin" });
     if (!adminAuth.flag)
-        return res.status(401).json({ error: adminAuth.cause }) 
+      return res.status(401).json({ error: adminAuth.cause });
 
     const group = await Group.findOne({ name: groupName });
     if (!group)
-      return res.status(400).json({ error: "The group doesn't exist" })
+      return res.status(400).json({ error: "The group doesn't exist" });
+
+    res.locals.refreshedTokenMessage = "";
 
     // Delete the group
     await Group.deleteOne({ name: groupName });
-    res.status(200).json({ data: { message: "Group deleted successfully" }, message: res.locals.refreshedToken });
+    res
+      .status(200)
+      .json({
+        data: { message: "Group deleted successfully" },
+        refreshedTokenMessage: res.locals.refreshedTokenMessage,
+      });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

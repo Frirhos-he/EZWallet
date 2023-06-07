@@ -90,6 +90,7 @@ describe("getUsers", () => {
             data: [
               { email: "test@test.com", role: "Regular", username: "tester" },
             ],
+            refreshedTokenMessage: ""
           });
 
           done();
@@ -142,6 +143,7 @@ describe("getUser", () => {
             role: "Regular",
             username: "tokenuser",
           },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
 
@@ -239,6 +241,7 @@ describe("createGroup", () => {
             alreadyInGroup: [{ email: "token@token.token" }],
             membersNotFound: ["missing@missing.missing"],
           },
+          refreshedTokenMessage: ""
         });
         done();
       })
@@ -467,6 +470,7 @@ describe("getGroups", () => {
               members: [{ email: "token@token.token" }],
             },
           ],
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();
@@ -530,6 +534,7 @@ describe("getGroup", () => {
               members: [{ email: "token@token.token" }],
             },
           },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();
@@ -625,6 +630,7 @@ describe("addToGroup", () => {
             alreadyInGroup: [],
             membersNotFound: [],
           },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();
@@ -832,6 +838,7 @@ describe("removeFromGroup", () => {
             membersNotFound: [],
             notInGroup: [],
           },
+          refreshedTokenMessage: ""
         });
         expect(response.status).toBe(200);
         done();
@@ -1019,6 +1026,7 @@ describe("deleteUser", () => {
             deletedFromGroup: false,
             deletedTransactions: 0,
           },
+          refreshedTokenMessage: ""
         });
         //TODO
         done();
@@ -1155,6 +1163,7 @@ describe("deleteGroup", () => {
       .then((response) => {
         expect(response.body).toStrictEqual({
           data: { message: "Group deleted successfully" },
+          refreshedTokenMessage: ""
         });
         //TODO
         done();

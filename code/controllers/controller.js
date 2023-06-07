@@ -12,7 +12,8 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
   - Returns a 400 error if the type of category passed in the request body represents an already existing category in the database 
   - Returns a 401 error if called by an authenticated user who is not an admin (authType = Admin) 
 
- */export const createCategory = async (req, res) => {
+ */
+export const createCategory = async (req, res) => {
     try {  
         const adminAuth = verifyAuth(req, res, { authType: "Admin" })
 
@@ -31,6 +32,7 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
         if (existingCategory) return res.status(400).json({ error: "Category already exists" });
         const new_categories = new categories({ type, color });
 
+        res.locals.refreshedTokenMessage = ""
         new_categories.save()
             .then(data => {
                 res.status(200).json({ 
@@ -43,7 +45,6 @@ import { handleDateFilterParams, handleAmountFilterParams, verifyAuth, checkMiss
         res.status(400).json({ error: error.message })
     }
 }
-
 
 /**
  * Edit a category's type or color  Done
@@ -94,6 +95,7 @@ export const updateCategory = async (req, res) => {
             { $set: { type: type } }
         );
 
+        res.locals.refreshedTokenMessage = ""
         return res.status(200).json({ 
             data: { message: "Category successfully updated", count: updateTransactions.modifiedCount },
             refreshedTokenMessage: res.locals.refreshedTokenMessage 
@@ -167,6 +169,7 @@ export const deleteCategory = async (req, res) => {
 
         const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 
+        res.locals.refreshedTokenMessage = ""
         return res.status(200).json({ 
             data: { message: "Categories deleted", count: (updateResult ? updateResult.modifiedCount : 0 ) },
             refreshedTokenMessage: res.locals.refreshedTokenMessage
@@ -195,6 +198,8 @@ export const getCategories = async (req, res) => {
         let data = await categories.find({})  
 
         let categoriesData = data.map(v => Object.assign({}, { type: v.type, color: v.color }))
+
+        res.locals.refreshedTokenMessage = ""
         return res.status(200).json({
             data: categoriesData,
             refreshedTokenMessage:res.locals.refreshedTokenMessage
@@ -256,6 +261,8 @@ export const createTransaction = async (req, res) => {
         }
 
         const new_transactions = new transactions({ username, amount, type });
+
+        res.locals.refreshedTokenMessage = ""
         new_transactions.save()
             .then(data => res.status(200).json({ 
                 data: { username: data.username, amount: data.amount , type: data.type, date: data.date }, 
@@ -284,6 +291,8 @@ export const getAllTransactions = async (req, res) => {
         /**
          * MongoDB equivalent to the query "SELECT * FROM transactions, categories WHERE transactions.type = categories.type"
          */
+        
+        res.locals.refreshedTokenMessage = ""
         
         transactions.aggregate([
             {
@@ -352,6 +361,9 @@ export const getTransactionsByUser = async (req, res) => {
         if (Object.keys(queryAmount).length !== 0 ){
             matchStage = { ...matchStage, ...queryAmount };
         }
+
+        res.locals.refreshedTokenMessage = ""
+
         //Query the MONGODB Transactions
         transactions.aggregate([
             { $match: matchStage},
@@ -410,6 +422,9 @@ export const getTransactionsByUserByCategory = async (req, res) => {
         if(!matchedCategory) {
             return res.status(400).json({ error: "The category does not exist" });
         }
+
+        res.locals.refreshedTokenMessage = ""
+
         transactions.aggregate([
             { $match: { username: username, type: category }},
             {
@@ -465,6 +480,8 @@ export const getTransactionsByGroup = async (req, res) => {
             const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
             const usernames = usersByUsername.map(user => user.username);
             
+            res.locals.refreshedTokenMessage = ""
+
             transactions.aggregate([
                 { $match: { username: { $in: usernames } } },
                 {
@@ -530,6 +547,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
         const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
 
+        res.locals.refreshedTokenMessage = ""
+
         transactions.aggregate([
             { $match: { username: { $in: usernames}, type: type } },
             {
@@ -567,47 +586,53 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
   - Returns a 401 error if called by an authenticated user who is not the same user as the one in the route (authType = User)
  */  //a regular user should be capable deleting only own transactions
 export const deleteTransaction = async (req, res) => {
-    try {
+  try {
+    const userAuth = verifyAuth(req, res, {
+      authType: "User",
+      username: req.params.username,
+    });
+    if (!userAuth.flag) return res.status(401).json({ error: userAuth.cause });
 
-        const userAuth = verifyAuth(req, res, { authType: "User", username: req.params.username })
-        if(!userAuth.flag)
-            return res.status(401).json({ error: userAuth.cause})
+    //Check for missing or empty string parameter
 
-        //Check for missing or empty string parameter
+    let message;
+    if ((message = checkMissingOrEmptyParams([req.body._id])))
+      return res.status(400).json({ error: message });
 
-        let message;
-        if((message = checkMissingOrEmptyParams([req.body._id])))
-                    return res.status(400).json({ error: message });
-        
-        //Search requested user
-        const username = req.params.username;
-        const matchedUserid = await User.findOne({username: username });
-        if(!matchedUserid) {
-            return res.status(400).json({ error : "The user does not exist" });
-        }
-
-        //Search requested transaction
-        const transactionId = req.body._id;
-        const matchedTransaction = await transactions.findOne({ _id: transactionId });
-        if(!matchedTransaction) {
-            return res.status(400).json({ error : "The transaction does not exist" });
-        }
-
-        //Check if the transaction was made by the user requesting deletion
-        if(matchedTransaction.username !== username){
-            return res.status(400).json({ error : "The transaction is not made by the requesting user" });
-        }
-
-        let data = await transactions.deleteOne({ _id: transactionId });
-        return res.status(200).json({ 
-            data: { message: "Transaction deleted" }, 
-            refreshedTokenMessage: res.locals.refreshedTokenMessage
-        });
-
-    } catch (error) {
-        res.status(400).json({ error: error.message })
+    //Search requested user
+    const username = req.params.username;
+    const matchedUserid = await User.findOne({ username: username });
+    if (!matchedUserid) {
+      return res.status(400).json({ error: "The user does not exist" });
     }
-}
+
+    //Search requested transaction
+    const transactionId = req.body._id;
+    const matchedTransaction = await transactions.findOne({
+      _id: transactionId,
+    });
+    if (!matchedTransaction) {
+      return res.status(400).json({ error: "The transaction does not exist" });
+    }
+
+    //Check if the transaction was made by the user requesting deletion
+    if (matchedTransaction.username !== username) {
+      return res
+        .status(400)
+        .json({ error: "The transaction is not made by the requesting user" });
+    }
+
+    res.locals.refreshedTokenMessage = "";
+
+    let data = await transactions.deleteOne({ _id: transactionId });
+    return res.status(200).json({
+      data: { message: "Transaction deleted" },
+      refreshedTokenMessage: res.locals.refreshedTokenMessage,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 /**
  * Delete multiple transactions identified by their ids
@@ -648,6 +673,8 @@ export const deleteTransactions = async (req, res) => {
 
         const result = await transactions.deleteMany({_id: { $in: transactionsToDelete }}); 
         
+        res.locals.refreshedTokenMessage = ""
+
         return res.status(200).json({ 
             data: { message: "Transactions deleted" }, 
             refreshedTokenMessage: res.locals.refreshedTokenMessage

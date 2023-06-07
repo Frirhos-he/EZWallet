@@ -2443,7 +2443,7 @@ describe("deleteGroup", () => {
     expect(mockRes.json).toHaveBeenCalled();
     expect(mockRes.json).toHaveBeenCalledWith({
       data: { message: "Group deleted successfully" },
-      message: mockRes.locals.refreshedToken,
+      refreshedTokenMessage: mockRes.locals.refreshedTokenMessage,
     });
   });
 

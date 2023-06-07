@@ -408,11 +408,9 @@ export const removeFromGroup = async (req, res) => {
   
       // Select members not in the group
       const notInGroup = memberUsers.filter(
-        (m) =>
-          !group.members.map((u) => u.email).includes(m.email) &&
-          !membersNotFound.includes(m.email)
+        (m) => !group.members.map((u) => u.email).includes(m.email)
       );
-
+       
       if ((notInGroup.length + membersNotFound.length) >= memberEmails.length)
         return res
           .status(400)

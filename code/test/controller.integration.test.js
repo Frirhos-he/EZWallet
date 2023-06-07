@@ -52,6 +52,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+
   await mongoose.connection.db.dropDatabase();
   await mongoose.connection.close();
 });
@@ -1075,20 +1076,22 @@ describe("getTransactionsByUserByCategory", () => {
 
 describe("getTransactionsByGroup", () => {
   const today = new Date();
+  let _id ;
   beforeAll(async () => {
-    let _id = null;
+
     await transactions.deleteMany({});
     await categories.deleteMany({});
-    await User.deleteMany({});
     await Group.deleteMany({});
-    await User.create({
+    await User.deleteMany({});
+
+    const createdUser = await User.create({
       username: "tokenuser",
       email: "token@token.token",
       password: "token",
       refreshToken: userToken,
       role: "Regular",
     });
-
+    _id = createdUser._id; // Assign the _id after user creation
     await categories.create({
       type: "investment",
       color: "blue",
@@ -1106,7 +1109,7 @@ describe("getTransactionsByGroup", () => {
     });
     await Group.create({
       name: "group1",
-      members: [{ email: "token@token.token", user: _id }],
+      members: [{ email: "token@token.token", user: _id }]
     });
   });
 
@@ -1115,7 +1118,6 @@ describe("getTransactionsByGroup", () => {
       .get("/api/groups/group1/transactions")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
       .then((response) => {
-        console.log(response.body)
         expect(response.status).toBe(200);
         expect(response.body.data[0].username).toBe("tokenuser");
         expect(response.body.data[0].amount).toBe(12.54);
@@ -1194,19 +1196,21 @@ describe("getTransactionsByGroup", () => {
 
 describe("getTransactionsByGroupByCategory", () => {
   const today = new Date();
+  let _id;
   beforeAll(async () => {
-    let _id = null;
+
     await categories.deleteMany({});
     await User.deleteMany({});
     await transactions.deleteMany({});
     await Group.deleteMany({});
-    await User.create({
-      username: "tokenuser",
-      email: "token@token.com",
-      password: "token",
-      refreshToken: userToken,
-      role: "Regular",
-    });
+    const createdUser = await User.create({
+        username: "tokenuser",
+        email: "token@token.token",
+        password: "token",
+        refreshToken: userToken,
+        role: "Regular",
+      });
+      _id = createdUser._id; // Assign the _id after user creation
 
     await categories.create({
       type: "investment",
@@ -1473,18 +1477,21 @@ describe("deleteTransactions", () => {
     await transactions.deleteMany({});
     await categories.deleteMany({});
     await User.deleteMany({});
-    transaction1 = await transactions.create({
+
+    const tr1 = await transactions.create({
       username: "tokenuser",
       amount: 12.54,
       type: "investment",
       date: today,
-    })._id;
-    transaction2 =await transactions.create({
+    });
+    transaction1 = tr1._id
+    const tr2 =await transactions.create({
       username: "tokenuser",
       amount: 14213,
       type: "work",
       date: today,
-    })._id;
+    });
+    transaction2 = tr2._id
     await categories.create({
       type: "investment",
       color: "blue",

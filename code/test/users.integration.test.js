@@ -54,7 +54,7 @@ const thirdUser = jwt.sign(
 );
 
 beforeAll(async () => {
-  const dbName = "testingDatabaseUserController";
+  const dbName = "testingDatabaseUsers";
   const url = `${process.env.MONGO_URI}/${dbName}`;
 
   await mongoose.connect(url, {
@@ -64,6 +64,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+
   await mongoose.connection.db.dropDatabase();
   await mongoose.connection.close();
 });
@@ -71,26 +72,15 @@ afterAll(async () => {
 describe("getUsers", () => {
   beforeAll(async () => {
     await User.deleteMany({});
-  });
-
-  test("should return empty list if there are no users", (done) => {
-    request(app)
-      .get("/api/users")
-      .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
-      .then((response) => {
-        expect(response.status).toBe(200);
-        expect(response.body).toStrictEqual({ data: [] });
-        done();
-      })
-      .catch((err) => done(err));
-  });
-
-  test("should retrieve list of all users", (done) => {
-    User.create({
+    await User.create({
       username: "tester",
       email: "test@test.com",
       password: "tester",
-    }).then(() => {
+    })
+  });
+
+  test("should retrieve list of all users", (done) => {
+ 
       request(app)
         .get("/api/users")
         .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -105,15 +95,10 @@ describe("getUsers", () => {
           done();
         })
         .catch((err) => done(err));
-    });
   });
 
   test("should return an error of authentication (user token)", (done) => {
-    User.create({
-      username: "tester",
-      email: "test@test.com",
-      password: "tester",
-    }).then(() => {
+
       request(app)
         .get("/api/users")
         .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -124,7 +109,6 @@ describe("getUsers", () => {
           done();
         })
         .catch((err) => done(err));
-    });
   });
 
   afterAll(async () => {

@@ -295,21 +295,23 @@ export const addToGroup = async (req, res) => {
 
       // Retrieve the list of users with their id from memberEmails
       let memberUsers = await User.find({ email: { $in: memberEmails } })
-      memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
+      memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email })) 
 
       // Retrieve the list of all users
       let allUsers = await User.find({})
-      allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
+      allUsers = allUsers.map(v => Object.assign({}, { email: v.email}))
 
       // Select not existing members
-      const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e))
-
+      const membersNotFound = memberEmails.filter(e => !allUsers.map(u => u.email).includes(e));
+      const membersNotFoundObjects = membersNotFound.map(email => ({ email }));
+      
       // Select already in a group members
       let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
       alreadyInGroup = alreadyInGroup.map(v =>  v.members) 
       alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+      alreadyInGroup = alreadyInGroup.map(v =>  Object.assign({}, { email: v.email})) 
       alreadyInGroup = alreadyInGroup.filter(m => memberEmails.includes(m.email))
-
+  
       // Select members to add to the group
       const newMembers = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
 
@@ -323,7 +325,7 @@ export const addToGroup = async (req, res) => {
         { new: true }
       )
 
-      updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members.map(m => Object.assign({}, {email:m.email, user:m.user})) })
+      updatedGroup = Object.assign({}, { name: updatedGroup.name, members: updatedGroup.members.map(m => Object.assign({}, {email:m.email})) })
 
       return res.status(200).json({ 
         data: {
@@ -332,7 +334,7 @@ export const addToGroup = async (req, res) => {
             members:updatedGroup.members
           }, 
           alreadyInGroup: alreadyInGroup, 
-          membersNotFound: membersNotFound
+          membersNotFound: membersNotFoundObjects
         }, 
         refreshedTokenMessage: res.locals.refreshedTokenMessage 
       })
@@ -410,19 +412,18 @@ export const removeFromGroup = async (req, res) => {
           !group.members.map((u) => u.email).includes(m.email) &&
           !membersNotFound.includes(m.email)
       );
-  
-      if (notInGroup.length + membersNotFound === memberEmails.length)
+
+      if ((notInGroup.length + membersNotFound.length) === memberEmails.length)
         return res
-          .status(401)
+          .status(400)
           .json({ message: "All the members either don't exist or are not in the group" });
-  
+
       // Remove the specified users from the group
       let updatedGroup = await Group.findOneAndUpdate(
         { name: groupName },
         { $pull: { members: { email: { $in: memberEmails } } } },
         { new: true }
       );
-  
       updatedGroup = Object.assign(
         {},
         { name: updatedGroup.name, members: updatedGroup.members }

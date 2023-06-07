@@ -882,11 +882,176 @@ describe("removeFromGroup", () => {
       .catch((err) => done(err))
   })
 
+  test('The group doesn t exist', (done) => {
+    request(app)
+      .patch("/api/groups/g3/pull")
+      .send(
+          {emails: [pluto.email]}
+      ).set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "The group doesn't exist"
+        })
+        expect(response.status).toBe(400)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test('member emails not defined', (done) => {
+    request(app)
+      .patch("/api/groups/g1/pull")
+      .send({
+
+      })
+      .set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "member emails not defined"
+        })
+        expect(response.status).toBe(400)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test('Empty email', (done) => {
+    request(app)
+      .patch("/api/groups/g1/pull")
+      .send(
+          {emails: [""]}
+      ).set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "Empty email"
+        })
+        expect(response.status).toBe(400)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test('Regex failed email', (done) => {
+    request(app)
+      .patch("/api/groups/g1/pull")
+      .send(
+          {emails: ["wrongemail"]}
+      ).set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "Invalid email format"
+        })
+        expect(response.status).toBe(400)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test('all the members don\'t exits or are not in the group', (done) => {
+    request(app)
+      .patch("/api/groups/g1/pull")
+      .send(
+          {emails: ["notexisting@gmail.com"]}
+      ).set(
+        "Cookie",
+        `accessToken=${adminToken};refreshToken=${adminToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "All the members either don't exist or are not in the group"
+        })
+        expect(response.status).toBe(400)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test("should return an error of authentication (user try admin route)", (done) => {
+    request(app)
+      .patch("/api/groups/g1/pull")
+      .send(
+          {emails: [pluto.email]}
+      ).set(
+        "Cookie",
+        `accessToken=${userToken};refreshToken=${userToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: " adminAuth: Mismatch role"
+        })
+        expect(response.status).toBe(401)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
+  test("should return an error of authentication (user not in Group)", (done) => {
+    request(app)
+      .patch("/api/groups/g1/remove")
+      .send(
+          {emails: [pluto.email]}
+      ).set(
+        "Cookie",
+        `accessToken=${userToken};refreshToken=${userToken}`
+      )
+      .then((response) => {
+        expect(response.body).toStrictEqual({
+          error: "groupAuth: User is not in the group"
+        })
+        expect(response.status).toBe(401)
+        done();
+      })
+      .catch((err) => done(err))
+  })
+
   afterAll(async () => {
     await User.deleteMany()
     await Group.deleteMany()
   })
 })
+
+test('Regex failed email', (done) => {
+  request(app)
+    .patch("/api/groups/g1/pull")
+    .send(
+        {emails: [pluto.email]}
+    ).set(
+      "Cookie",
+      `accessToken=${adminToken};refreshToken=${adminToken}`
+    )
+    .then((response) => {
+      expect(response.body).toStrictEqual({
+        data: {
+          group: {
+            name: "g1",
+            members: [
+                { 
+                  email: pippo.email,
+                }
+            ]
+          },
+          membersNotFound: [],
+          notInGroup: [],
+        }
+      })
+      expect(response.status).toBe(200)
+      done();
+    })
+    .catch((err) => done(err))
+})
+
 
 describe("deleteUser", () => {
   var bulma,pluto,pippo,goku;

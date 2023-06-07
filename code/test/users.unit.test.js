@@ -1811,6 +1811,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "The group doesn't exist" })
   })
+  
   test('missing params', async () => {
     const mockReq = {
       params: {
@@ -1840,6 +1841,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "error" })
   })
+  
   test('member emails not defined', async () => {
     const mockReq = {
       params: {
@@ -1869,6 +1871,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "member emails not defined" })
   })
+  
   test('Empty email', async () => {
     const mockReq = {
       params: {
@@ -1898,6 +1901,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "Empty email" })
   })
+  
   test('Regex failed email', async () => {
     const mockReq = {
       params: {
@@ -1927,6 +1931,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "Invalid email format" })
   })
+  
   test('Admin failed login', async () => {
     const mockReq = {
       params: {
@@ -1956,6 +1961,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: " adminAuth: not authorized" })
   })
+  
   test('Group failed login', async () => {
     const mockReq = {
       params: {
@@ -1985,6 +1991,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "groupAuth: not authorized" })
   })
+  
   test('length 0 toDelete', async () => {
     const mockReq = {
       params: {
@@ -2016,6 +2023,7 @@ describe("removeFromGroup", () => {
   expect(mockRes.json).toHaveBeenCalledWith({ 
     error: "All the members either don't exist or are not in the group" })
   })
+  
   test('if the group has same number to delete', async () => {
     const mockReq = {
       params: {
@@ -2060,7 +2068,8 @@ describe("removeFromGroup", () => {
        },
        refreshedTokenMessage: ""
   })
-})
+  })
+  
   test('if the group has 1 member and is the selected', async () => {
     const mockReq = {
       params: {
@@ -2093,6 +2102,7 @@ describe("removeFromGroup", () => {
      error: 'if the group only has one member ' 
   })
   })
+  
   test('throw error', async () => {
     const mockReq = {
       params: {

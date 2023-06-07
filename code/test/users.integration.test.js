@@ -664,7 +664,13 @@ describe("removeFromGroup", () => {
         expect(response.status).toBe(200)
         done();
       })
-      .catch((err) => done(err))})
+      .catch((err) => done(err))
+  })
+
+  afterAll(async () => {
+    await User.deleteMany()
+    await Group.deleteMany()
+  })
 })
 
 describe("deleteUser", () => {

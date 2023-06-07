@@ -180,12 +180,14 @@ export const getGroups = async (req, res) => {
 
       let groups = await Group.find({})
       groups = groups.map(v => {
-        v.members = v.members.map(m => Object.assign({}, { email: m.email, user: m.user }))
-        console.log(v.members)
-      })
-      console.log(groups)
-      groups = groups.map(v => Object.assign({}, { name: v.name, members: v.members }))
-
+        return {
+          name: v.name,
+          members: v.members.map(member => {
+            const { _id, ...rest } = member.toObject();
+            return rest;
+          })
+        };
+      });
       res.status(200).json({ data: groups , refreshedTokenMessage: res.locals.refreshedTokenMessage})
 
     } catch (err) {
@@ -208,7 +210,7 @@ export const getGroup = async (req, res) => {
       if((message = checkMissingOrEmptyParams([groupName])))
           return res.status(400).json({ error: message });
         
-      let group = await Group.findOne({ name: groupName });
+      let group = await Group.findOne({ name: groupName }).lean();
       if (!group)
         return res.status(400).json({ error: "The group doesn't exist" })
 
@@ -218,12 +220,14 @@ export const getGroup = async (req, res) => {
       {
           const adminAuth = verifyAuth(req, res, { authType: "Admin" })
           if (!adminAuth.flag)
-              return res.status(401).json({ error: adminAuth.cause }) 
+              return res.status(401).json({ error: groupAuth.cause }) 
       }
 
-      group = Object.assign({}, { name: group.name, members: group.members })
-
-      res.status(200).json({ data: { group: group }, refreshedTokenMessage: res.locals.refreshedTokenMessage })      
+      group = {
+        name: group.name,
+        members: group.members.map(({ _id, ...rest }) => rest)
+      };
+      res.status(200).json({ data: group , refreshedTokenMessage: res.locals.refreshedTokenMessage })      
     } catch (err) {
         res.status(400).json({ error: err.message })
     }

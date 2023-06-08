@@ -36,7 +36,6 @@ beforeEach(() => {
 });
 
 describe("getUsers", () => {
-
   test("should retrieve list of all users", async () => {
     // Mock input data
     const mockReq = {
@@ -311,7 +310,6 @@ describe("getUser", () => {
 });
 
 describe("createGroup", () => {
-
   test("should create a group successfully", async () => {
     // Mock input data
     const mockReq = {
@@ -961,7 +959,6 @@ describe("createGroup", () => {
 });
 
 describe("getGroups", () => {
-
   test("should retrieve list of all groups", async () => {
     // Mock input data
     const mockReq = {
@@ -1256,7 +1253,6 @@ describe("getGroup", () => {
 });
 
 describe("addToGroup", () => {
-
   test("should add to the group the members passed in the body", async () => {
     // Mock input data
     const mockReq = {
@@ -1811,7 +1807,7 @@ describe("removeFromGroup", () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
-  
+
   test("Nominal scenario", async () => {
     const mockReq = {
       params: {
@@ -1831,16 +1827,17 @@ describe("removeFromGroup", () => {
     };
     verifyAuth.mockReturnValue({ flag: true, cause: "Authorized" });
     checkMissingOrEmptyParams.mockReturnValue(false);
+    jest.spyOn(Group, "findOne").mockReturnValue({
+      members: [{ email: "c@h.it" }, { email: "b@h.it" }],
+      name: "group",
+    });
     jest
-      .spyOn(Group, "findOne")
-      .mockReturnValue({ members: [{ email: "c@h.it" }, { email: "b@h.it" }], name:"group" });
-    jest.spyOn(User, "find").mockResolvedValueOnce([
-      { email: "b@h.it", _id: "b" }
-    ]).mockResolvedValueOnce([
-      { email: "b@h.it", _id: "b" },
-      { email: "c@h.it", _id: "c" }
-    ]);
-    
+      .spyOn(User, "find")
+      .mockResolvedValueOnce([{ email: "b@h.it", _id: "b" }])
+      .mockResolvedValueOnce([
+        { email: "b@h.it", _id: "b" },
+        { email: "c@h.it", _id: "c" },
+      ]);
 
     jest.spyOn(Group, "findOneAndUpdate").mockResolvedValue({
       name: "group",
@@ -2422,7 +2419,6 @@ describe("deleteUser", () => {
 });
 
 describe("deleteGroup", () => {
-
   test("Nominal scenario", async () => {
     const mockReq = {
       body: { name: "pippo" },

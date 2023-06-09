@@ -430,6 +430,7 @@ describe("verifyAuth", () => {
         expect(result).not.toBeNull();
         expect(result).toEqual({flag: false, cause: "Mismatched users" });
     });
+
     test("Thrown expired error corrected", async () => {
         const mockReq = {cookies: token};
         const mockRes = {cookie: jest.fn(),
@@ -453,6 +454,167 @@ describe("verifyAuth", () => {
             const result = verifyAuth(mockReq, mockRes, mockInfo);
             expect(result).not.toBeNull();
             expect(result).toEqual({flag: true, cause: "Authorized" });
+
+      
+    });
+
+    test("Thrown expired error corrected User", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"Simple"};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "Simple",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: true, cause: "Authorized" });
+
+      
+    });
+
+    test("Thrown expired error corrected Group", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"Simple"};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "Simple",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: true, cause: "Authorized" });
+
+      
+    });
+
+    test("Thrown expired error corrected Admin", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"Admin"};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "User",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: false, cause: "Mismatch role" });
+
+      
+    });
+    test("Thrown expired error corrected User", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"User", username: "c"};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "User",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: false, cause: "Mismatched users" });
+
+      
+    });
+
+    test("Thrown expired error corrected Group", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"Group", members: [{email:"email@gmail.com"}]};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "User",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: false, cause: "User is not in the group" });
+
+      
+    });
+
+    test("Thrown expired error corrected Wrong type", async () => {
+        const mockReq = {cookies: token};
+        const mockRes = {cookie: jest.fn(),
+                         locals:   jest.fn()}
+        const mockInfo = {authType:"Wrong"};
+        const decodedAccessToken = {
+            username: "s",
+            email: "s@h.it",
+            role: "Wrong",
+            exp: 0 ,
+            id: 0
+           }
+           const verifySpy = jest.spyOn(jwt, 'verify');   
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
+ 
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
+
+            const result = verifyAuth(mockReq, mockRes, mockInfo);
+            expect(result).not.toBeNull();
+            expect(result).toEqual({flag: false, cause: "Auth type is not defined" });
 
       
     });

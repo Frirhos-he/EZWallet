@@ -28,11 +28,27 @@
     <Some steps may  correspond to unit testing (ex step1 in ex above)>
     <One step will  correspond to API testing, or testing unit route.js>
 
-
+<div style="text-align: justify">
 The integration sequence that was adopted follows a bottom-up approach starting from unit testing ending with API testing. 
 The development process started by creating the individual functions. These functions were then isolately tested using unit tests. Mocks objects were used to simulate dependencies ensuring that each mocked functions behaved correctly.
- We then integrated functions and modules ensuring that the interaction between the functions and their dependencies worked as expected. 
-API testing was conducted handling routes incoming requests and cofnirming the expected response.
+We then integrated functions and modules ensuring that the interaction between the functions and their dependencies worked as expected. 
+API testing was conducted handling routes incoming requests and confirming the expected response. Summarizing here the step followed:
+
+1. step: unit testing
+     - step 1.1: util.js
+    - step 1.2: users.js
+     - step 1.3: controller.js
+    - step 1.4: auth.js
+2.  step: API testing
+    - step 2.1: util.integration.test.js
+    - step 2.2: users.integration.test.js
+    - step 2.3: controller.integration.test.js
+    - step 2.4: auth.integration.test.js
+
+
+Although integration testing was omitted, our team effectively executed API testing and unit testing, ensuring comprehensive coverage of all dependency scenarios. Considered the complexity f the project as well as the above described considerations they minimized a chaotic "big bang" integration and facilitated the identification of errors during function development. By accurately testing each function with various inputs, including those expected to produce errors (e.g., invalid email formats), and employing mocking functions to handle different conditions, we successfully addressed potential issues. However, it is essential to acknowledge that the current organizational situation exacerbated the challenges faced, noticeably the lack of integration testing complicated the system's overall complexity and risk. Despite this setback, our rigorous API and unit testing approach significantly reduced the likelihood of critical errors and allowed for targeted issue resolution within individual components.
+</div>
+
 # Tests
 
    <in the table below list the test cases defined For each test report the object tested, the test level (API, integration, unit) and the technique used to define the test case  (BB/ eq partitioning, BB/ boundary, WB/ statement coverage, etc)>   <split the table if needed>

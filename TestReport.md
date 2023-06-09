@@ -419,8 +419,23 @@ Although integration testing was omitted, our team effectively executed API test
 | FR43 deleteCategory| <ul><li>Nominal scenario</li><li>should return an error if missing field in body</li><li>should return an error if theres an empty string</li><li>should return an error if theres a category to be deleted that is not in the database</li><li>should return an error if theres only one category in the database</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>| 
 | FR44 getCategories | <ul><li>Nominal scenario</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
 
-
-
+| Functional Requirements covered |   Unit Test(s) |  
+| ------------------------------- | ----------- |  
+|  FR1 Manage users   |  | 
+| FR11 register|<ul><li>Nominal scenario</li><li>Exception existing email</li><li>Exception existing username</li><li>Exception no username</li><li>Exception wrong email format</li></ul> | 
+| FR12 login|<ul><li>Nominal scenario</li><li>Exception not existing user</li><li>Exception wrong credential</li><li>Exception empty email</li><li>Exception wrong email format</li></ul>| 
+| FR13 logout|<ul><li>Nominal scenario</li><li>User not found scenario</li><li>Not authenticated scenario</li></ul>| 
+| FR14 registerAdmin |<ul><li>Nominal scenario</li><li>Exception empty username</li><li>Exception wrong email format</li><li>Exception Existing username</li><li>Exception Existing email</li></ul> | 
+| FR15 getUsers | <ul><li>Nominal scenario</li><li>Exception authentication (user token)</li></ul>|  
+| FR16 getUser| <ul><li>Nominal scenario</li><li>Should return an error when the user doesn't exist</li><li>Should return an error of authentication (wrong user token)</li></ul>|  
+| FR17 deleteUser |<ul><li>Nominal scenario</li><li>user in a group alone</li><li>missing params admin</li><li>not admin</li><li>email wrong format</li><li>email doesn't exist</li></ul>|  
+| FR2 Manage groups | | 
+| FR21 createGroup |<ul><li>Nominal scenario</li><li>Should return an error if the body is incomplete</li><li>Should return an error if the name in the body is an empty string</li><li>Should return an error when there's already a group with the same name</li><li>Should return an error if all members are already in a group or don't exist</li><li>Should return an error if the user who calls the API is already in a group</li><li>Should return an error if an email is invalid</li><li>Should return an error if an email is an empty string</li><li>should return an error of authentication (missing token)</li></ul>| 
+| FR22 getGroups|<ul><li>Nominal scenario</li><li>should return an error of authentification (user token)</li></ul>| 
+| FR23 getGroup |<ul><li>Nominal scenario</li><li>Should return an error if the group doesn't exist</li><li>should return an error of authentification (user is not in the group)</li></ul>| 
+| FR24 addToGroup| <ul><li>Nominal scenario</li><li>Should return an error if the body doesn't contain all attributes</li><li>Should return an error if the group doesn't exist</li><li>Should return an error if all the emails are already in the group or not existing</li><li>Should return an error if at least one email is invalid (format)</li><li>Should return an error if at least one email is an empty string</li><li>should return an error of authentication (user is not in the group)</li><li>should return an error of authentication (user using wrong path)</li></ul>|  
+| FR26 removeFromGroup| <ul><li>Nominal scenario</li><li>The group doesn't exist</li><li>member emails not defined</li><li>Empty email</li><li>Regex failed email</li><li>all the members don't exits or are not in the group</li><li>should return an error of authentication (user try admin route)</li><li>should return an error of authentication (user not in Group)</li></ul>| 
+| FR28 deleteGroup|<ul><li>Nominal scenario</li><li>Missing params</li><li>The group doesn't exist</li><li>not admin authenticated</li></ul>|
 
 
 ## Coverage white box

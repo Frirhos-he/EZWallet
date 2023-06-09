@@ -388,8 +388,6 @@ Although integration testing was omitted, our team effectively executed API test
 
 ## Coverage of FR
 
-<Report in the following table the coverage of  functional requirements (from official requirements) >
-
 | Functional Requirements covered |   Unit Test(s) |  
 | ------------------------------- | ----------- |  
 |  FR1 Manage users   |  | 
@@ -426,9 +424,7 @@ Although integration testing was omitted, our team effectively executed API test
 
 ## Coverage white box
 
-Report here the screenshot of coverage values obtained with jest-- coverage 
-
-<div style="text-align:center"><img src="./images/coverage_test.jpg"  width="500" height="500"/>
+<div style="text-align:center"><img src="./images/coverage_test.jpg"  width="1000" height="500"/>
      
 
 

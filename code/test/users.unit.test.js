@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 describe("getUsers", () => {
-  test("should retrieve list of all users", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -170,7 +170,7 @@ describe("getUser", () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
-  test("should retrieve infos of a specific users", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -310,7 +310,7 @@ describe("getUser", () => {
 });
 
 describe("createGroup", () => {
-  test("should create a group successfully", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -959,7 +959,7 @@ describe("createGroup", () => {
 });
 
 describe("getGroups", () => {
-  test("should retrieve list of all groups", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1065,7 +1065,7 @@ describe("getGroup", () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
-  test("should return the group passed in the url", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1253,7 +1253,7 @@ describe("getGroup", () => {
 });
 
 describe("addToGroup", () => {
-  test("should add to the group the members passed in the body", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {

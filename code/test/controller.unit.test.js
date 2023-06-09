@@ -26,7 +26,7 @@ beforeEach (() =>{
 })
 
 describe("createCategory", () => {
-  test('should create a new category successfully', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -200,7 +200,7 @@ describe("createCategory", () => {
 })
 
 describe("updateCategory", () => { 
-  test('should update a category successfully', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -442,7 +442,7 @@ describe("updateCategory", () => {
 })
 
 describe("deleteCategory", () => { 
-  test('should delete a category successfully', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -727,7 +727,7 @@ describe("deleteCategory", () => {
 })
 
 describe("getCategories", () => {
-  test('should return all the categories', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -820,7 +820,7 @@ describe("getCategories", () => {
 });
 
 describe("createTransaction", () => { 
-  test('should create a new transaction successfully', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockDate = "YYYY-MM-DD";
     const mockReq = {
@@ -1182,7 +1182,7 @@ describe("createTransaction", () => {
 })
 
 describe("getAllTransactions", () => { 
-  test('should return all transactions by all users', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockDate = "2000-03-10"
     const mockReq = {
@@ -1416,7 +1416,7 @@ describe("getAllTransactions", () => {
 })
 
 describe("getTransactionsByUser", () => { 
-  test("should return all transactions of a user ", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -1650,7 +1650,7 @@ describe("getTransactionsByUser", () => {
 })
 
 describe("getTransactionsByUserByCategory", () => { 
-  test('should return all transactions of a user of a specific category ', async () => {
+  test('Nominal scenario ', async () => {
       // Mock input data
       const mockReq = {
         cookies: {
@@ -1875,7 +1875,7 @@ describe("getTransactionsByUserByCategory", () => {
 })
 
 describe("getTransactionsByGroup", () => { 
-  test("should return all transactions of a group ", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -2127,7 +2127,7 @@ describe("getTransactionsByGroup", () => {
 })
 
 describe("getTransactionsByGroupByCategory", () => { 
-  test("should return all transactions of a group of a category", async () => {
+  test("Nominal scenario", async () => {
     // Mock input data
     const mockReq = {
       cookies: {
@@ -2436,7 +2436,7 @@ describe("getTransactionsByGroupByCategory", () => {
 })
 
 describe("deleteTransaction", () => { 
-  test('should successfully delete a transaction of a specific user', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockDate = "2000-03-10"
     const mockReq = {
@@ -2778,7 +2778,7 @@ describe("deleteTransaction", () => {
 })
 
 describe("deleteTransactions", () => { 
-  test('should successfully delete multiple transactions', async () => {
+  test('Nominal scenario', async () => {
     // Mock input data
     const mockDate = "2000-03-10"
     const mockReq = {

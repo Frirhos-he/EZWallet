@@ -190,11 +190,11 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication (other user) | deleteTransaction | unit | WB/statement coverage |
 | Exception thrown error catch | deleteTransaction | unit | BB/boundary |
 | FR38 deleteTransactions ||||
-| Test 1: should successfully delete multiple transactions | deleteTransactions | unit | WB/ statement coverage |
-| Test 2: should return an error if missing or empty body | deleteTransactions | unit | WB/statement coverage |
-| Test 3: should return an error if at least one transaction is not in the database | deleteTransactions | unit | WB/statement coverage |
-| Test 4: should return an error of authentication | deleteTransactions | unit | WB/statement coverage |
-| Test 5: Exception thrown error catch | deleteTransactions | unit | BB/boundary |
+| Nominal scenario | deleteTransactions | unit | WB/ statement coverage |
+| should return an error if missing or empty body | deleteTransactions | unit | WB/statement coverage |
+| should return an error if at least one transaction is not in the database | deleteTransactions | unit | WB/statement coverage |
+| should return an error of authentication | deleteTransactions | unit | WB/statement coverage |
+| Exception thrown error catch | deleteTransactions | unit | BB/boundary |
 | FR4 Manage categories ||||
 | FR41 createCategory ||||
 | Nominal scenario | createCategory | unit | WB/ statement coverage |
@@ -203,16 +203,16 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication | createCategory | unit | WB/statement coverage |
 | Exception thrown error catch | createCategory | unit | BB/boundary |
 | FR42 getCategories ||||
-| Should retrieve a list of all categories | getCategories | unit | WB/ statement coverage |
+| Nominal scenario | getCategories | unit | WB/ statement coverage |
 | Should return an error of authentication | getCategories | unit | WB/statement coverage |
 | Exception thrown error catch | getCategories | unit | BB/boundary |
 | FR43 updateCategory ||||
-| Should update a category successfully | updateCategory | unit | WB/ statement coverage |
+| Nominal scenario| updateCategory | unit | WB/ statement coverage |
 | Should return an error if the category to be updated doesn't exist | updateCategory | unit | WB/statement coverage |
 | Should return an error of authentication | updateCategory | unit | WB/statement coverage |
 | Exception thrown error catch | updateCategory | unit | BB/boundary |
 | FR44 deleteCategory ||||
-| Should delete a category successfully | deleteCategory | unit | WB/ statement coverage |
+| Nominal scenario | deleteCategory | unit | WB/ statement coverage |
 | Should return an error if the category to be deleted doesn't exist | deleteCategory | unit | WB/statement coverage |
 | Should return an error of authentication | deleteCategory | unit | WB/statement coverage |
 | Exception thrown error catch | deleteCategory | unit | BB/boundary |
@@ -299,7 +299,7 @@ Although integration testing was omitted, our team effectively executed API test
 | not admin authenticated | deleteGroup | integration | WB/statement coverage |
 | FR3 Manage transactions ||||
 | FR31 createTransaction ||||
-| Should create a new transaction successfully | createTransaction | integration | WB/ statement coverage |
+| Nominal scenario | createTransaction | integration | WB/ statement coverage |
 | Should return an error when empty parameters | createTransaction | integration | WB/statement coverage |
 | Should return an error when missing parameters | createTransaction | integration | WB/statement coverage |
 | Should return an error if the amount can't be parsed as a float | createTransaction | integration | WB/statement coverage |
@@ -309,44 +309,44 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication (wrong user token)| createTransaction | integration | WB/statement coverage |
 | Should return an error of authentication (missing token) | createTransaction | integration | BB/boundary |
 |FR32 getAllTransactions| 
-|should return all transactions by all users|getAllTransactions|integration|WB/ statement coverage|
+| Nominal scenario |getAllTransactions|integration|WB/ statement coverage|
 | Should return an error of authentication (user token)|getAllTransactions |integration | WB/statement coverage |
 | Should return an error of authentication (missing token) |getAllTransactions | integration | BB/boundary |
 | FR33 getTransactionsByUser ||||
-| Should return all transactions of a user | getTransactionsByUser |  integration | WB/ statement coverage |
+| Nominal scenario | getTransactionsByUser |  integration | WB/ statement coverage |
 | Should return an error if the user doesn't exist | getTransactionsByUser | integration | WB/statement coverage |
 | Should return all transactions by a specific user filtered date and amount| getTransactionsByUser | integration | WB/statement coverage |
 | Should return an error of authentication (user token instead of admin) | getTransactionsByUser | integration | WB/statement coverage |
 | Should return an error of authentication (admin token instead of user) | getTransactionsByUser | integration | WB/statement coverage |
 | Should return an error of authentication (missing token) | getTransactionsByUser | integration | BB/boundary |
 | FR34 getTransactionsByUserByCategory ||||
-| Should return all transactions by a specific user                | getTransactionByUserByCategory | integration | WB/ statement coverage |
+| Nominal scenario              | getTransactionByUserByCategory | integration | WB/ statement coverage |
 | Should return an error if user doesn't exist                     | getTransactionByUserByCategory | integration | WB/statement coverage |
 | Should return an error if category doesn't exist                 | getTransactionByUserByCategory | integration | WB/statement coverage |
 | Should return an error of authentication (user token instead of admin) | getTransactionByUserByCategory | integration | WB/statement coverage |
 | Should return an error of authentication (admin token instead of user) | getTransactionByUserByCategory | integration | WB/statement coverage |
 | Should return an error of authentication (missing token)         | getTransactionByUserByCategory | integration | BB/boundary           |integration | BB/boundary |
 | FR35 getTransactionsByGroup ||||
-| Should return all transactions by a specific group          | getTransactionByGroup      | integration | WB/ statement coverage |
+| Nominal scenario          | getTransactionByGroup      | integration | WB/ statement coverage |
 | Should return an error if the group doesn't exist           | getTransactionByGroup      | integration | WB/statement coverage |
 | Should return an error of authentication (user not part of the group) | getTransactionByGroup      | integration | WB/statement coverage |
 | Should return an error of authentication (not admin)        | getTransactionByGroup      | integration | WB/statement coverage |
 | Should return an error of authentication (token missing)    | getTransactionByGroup      | integration | BB/boundary           |
 | FR36 getTransactionsByGroupByCategory ||||
-| Should return all transactions by a specific group of a specific type  | getTransactionsByGroupByCategory      | integration | WB/ statement coverage |
+|Nominal scenario  | getTransactionsByGroupByCategory      | integration | WB/ statement coverage |
 | Should return an error if the group doesn't exist                       | getTransactionsByGroupByCategory      | integration | WB/statement coverage |
 | Should return an error of authentication (user not part of the group)  | getTransactionsByGroupByCategory      | integration | WB/statement coverage |
 | Should return an error of authentication (not admin)                    | getTransactionsByGroupByCategory      | integration | WB/statement coverage |
 | Should return an error of authentication (token missing)                | getTransactionsByGroupByCategory      | integration | BB/boundary           |
 | FR37 deleteTransaction ||||
-| Should successfully delete a transaction of a specific user              | deleteTransaction | integration | WB/ statement coverage |
+|Nominal scenario            | deleteTransaction | integration | WB/ statement coverage |
 | Should return an error if missing parameters in body                     | deleteTransaction | integration | WB/statement coverage |
 | Should return an error if empty strings in body                           | deleteTransaction | integration | WB/statement coverage |
 | Should return an error if user doesn't exist                             | deleteTransaction | integration | WB/statement coverage |
 | Should return an error if transaction isn't made by requesting user      | deleteTransaction | integration | WB/statement coverage |
 | Should return an error of authentication (missing token)                 | deleteTransaction | integration | BB/boundary           |
 | FR38 deleteTransactions ||||
-| Should successfully delete all the transactions in the body     | deleteTransactions | integration | WB/statement coverage |
+| Nominal scenario     | deleteTransactions | integration | WB/statement coverage |
 | Should return an error if missing parameters in body            | deleteTransactions | integration | WB/statement coverage |
 | Should return an error if empty strings in body                  | deleteTransactions | integration | WB/statement coverage |
 | Should return an error if at least one transaction is not in the database | deleteTransactions | integration | WB/statement coverage |
@@ -354,17 +354,17 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication (missing token)        | deleteTransactions | integration | BB/boundary           |
 | FR4 Manage categories ||||
 | FR41 createCategory ||||
-| Should create a new category successfully       | createCategory | integration | WB/statement coverage |
+| Nominal scenario       | createCategory | integration | WB/statement coverage |
 | Should return an error if missing field in body | createCategory | integration | WB/statement coverage |
 | Should return an error if a field is an empty string | createCategory | integration | WB/statement coverage |
 | Should return an error if category already exists | createCategory | integration | WB/statement coverage |
 | Should return an error if the tokens are not present | createCategory | integration | BB/boundary           |
 | Should return an error of authentication (user token) | createCategory | integration | BB/boundary           |
 | FR42 getCategories ||||
-| Should retrieve all categories | getCategories | integration | WB/ statement coverage |
+| Nominal scenario| getCategories | integration | WB/ statement coverage |
 | Should return an error of authentication (missing token)| getCategories | integration | WB/statement coverage |
 | FR43 updateCategory ||||
-| Should update a category successfully                      | updateCategory | integration | WB/statement coverage |
+| Nominal scenario| updateCategory | integration | WB/statement coverage |
 | Should return an error if missing parameters               | updateCategory | integration | WB/statement coverage |
 | Should return an error if empty strings parameters         | updateCategory | integration | WB/statement coverage |
 | Should return an error if category in route parameters doesn't exist | updateCategory | integration | WB/statement coverage |
@@ -372,16 +372,13 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication (user token)      | updateCategory | integration | BB/boundary           |
 | Should return an error of authentication (missing token)   | updateCategory | integration | BB/boundary           |
 | FR44 deleteCategory ||||
-| Should delete a category successfully                                                 | deleteCategory  | integration | WB/statement coverage |
+| Nominal scenario                                                 | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if missing field in body                                       | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if there's an empty string                                     | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if there's a category to be deleted that is not in the database | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if there's only one category in the database                   | deleteCategory  | integration | WB/statement coverage |
 | Should return an error of authentication (user token)                                 | deleteCategory  | integration | BB/boundary           |
 | Should return an error of authentication (missing token)                              | deleteCategory  | integration | BB/boundary           |
-| FR45 getCategoryTransactions ||||
-| should return all the categories | getCategories | integration | WB/ statement coverage |
-| should return an error of authentication (missing token) | getCategories | integration | WB/statement coverage |
 
 
 

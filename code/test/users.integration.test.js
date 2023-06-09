@@ -1016,7 +1016,7 @@ describe("deleteUser", () => {
     });
   });
 
-  test("nominal scenario admin", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .delete("/api/users")
       .send({ email: goku.email })

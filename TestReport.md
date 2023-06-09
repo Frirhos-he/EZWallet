@@ -43,6 +43,8 @@ Although integration testing was omitted, our team effectively executed API test
 
 # Tests
 
+<h2>Unit test</h2>
+
 | Test case name | Object(s) tested | Test level | Technique used |
 |--|--|--|--|
 | FR1 Manage users |||| 
@@ -217,6 +219,8 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error of authentication | deleteCategory | unit | WB/statement coverage |
 | Exception thrown error catch | deleteCategory | unit | BB/boundary |
 
+<h2>Integration test</h2>
+
 | Test case name | Object(s) tested | Test level | Technique used |
 |--|--|--|--|
 | FR1 Manage users |||| 
@@ -379,9 +383,6 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error if there's only one category in the database                   | deleteCategory  | integration | WB/statement coverage |
 | Should return an error of authentication (user token)                                 | deleteCategory  | integration | BB/boundary           |
 | Should return an error of authentication (missing token)                              | deleteCategory  | integration | BB/boundary           |
-| FR45 getCategoryTransactions ||||
-| should return all the categories | getCategories | integration | WB/ statement coverage |
-| should return an error of authentication (missing token) | getCategories | integration | WB/statement coverage |
 
 
 
@@ -424,6 +425,32 @@ Although integration testing was omitted, our team effectively executed API test
 | FR42 updateCategory| <ul><li>Nominal scenario</li><li>should return an error if missing or empty parameters</li><li>should return an error if category in route parameters doesn\t exist</li><li>should return an error if category in body already exists</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
 | FR43 deleteCategory| <ul><li>Nominal scenario</li><li>should return an error if missing field in body</li><li>should return an error if theres an empty string</li><li>should return an error if theres a category to be deleted that is not in the database</li><li>should return an error if theres only one category in the database</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>| 
 | FR44 getCategories | <ul><li>Nominal scenario</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
+
+
+
+| Functional Requirements covered |   Unit Test(s) |  
+| ------------------------------- | ----------- |  
+| FR3 Manage transactions ||
+| FR31 createTransaction | <ul><li> Should create a new transaction successfully </li><li> Should return an error when empty parameters </li> <li> Should return an error when missing parameters </li><li> Should return an error if the amount can't be parsed as a float </li> <li> Should return an error if the requesting user doesn't exist </li> <li> Should return an error if requesting user doesn't match involved user </li> <li> Should return an error if category doesn't exist </li> <li> Should return an error of authentication (wrong user token)</li><li> Should return an error of authentication (missing token) </li> </ul> |
+|FR32 getAllTransactions| <ul><li> should return all transactions by all users</li><li> Should return an error of authentication (user token)</li><li> Should return an error of authentication (missing token) </li> </ul>|
+| FR33 getTransactionsByUser |<ul><li> Should return all transactions of a user </li> <li> Should return an error if the user doesn't exist </li><li> Should return all transactions by a specific user filtered date and amount</li><li> Should return an error of authentication (user token instead of admin) </li><li> Should return an error of authentication (admin token instead of user) </li><li> Should return an error of authentication (missing token) </li> </ul>|
+| FR34 getTransactionsByUserByCategory |<ul><li> Should return all transactions by a specific user</li> <li> Should return an error if user doesn't exist</li> <li> Should return an error if category doesn't exist</li> <li> Should return an error of authentication (user token instead of admin) </li> <li> Should return an error of authentication (admin token instead of user) <li><li> Should return an error of authentication (missing token)</li> </ul>|
+| FR35 getTransactionsByGroup |<ul><li> Should return all transactions by a specific group</li> <li> Should return an error if the group doesn't exist</li><li> Should return an error of authentication (user not part of the group) </li> <li> Should return an error of authentication (not admin)</li> <li> Should return an error of authentication (token missing)</li> </ul>|
+| FR36 getTransactionsByGroupByCategory |<ul><li> Should return all transactions by a specific group of a specific type</li> <li> Should return an error if the group doesn't exist</li> <li> Should return an error of authentication (user not part of the group)</li> <li> Should return an error of authentication (not admin)</li> <li> Should return an error of authentication (token missing)</li> </ul>|
+| FR37 deleteTransaction |<ul><li> Should successfully delete a transaction of a specific user</li> <li> Should return an error if missing parameters in body</li> <li> Should return an error if empty strings in body</li> <li> Should return an error if user doesn't exist</li> <li> Should return an error if transaction isn't made by requesting user</li> <li> Should return an error of authentication (missing token)</li></ul>|
+| FR38 deleteTransactions |<ul><li> Should successfully delete all the transactions in the body</li> <li> Should return an error if missing parameters in body</li> <li> Should return an error if empty strings in body</li><li> Should return an error if at least one transaction is not in the database </li><li> Should return an error of authentication (user token)</li><li> Should return an error of authentication (missing token)</li></ul>|
+| FR4 Manage categories ||
+| FR41 createCategory |<ul><li> Should create a new category successfully</li> <li> Should return an error if missing field in body </li> <li> Should return an error if a field is an empty string </li> <li> Should return an error if category already exists </li> <li> Should return an error if the tokens are not present </li><li> Should return an error of authentication (user token) </li> </ul>|
+| FR42 getCategories |<ul><li> Should retrieve all categories </li><li> Should return an error of authentication (missing token)</li></ul>
+| FR43 updateCategory ||<ul><li> Should update a category successfully</li>  <li> Should return an error if missing parameters</li>  <li> Should return an error if empty strings parameters</li> <li> Should return an error if category in route parameters doesn't exist </li>  <li> Should return an error if category in body already exists  </li>  <li> Should return an error of authentication (user token)</li><li> Should return an error of authentication (missing token)</li>  </ul>|
+| FR44 deleteCategory ||
+| Should delete a category successfully|   
+| Should return an error if missing field in body|   
+| Should return an error if there's an empty string|   
+| Should return an error if there's a category to be deleted that is not in the database |   
+| Should return an error if there's only one category in the database|   
+| Should return an error of authentication (user token)|   
+| Should return an error of authentication (missing token) |   
 
 
 

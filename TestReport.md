@@ -388,7 +388,7 @@ Although integration testing was omitted, our team effectively executed API test
 ## Coverage of FR
 
 | Functional Requirements covered |   Unit Test(s) |  
-| ------------------------------- | ----------- |  
+| ------------------------------- | :----------- |  
 |  FR1 Manage users   |  | 
 | FR11 register|<ul><li>Nominal scenario</li><li>Exception existing email</li><li>Exception existing username</li><li>Exception Missing params: empty email</li><li>Exception wrong email format</li><li>Exception thrown error catch</li> </ul> | 
 | FR12 login| <ul><li>Nominal scenario</li> <li>Wrong credentials scenario</li> <li>Empty email</li> <li>User not found</li> <li>Wrong format email</li> <li>Throw catch error</li></ul>| 
@@ -419,8 +419,8 @@ Although integration testing was omitted, our team effectively executed API test
 | FR43 deleteCategory| <ul><li>Nominal scenario</li><li>should return an error if missing field in body</li><li>should return an error if theres an empty string</li><li>should return an error if theres a category to be deleted that is not in the database</li><li>should return an error if theres only one category in the database</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>| 
 | FR44 getCategories | <ul><li>Nominal scenario</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
 
-| Functional Requirements covered |   Unit Test(s) |  
-| ------------------------------- | ----------- |  
+| Functional Requirements covered |   Integration Test(s) |  
+| ------------------------------- | :----------- |  
 |  FR1 Manage users   |  | 
 | FR11 register|<ul><li>Nominal scenario</li><li>Exception existing email</li><li>Exception existing username</li><li>Exception no username</li><li>Exception wrong email format</li></ul> | 
 | FR12 login|<ul><li>Nominal scenario</li><li>Exception not existing user</li><li>Exception wrong credential</li><li>Exception empty email</li><li>Exception wrong email format</li></ul>| 

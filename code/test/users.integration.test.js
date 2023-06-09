@@ -79,7 +79,7 @@ describe("getUsers", () => {
     })
   });
 
-  test("should retrieve list of all users", (done) => {
+  test("Nominal scenario", (done) => {
  
       request(app)
         .get("/api/users")
@@ -98,7 +98,7 @@ describe("getUsers", () => {
         .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Exception authentication (user token)", (done) => {
 
       request(app)
         .get("/api/users")
@@ -132,7 +132,7 @@ describe("getUser", () => {
     });
   });
 
-  test("should retrieve infos of a specific users", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/users/tokenuser")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -215,7 +215,7 @@ describe("createGroup", () => {
     });
   });
 
-  test("should create a group successfully", (done) => {
+  test("Nominal scneario", (done) => {
     request(app)
       .post("/api/groups")
       .set(
@@ -458,7 +458,7 @@ describe("getGroups", () => {
     });
   });
 
-  test("should retrieve list of all groups", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/groups")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -522,7 +522,7 @@ describe("getGroup", () => {
     });
   });
 
-  test("should return the group passed in the url", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/groups/groupTest")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -610,7 +610,7 @@ describe("addToGroup", () => {
     });
   });
 
-  test("should add to the group the members passed in the body", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .patch("/api/groups/groupTest/insert")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -688,7 +688,7 @@ describe("addToGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if at least one email is invalid (fromat)", (done) => {
+  test("should return an error if at least one email is invalid (format)", (done) => {
     request(app)
       .patch("/api/groups/groupTest/insert")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -761,6 +761,7 @@ describe("addToGroup", () => {
     await User.deleteMany({});
   });
 });
+
 describe("removeFromGroup", () => {
   var bulma, pluto, pippo, goku;
   beforeAll(async () => {
@@ -819,7 +820,7 @@ describe("removeFromGroup", () => {
     });
   });
 
-  test("nominal scenario admin", (done) => {
+  test("nominal scenario", (done) => {
     request(app)
       .patch("/api/groups/g1/pull")
       .send({ emails: [pluto.email] })
@@ -1077,7 +1078,7 @@ describe("deleteUser", () => {
       .catch((err) => done(err));
   });
 
-  test("email wrong format ", (done) => {
+  test("email wrong format", (done) => {
     request(app)
       .delete("/api/users")
       .send({ email: "b.it" })
@@ -1091,7 +1092,7 @@ describe("deleteUser", () => {
       .catch((err) => done(err));
   });
 
-  test("email doens't exists ", (done) => {
+  test("email doens't exists", (done) => {
     request(app)
       .delete("/api/users")
       .send({ email: "b@h.it" })
@@ -1155,7 +1156,7 @@ describe("deleteGroup", () => {
     });
   });
 
-  test("nominal scenario admin", (done) => {
+  test("nominal scenario", (done) => {
     request(app)
       .delete("/api/groups")
       .send({ name: "g1" })
@@ -1171,7 +1172,7 @@ describe("deleteGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("missing params admin", (done) => {
+  test("missing params", (done) => {
     request(app)
       .delete("/api/groups")
       .send({ name: " " })

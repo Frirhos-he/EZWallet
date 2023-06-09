@@ -439,7 +439,6 @@ export const removeFromGroup = async (req, res) => {
         }
         const firstUser = deleteMembers.shift();        // to delete the first member of the group
         memberEmails = memberEmails.filter(x=> x != firstUser)
-        console.log("firstUser")
       }
 
 

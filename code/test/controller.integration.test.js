@@ -66,7 +66,7 @@ describe("createCategory", () => {
     });
   });
 
-  test("should create a new category successfully", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -88,7 +88,7 @@ describe("createCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if missing field in body", (done) => {
+  test("Should return an error if missing field in body", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -105,7 +105,7 @@ describe("createCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if a field is an empty string", (done) => {
+  test("Should return an error if a field is an empty string", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -123,7 +123,7 @@ describe("createCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if category already exists", (done) => {
+  test("Should return an error if category already exists", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -141,7 +141,7 @@ describe("createCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if the tokens are not present", (done) => {
+  test("Should return an error if the tokens are not present", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -158,7 +158,7 @@ describe("createCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Should return an error of authentication (user token)", (done) => {
     request(app)
       .post("/api/categories")
       .send({
@@ -220,7 +220,7 @@ describe("updateCategory", () => {
     });
   });
 
-  test("should update a category successfully", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .patch("/api/categories/investment")
       .send({
@@ -242,7 +242,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if missing parameters", (done) => {
+  test("Should return an error if missing parameters", (done) => {
     request(app)
       .patch("/api/categories/investment")
       .send({
@@ -259,7 +259,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if empty strings parameters", (done) => {
+  test("Should return an error if empty strings parameters", (done) => {
     request(app)
       .patch("/api/categories/investment")
       .send({
@@ -277,7 +277,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if category in route parameters doesn't exists", (done) => {
+  test("Should return an error if category in route parameters doesn't exists", (done) => {
     request(app)
       .patch("/api/categories/wrong")
       .send({
@@ -295,7 +295,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if category in body already exists", (done) => {
+  test("Should return an error if category in body already exists", (done) => {
     request(app)
       .patch("/api/categories/work")
       .send({
@@ -313,7 +313,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Should return an error of authentication (user token)", (done) => {
     request(app)
       .patch("/api/categories/investment")
       .send({
@@ -331,7 +331,7 @@ describe("updateCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .patch("/api/categories/investment")
       .send({
@@ -387,7 +387,7 @@ describe("deleteCategory", () => {
     });
   });
 
-  test("should delete a category successfully", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -405,7 +405,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if missing field in body", (done) => {
+  test("Should return an error if missing field in body", (done) => {
     request(app)
       .delete("/api/categories")
       .send({})
@@ -420,7 +420,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if therea an empty string", (done) => {
+  test("Should return an error if therea an empty string", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -437,7 +437,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if therea a category to be deleted that is not in the database", (done) => {
+  test("Should return an error if therea a category to be deleted that is not in the database", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -454,7 +454,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if therea only one category in the database", (done) => {
+  test("Should return an error if therea only one category in the database", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -471,7 +471,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Should return an error of authentication (user token)", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -488,7 +488,7 @@ describe("deleteCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .delete("/api/categories")
       .send({
@@ -523,7 +523,7 @@ describe("getCategories", () => {
     });
   });
 
-  test("should return all the categories", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/categories")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -547,7 +547,7 @@ describe("getCategories", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .get("/api/categories")
       .then((response) => {
@@ -586,7 +586,7 @@ describe("createTransaction", () => {
     });
   });
 
-  test("should create a new transaction successfully", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -606,7 +606,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error when missing parameters", (done) => {
+  test("Should return an error when missing parameters", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -624,7 +624,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error when empty string parameters", (done) => {
+  test("Should return an error when empty string parameters", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -643,7 +643,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if amount can't be parsed as float", (done) => {
+  test("Should return an error if amount can't be parsed as float", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -662,7 +662,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if requesting user doesn't match involved user", (done) => {
+  test("Should return an error if requesting user doesn't match involved user", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -681,7 +681,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if involved user doesn't exist", (done) => {
+  test("Should return an error if involved user doesn't exist", (done) => {
     request(app)
       .post("/api/users/wronguser/transactions")
       .send({
@@ -703,7 +703,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if category doesn't exist", (done) => {
+  test("Should return an error if category doesn't exist", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -722,7 +722,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (wrong user token)", (done) => {
+  test("Should return an error of authentication (wrong user token)", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -744,7 +744,7 @@ describe("createTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .post("/api/users/tokenuser/transactions")
       .send({
@@ -797,7 +797,7 @@ describe("getAllTransactions", () => {
     });
   });
 
-  test("should return all transactions by all users", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/transactions")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -813,7 +813,7 @@ describe("getAllTransactions", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Should return an error of authentication (user token)", (done) => {
     request(app)
       .get("/api/transactions")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -827,7 +827,7 @@ describe("getAllTransactions", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .get("/api/transactions")
       .then((response) => {
@@ -889,7 +889,7 @@ describe("getTransactionsByUser", () => {
     });
   });
 
-  test("should return all transactions by a specific user", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/transactions/users/tokenuser")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -905,7 +905,7 @@ describe("getTransactionsByUser", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if user doesn't exist ", (done) => {
+  test("Should return an error if user doesn't exist ", (done) => {
     request(app)
       .get("/api/users/wronguser/transactions")
       .set(
@@ -922,7 +922,7 @@ describe("getTransactionsByUser", () => {
       .catch((err) => done(err));
   });
 
-  test("should return all transactions by a specific user filtered date and amount", (done) => {
+  test("Should return all transactions by a specific user filtered date and amount", (done) => {
     request(app)
       .get(`/api/transactions/users/tokenuser/?max=30&from=2023-06-07`)
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -937,8 +937,7 @@ describe("getTransactionsByUser", () => {
       .catch((err) => done(err));
   });
 
-
-  test("should return an error of authentication (user token instead of admin)", (done) => {
+  test("Should return an error of authentication (user token instead of admin)", (done) => {
     request(app)
       .get("/api/transactions/users/tokenuser")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -952,7 +951,7 @@ describe("getTransactionsByUser", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (admin token instead of user)", (done) => {
+  test("Should return an error of authentication (admin token instead of user)", (done) => {
     request(app)
       .get("/api/users/tokenuser/transactions")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -966,7 +965,7 @@ describe("getTransactionsByUser", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .get("/api/users/tokenuser/transactions")
       .then((response) => {
@@ -1015,7 +1014,7 @@ describe("getTransactionsByUserByCategory", () => {
     });
   });
 
-  test("should return all transactions by a specific user", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/transactions/users/tokenuser/category/investment")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -1031,7 +1030,7 @@ describe("getTransactionsByUserByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if user doesn't exist ", (done) => {
+  test("Should return an error if user doesn't exist ", (done) => {
     request(app)
       .get("/api/users/wronguser/transactions/category/investment")
       .set(
@@ -1048,7 +1047,7 @@ describe("getTransactionsByUserByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if category doesn't exist ", (done) => {
+  test("Should return an error if category doesn't exist ", (done) => {
     request(app)
       .get("/api/users/tokenuser/transactions/category/wrongone")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1062,7 +1061,7 @@ describe("getTransactionsByUserByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token instead of admin)", (done) => {
+  test("Should return an error of authentication (user token instead of admin)", (done) => {
     request(app)
       .get("/api/transactions/users/tokenuser/category/investment")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1076,7 +1075,7 @@ describe("getTransactionsByUserByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (admin token instead of user)", (done) => {
+  test("Should return an error of authentication (admin token instead of user)", (done) => {
     request(app)
       .get("/api/users/wronguser/transactions/category/investment")
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
@@ -1090,7 +1089,7 @@ describe("getTransactionsByUserByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .get("/api/users/wronguser/transactions/category/investment")
       .then((response) => {
@@ -1149,7 +1148,7 @@ describe("getTransactionsByGroup", () => {
     });
   });
 
-  test("should return all transactions by a specific group", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/groups/group1/transactions")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1165,7 +1164,7 @@ describe("getTransactionsByGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if the group doesn't exist ", (done) => {
+  test("Should return an error if the group doesn't exist ", (done) => {
     request(app)
       .get("/api/groups/groupx/transactions")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1179,7 +1178,7 @@ describe("getTransactionsByGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user not part of the group)", (done) => {
+  test("Should return an error of authentication (user not part of the group)", (done) => {
     request(app)
       .get("/api/groups/group1/transactions")
       .set(
@@ -1196,7 +1195,7 @@ describe("getTransactionsByGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (not admin)", (done) => {
+  test("Should return an error of authentication (not admin)", (done) => {
     request(app)
       .get("/api/transactions/groups/group1")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1210,7 +1209,7 @@ describe("getTransactionsByGroup", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (token missing)", (done) => {
+  test("Should return an error of authentication (token missing)", (done) => {
     request(app)
       .get("/api/groups/group1/transactions")
       .then((response) => {
@@ -1270,7 +1269,7 @@ describe("getTransactionsByGroupByCategory", () => {
     });
   });
 
-  test("should return all transactions by a specific group of a specific type", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .get("/api/groups/group1/transactions/category/investment")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1286,7 +1285,7 @@ describe("getTransactionsByGroupByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if the group doesn't exist ", (done) => {
+  test("Should return an error if the group doesn't exist ", (done) => {
     request(app)
       .get("/api/groups/groupx/transactions/category/investment")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1300,7 +1299,7 @@ describe("getTransactionsByGroupByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user not part of the group)", (done) => {
+  test("Should return an error of authentication (user not part of the group)", (done) => {
     request(app)
       .get("/api/groups/group1/transactions/category/investment")
       .set(
@@ -1317,7 +1316,7 @@ describe("getTransactionsByGroupByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (not admin)", (done) => {
+  test("Should return an error of authentication (not admin)", (done) => {
     request(app)
       .get("/api/transactions/groups/group1/category/investment")
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
@@ -1331,7 +1330,7 @@ describe("getTransactionsByGroupByCategory", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (token missing)", (done) => {
+  test("Should return an error of authentication (token missing)", (done) => {
     request(app)
       .get("/api/groups/group1/transactions")
       .then((response) => {
@@ -1397,7 +1396,7 @@ describe("deleteTransaction", () => {
     });
   });
 
-  test("should successfully delete a transaction of a specific user", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .delete("/api/users/tokenuser/transactions")
       .send({
@@ -1415,7 +1414,7 @@ describe("deleteTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if missing parameters in body", (done) => {
+  test("Should return an error if missing parameters in body", (done) => {
     request(app)
       .delete("/api/users/tokenuser/transactions")
       .send({})
@@ -1430,7 +1429,7 @@ describe("deleteTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if empty strings in body", (done) => {
+  test("Should return an error if empty strings in body", (done) => {
     request(app)
       .delete("/api/users/tokenuser/transactions")
       .send({
@@ -1447,7 +1446,7 @@ describe("deleteTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if user does't exist", (done) => {
+  test("Should return an error if user does't exist", (done) => {
     request(app)
       .delete("/api/users/wronguser/transactions")
       .send({
@@ -1467,7 +1466,7 @@ describe("deleteTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error if transaction isn't made by requesting user", (done) => {
+  test("Should return an error if transaction isn't made by requesting user", (done) => {
     request(app)
       .delete("/api/users/tokenadmin/transactions")
       .send({
@@ -1484,7 +1483,7 @@ describe("deleteTransaction", () => {
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (missing token)", (done) => {
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .delete("/api/users/tokenuser/transactions")
       .send({
@@ -1555,7 +1554,7 @@ describe("deleteTransactions", () => {1
     });
   });
 
-  test("should successfully delete all the transactions in the body", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({
@@ -1573,7 +1572,7 @@ describe("deleteTransactions", () => {1
       .catch((err) => done(err));
   });
 
-  test("should return an error if missing parameters in body", (done) => {
+  test("Should return an error if missing parameters in body", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({})
@@ -1588,7 +1587,7 @@ describe("deleteTransactions", () => {1
       .catch((err) => done(err));
   });
 
-  test("should return an error if empty strings in body", (done) => {
+  test("Should return an error if empty strings in body", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({
@@ -1605,7 +1604,7 @@ describe("deleteTransactions", () => {1
       .catch((err) => done(err));
   });
 
-  test("should return an error if at least one transaction is not in database", (done) => {
+  test("Should return an error if at least one transaction is not in database", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({
@@ -1622,7 +1621,7 @@ describe("deleteTransactions", () => {1
       .catch((err) => done(err));
   });
 
-  test("should return an error of authentication (user token)", (done) => {
+  test("Should return an error of authentication (user token)", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({
@@ -1638,7 +1637,8 @@ describe("deleteTransactions", () => {1
       })
       .catch((err) => done(err));
   });
-  test("should return an error of authentication (missing token)", (done) => {
+
+  test("Should return an error of authentication (missing token)", (done) => {
     request(app)
       .delete("/api/transactions")
       .send({

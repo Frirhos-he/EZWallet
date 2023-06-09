@@ -460,13 +460,12 @@ describe("verifyAuth", () => {
             username: "s",
             email: "s@h.it",
             role: "Simple",
-            exp: 0  
+            exp: 0
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockReturnValue(decodedAccessToken);
+           verifySpy.mockImplementation(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
            const signSpy = jest.spyOn(jwt, 'sign');   
            signSpy.mockImplementation(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
- 
 
             const result = verifyAuth(mockReq, mockRes, mockInfo);
             expect(result).not.toBeNull();
@@ -484,7 +483,8 @@ describe("verifyAuth", () => {
             exp: 0  
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockReturnValue(decodedAccessToken);
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
            const signSpy = jest.spyOn(jwt, 'sign');   
            signSpy.mockImplementation(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
  
@@ -590,7 +590,8 @@ describe("verifyAuth", () => {
             exp: 0  
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockReturnValue(decodedAccessToken);
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
            const signSpy = jest.spyOn(jwt, 'sign');   
            signSpy.mockImplementation(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
 
@@ -654,7 +655,8 @@ describe("verifyAuth", () => {
             exp: 0
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockImplementation(() =>{return decodedRefreshToken}).mockReturnValueOnce(decodedAccessToken);
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
            const signSpy = jest.spyOn(jwt, 'sign');   
            signSpy.mockImplementation(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
 
@@ -731,7 +733,8 @@ describe("verifyAuth", () => {
             exp: 0
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockImplementation(() =>{return decodedRefreshToken}).mockReturnValueOnce(decodedAccessToken);
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
            const signSpy = jest.spyOn(jwt, 'sign');    
            signSpy.mockImplementation(() => { throw Object.assign(new Error("myerror"), { name: "myerror" })});
 

@@ -86,7 +86,7 @@ describe("register", () => {
       })
       .catch((err) => done(err));
   });
-  test('No username " " ', (done) => {
+  test('Exception no username', (done) => {
     request(app)
       .post("/api/register")
       .send({
@@ -101,7 +101,7 @@ describe("register", () => {
       })
       .catch((err) => done(err));
   });
-  test("no email regex ", (done) => {
+  test("Exception wrong email format", (done) => {
     request(app)
       .post("/api/register")
       .send({
@@ -116,7 +116,7 @@ describe("register", () => {
       })
       .catch((err) => done(err));
   });
-  test("Existing username ", (done) => {
+  test("Exception existing username", (done) => {
     request(app)
       .post("/api/register")
       .send({
@@ -133,7 +133,7 @@ describe("register", () => {
       })
       .catch((err) => done(err));
   });
-  test("Existing email ", (done) => {
+  test("Exception existing email", (done) => {
     request(app)
       .post("/api/register")
       .send({
@@ -186,7 +186,7 @@ describe("registerAdmin", () => {
       })
       .catch((err) => done(err));
   });
-  test('No username " " ', (done) => {
+  test('Exception empty username', (done) => {
     request(app)
       .post("/api/admin")
       .send({
@@ -201,7 +201,7 @@ describe("registerAdmin", () => {
       })
       .catch((err) => done(err));
   });
-  test("no email regex ", (done) => {
+  test("Exception wrong email format", (done) => {
     request(app)
       .post("/api/admin")
       .send({
@@ -216,7 +216,7 @@ describe("registerAdmin", () => {
       })
       .catch((err) => done(err));
   });
-  test("Existing username ", (done) => {
+  test("Exception Existing username", (done) => {
     request(app)
       .post("/api/admin")
       .send({
@@ -233,7 +233,7 @@ describe("registerAdmin", () => {
       })
       .catch((err) => done(err));
   });
-  test("Existing email ", (done) => {
+  test("Exception Existing email", (done) => {
     request(app)
       .post("/api/admin")
       .send({
@@ -280,7 +280,7 @@ describe("login", () => {
       })
       .catch((err) => done(err));
   });
-  test("existing user no scenario", (done) => {
+  test("Exception not existing user", (done) => {
     request(app)
       .post("/api/login")
       .send({
@@ -296,7 +296,7 @@ describe("login", () => {
       })
       .catch((err) => done(err));
   });
-  test("existing user no scenario", (done) => {
+  test("Exception wrong credential", (done) => {
     request(app)
       .post("/api/login")
       .send({
@@ -310,7 +310,7 @@ describe("login", () => {
       })
       .catch((err) => done(err));
   });
-  test('No email " " ', (done) => {
+  test('Exception empty email', (done) => {
     request(app)
       .post("/api/login")
       .send({
@@ -324,7 +324,7 @@ describe("login", () => {
       })
       .catch((err) => done(err));
   });
-  test("no email regex ", (done) => {
+  test("Exception wrong email format", (done) => {
     request(app)
       .post("/api/login")
       .send({
@@ -370,7 +370,7 @@ describe("logout", () => {
         .catch((err) => done(err));
     });
   });
-  test("no authentification", (done) => {
+  test("Not authenticated scenario", (done) => {
     bcrypt.hash("testPassword", 12).then((hashedPassword) => {
       request(app)
         .get("/api/logout")
@@ -387,7 +387,7 @@ describe("logout", () => {
         .catch((err) => done(err));
     });
   });
-  test("user not found", (done) => {
+  test("User not found scenario", (done) => {
     bcrypt.hash("testPassword", 12).then((hashedPassword) => {
       request(app)
         .get("/api/logout")

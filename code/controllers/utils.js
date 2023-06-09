@@ -101,6 +101,10 @@ export const handleDateFilterParams = (req) => {
 export const verifyAuth = (req, res, info) => {
 
     const cookie = req.cookies
+    const authType = info.authType;
+    if(authType == undefined){
+      return { flag: false, cause: "Auth type is not defined" };
+    }  
     if(cookie == undefined){
       return { flag: false, cause: "Missing cookies" };
     }
@@ -124,46 +128,41 @@ export const verifyAuth = (req, res, info) => {
           return { flag: false, cause: "Mismatched users" };
         }
 
-        const authType = info.authType;
-        const currentTime = Math.floor(Date.now() / 1000);
+
         
         switch(authType) {
-            case "Simple":
-
-              if (decodedAccessToken.exp < currentTime) {
-                  throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
-              }
+            case "Simple":      
               break;
 
             case "User":
 
               const username = info.username;
+              if(username == undefined){
+                return { flag: false, cause: "Username is not defined" };
+              }  
               if (username != decodedRefreshToken.username) {
                 return { flag: false, cause: "Mismatched users" };
               }
-              if (decodedAccessToken.exp < currentTime) {
-                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
-              }
+             
 
               break;
             case "Admin":
               if ("Admin" != decodedRefreshToken.role) {
                 return { flag: false, cause: "Mismatch role" };
               }
-              if (decodedAccessToken.exp < currentTime) {
-                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
-              }
+             
               break;
 
             case "Group":
               let members = info.members;
+              if(members == undefined){
+                return { flag: false, cause: "members are not defined" };
+              }  
               members = members.map(m => m.email)
               if (!members.includes(decodedRefreshToken.email)) {
                  return { flag: false, cause: "User is not in the group" };
               }
-              if (decodedAccessToken.exp < currentTime) {
-                throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })
-              }
+             
               break;
 
             default:
@@ -177,6 +176,48 @@ export const verifyAuth = (req, res, info) => {
         if (err.name === "TokenExpiredError") {
             try {
                 const refreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY)
+                if (!refreshToken.username || !refreshToken.email || !refreshToken.role) {
+                  return { flag: false, cause: "Token is missing information" }
+              }
+              switch(authType) {
+                case "Simple":      
+                  break;
+    
+                case "User":
+    
+                  const username = info.username;
+                  if(username == undefined){
+                    return { flag: false, cause: "Username is not defined" };
+                  }  
+                  if (username != refreshToken.username) {
+                    return { flag: false, cause: "Mismatched users" };
+                  }
+                 
+    
+                  break;
+                case "Admin":
+                  if ("Admin" != refreshToken.role) {
+                    return { flag: false, cause: "Mismatch role" };
+                  }
+                 
+                  break;
+    
+                case "Group":
+                  let members = info.members;
+                  if(members == undefined){
+                    return { flag: false, cause: "members are not defined" };
+                  }  
+                  members = members.map(m => m.email)
+                  if (!members.includes(refreshToken.email)) {
+                     return { flag: false, cause: "User is not in the group" };
+                  }
+                 
+                  break;
+    
+                default:
+                  return { flag: false, cause: "Auth type is not defined" };
+      
+            }
                 const newAccessToken = jwt.sign({
                     username: refreshToken.username,
                     email: refreshToken.email,

@@ -428,8 +428,7 @@ Although integration testing was omitted, our team effectively executed API test
 
 Report here the screenshot of coverage values obtained with jest-- coverage 
 
-
-
-
+<div style="text-align:center"><img src="./images/coverage_test.jpg"  width="500" height="500"/>
+     
 
 

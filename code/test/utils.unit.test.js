@@ -1,5 +1,5 @@
 import { handleDateFilterParams, verifyAuth, handleAmountFilterParams } from '../controllers/utils';
-import jwt from 'jsonwebtoken'
+import jwt, { decode, sign } from 'jsonwebtoken'
 
 jest.mock("jsonwebtoken");
 
@@ -439,11 +439,16 @@ describe("verifyAuth", () => {
             username: "s",
             email: "s@h.it",
             role: "Simple",
-            exp: 0  
+            exp: 0 ,
+            id: 0
            }
            const verifySpy = jest.spyOn(jwt, 'verify');   
-           verifySpy.mockReturnValue(decodedAccessToken);
+           verifySpy.mockImplementationOnce(() => { throw Object.assign(new Error("TokenExpiredError"), { name: "TokenExpiredError" })});
+           verifySpy.mockImplementationOnce(() => { return decodedAccessToken })
  
+           const signSpy = jest.spyOn(jwt, 'sign');   
+           signSpy.mockResolvedValueOnce(decodedAccessToken)
+
 
             const result = verifyAuth(mockReq, mockRes, mockInfo);
             expect(result).not.toBeNull();

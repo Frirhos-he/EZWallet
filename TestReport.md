@@ -202,20 +202,20 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error if the category already exists | createCategory | unit | WB/statement coverage |
 | Should return an error of authentication | createCategory | unit | WB/statement coverage |
 | Exception thrown error catch | createCategory | unit | BB/boundary |
-| FR42 getCategories ||||
-| Nominal scenario | getCategories | unit | WB/ statement coverage |
-| Should return an error of authentication | getCategories | unit | WB/statement coverage |
-| Exception thrown error catch | getCategories | unit | BB/boundary |
-| FR43 updateCategory ||||
+| FR42 updateCategory ||||
 | Nominal scenario| updateCategory | unit | WB/ statement coverage |
 | Should return an error if the category to be updated doesn't exist | updateCategory | unit | WB/statement coverage |
 | Should return an error of authentication | updateCategory | unit | WB/statement coverage |
 | Exception thrown error catch | updateCategory | unit | BB/boundary |
-| FR44 deleteCategory ||||
+| FR43 deleteCategory ||||
 | Nominal scenario | deleteCategory | unit | WB/ statement coverage |
 | Should return an error if the category to be deleted doesn't exist | deleteCategory | unit | WB/statement coverage |
 | Should return an error of authentication | deleteCategory | unit | WB/statement coverage |
 | Exception thrown error catch | deleteCategory | unit | BB/boundary |
+| FR44 getCategories ||||
+| Nominal scenario | getCategories | unit | WB/ statement coverage |
+| Should return an error of authentication | getCategories | unit | WB/statement coverage |
+| Exception thrown error catch | getCategories | unit | BB/boundary |
 
 | Test case name | Object(s) tested | Test level | Technique used |
 |--|--|--|--|
@@ -360,10 +360,7 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error if category already exists | createCategory | integration | WB/statement coverage |
 | Should return an error if the tokens are not present | createCategory | integration | BB/boundary           |
 | Should return an error of authentication (user token) | createCategory | integration | BB/boundary           |
-| FR42 getCategories ||||
-| Nominal scenario| getCategories | integration | WB/ statement coverage |
-| Should return an error of authentication (missing token)| getCategories | integration | WB/statement coverage |
-| FR43 updateCategory ||||
+| FR42 updateCategory ||||
 | Nominal scenario| updateCategory | integration | WB/statement coverage |
 | Should return an error if missing parameters               | updateCategory | integration | WB/statement coverage |
 | Should return an error if empty strings parameters         | updateCategory | integration | WB/statement coverage |
@@ -371,7 +368,7 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error if category in body already exists  | updateCategory | integration | WB/statement coverage |
 | Should return an error of authentication (user token)      | updateCategory | integration | BB/boundary           |
 | Should return an error of authentication (missing token)   | updateCategory | integration | BB/boundary           |
-| FR44 deleteCategory ||||
+| FR43 deleteCategory ||||
 | Nominal scenario                                                 | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if missing field in body                                       | deleteCategory  | integration | WB/statement coverage |
 | Should return an error if there's an empty string                                     | deleteCategory  | integration | WB/statement coverage |
@@ -379,7 +376,9 @@ Although integration testing was omitted, our team effectively executed API test
 | Should return an error if there's only one category in the database                   | deleteCategory  | integration | WB/statement coverage |
 | Should return an error of authentication (user token)                                 | deleteCategory  | integration | BB/boundary           |
 | Should return an error of authentication (missing token)                              | deleteCategory  | integration | BB/boundary           |
-
+| FR44 getCategories ||||
+| Nominal scenario| getCategories | integration | WB/ statement coverage |
+| Should return an error of authentication (missing token)| getCategories | integration | WB/statement coverage |
 
 
 # Coverage
@@ -419,6 +418,8 @@ Although integration testing was omitted, our team effectively executed API test
 | FR42 updateCategory| <ul><li>Nominal scenario</li><li>should return an error if missing or empty parameters</li><li>should return an error if category in route parameters doesn\t exist</li><li>should return an error if category in body already exists</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
 | FR43 deleteCategory| <ul><li>Nominal scenario</li><li>should return an error if missing field in body</li><li>should return an error if theres an empty string</li><li>should return an error if theres a category to be deleted that is not in the database</li><li>should return an error if theres only one category in the database</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>| 
 | FR44 getCategories | <ul><li>Nominal scenario</li><li>should return an error of authentication</li><li>Exception thrown error catch</li></ul>|  
+
+
 
 
 

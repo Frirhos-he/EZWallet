@@ -459,7 +459,7 @@ Although integration testing was omitted, our team effectively executed API test
 
 ## Coverage white box
 
-<div style="text-align:center"><img src="./images/coverage_test.jpg"  width="1000" height="500"/>
+<div style="text-align:center"><img src="./images/coverage_test.png"  width="1000" height="500"/>
      
 
 

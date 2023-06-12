@@ -7,13 +7,7 @@ Version: V1 - description of EZWallet in CURRENT form (as received by teachers)
  
 | Version number | Change |
 | ----------------- |:-----------|
-| v1 | Added following standard functionalities: <ul><li>Handle labeled transactions</li><li>Handle categories</li><li>Handle Transactions</li><li>View Users</li></ul>Added new actors:<ul><li>User</li></ul> | 
-
-
-# Contents
-
-- [Informal description](#informal-description)
-- [Stakeholders](#stakeholders)
+| v1 | Added following standard functionalities: <ul><li>Handle labeled transactions</li><li>Handle categori<V
 - [Context Diagram and interfaces](#context-diagram-and-interfaces)
 	+ [Context Diagram](#context-diagram)
 	+ [Interfaces](#interfaces) 

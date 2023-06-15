@@ -7,17 +7,10 @@
   "scripts": {
     "start": "npx nodemon server.js",
     "test": "jest",
-<<<<<<< HEAD
-    "dev": "concurrently \"cd data && mongod --dbpath . >nul\" \"nodemon server.js\"",
-    "test:coverage": "jest --coverage --colors",
-    "test:unit": "npx jest --coverage --coverageDirectory=coverage/coverage_unit --colors auth.unit.test.js controller.unit.test.js users.unit.test.js utils.unit.test.js",
-    "test:integration": "npx jest --coverage --coverageDirectory=coverage/coverage_integration --colors auth.integration.test.js controller.integration.test.js users.integration.test.js utils.integration.test.js"
-=======
     "test:coverage": "jest --runInBand --coverage --colors",
     "test:unit": "npx jest --runInBand --coverage --coverageDirectory=coverage/coverage_unit --colors auth.unit.test.js controller.unit.test.js users.unit.test.js utils.unit.test.js",
     "test:integration": "npx jest --runInBand --coverage --coverageDirectory=coverage/coverage_integration --colors auth.integration.test.js controller.integration.test.js users.integration.test.js utils.integration.test.js",
     "test:official": "npx jest --runInBand --coverage --colors --coverageDirectory=coverage/coverage_official --testPathPattern=test_official/.*\\.test\\.js$"
->>>>>>> upstream/main
   },
   "keywords": [],
   "author": "",

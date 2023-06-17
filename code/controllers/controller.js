@@ -155,19 +155,31 @@ export const deleteCategory = async (req, res) => {
         if(totNumberCategories == 1)
                 return res.status(400).json({ error: "Only one category remaining in database" });
 
-        //TODO: Profs says that createAt is automatically created, it is not
-        // NEEDS TO ADD createAt or find it..
         //sort based on the oldest one
         allCategories.sort((a, b) => b.createdAt - a.createdAt);
-        const oldestCategory = allCategories[0];
+        
+        let oldestCategory;
+        //If total categories in db is strictly more than to be deleted categories, then set the oldest category to the oldest in db not present in type
+        let validType = false;
+        if(totNumberCategories > typeListLength){
+            for(let j=0 ; (j < totNumberCategories) && !validType ; j++){ //For every category in db until found a valid type not present in req body
+                if(types.indexOf(allCategories[j].type)==-1){  //If category in db is not in req body typelist
+                    validType = true;
+                    oldestCategory = allCategories[j];
+                }
+            }
+        }
+        else if(totNumberCategories == typeListLength){ //If total categories in db is the same of to be deleted categories, then pick the absolute oldest (even if present in req body typelist)
+            oldestCategory = allCategories[0];
+            types.pop(oldestCategory.type);
+        }
+        
+        
         //Updating affected transactions
             updateResult =  await transactions.updateMany(
             { type: { $in: types } },
             { $set: { type: oldestCategory.type } }
         );
-        if(totNumberCategories == typeListLength){ // would be necessary to leave the lastCreatedOne
-            types.pop(oldestCategory.type);  // so that the oldestCategory will be left unchanged   
-        }
 
         const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 

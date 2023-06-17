@@ -131,7 +131,9 @@ export const deleteCategory = async (req, res) => {
         
         types = [...new Set(types)];   //to elimate duplicates
         const typeListLength = types.length;
-        
+        //Check if passed array is empty
+        if (!typeListLength) 
+            return res.status(400).json({ error: "body request is an empty array" });  
         //Check if one of the categories is empty string
         if (types.some((element) => element.trim() === "")) 
             return res.status(400).json({ error: "at least one of the types in the array is an empty string" }); 

@@ -489,11 +489,10 @@ export const getTransactionsByGroup = async (req, res) => {
                 return res.status(401).json({ error: groupAuth.cause }) 
         }
 
-        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersById = matchedGroup.members.map((member) => member._id);
+        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
 
-            const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
-            const usernames = usersByUsername.map(user => user.username);
-            
             res.locals.refreshedTokenMessage = ""
 
             transactions.aggregate([
@@ -508,6 +507,7 @@ export const getTransactionsByGroup = async (req, res) => {
                 },
                 { $unwind: "$categories_info" }
             ]).then((result) => {
+
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
                 res.status(200).json({
                     data: dataResult,
@@ -557,7 +557,7 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             return res.status(400).json({ error: "the category does not exist" });
         }
 
-        const usersById = matchedGroup.members.map((member) => member.user);
+        const usersById = matchedGroup.members.map((member) => member._id);
         const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
 

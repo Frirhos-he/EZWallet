@@ -152,7 +152,6 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken
-        console.log(refreshToken)
         if(refreshToken == undefined || refreshToken == null || (typeof refreshToken === 'string' && refreshToken.trim() === "" ))
             return res.status(400).json({ error: "refresh token missing" })
         

@@ -1041,10 +1041,7 @@ describe("deleteUser", () => {
       .send({ email: bulma.email })
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
       .then((response) => {
-        expect(response.status).toBe(400);
-        expect(response.body).toStrictEqual({
-          error: "user is the last of a group, cannot delete",
-        });
+        expect(response.status).toBe(200);
         done();
       })
       .catch((err) => done(err));

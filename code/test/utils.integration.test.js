@@ -25,16 +25,16 @@ describe("handleDateFilterParams", () => {
     });
     
     test('Should return an object with property upTo', () => {
-    const mockReq = { query: { upTo: '2023-04-31' } };
-    const expectedDate = new Date('2023-04-31T23:59:59.000Z');
-    const expectedObject = { date: { $lte: expectedDate } };
-
-    const result = handleDateFilterParams(mockReq);
-
-    expect(result).toHaveProperty('date');
-    expect(result.date).toHaveProperty('$lte', expectedDate);
-    expect(result).toEqual(expectedObject);
-    });
+        const mockReq = { query: { upTo: '2023-04-30' } };
+        const expectedDate = new Date('2023-04-30T23:59:59.000Z');
+        const expectedObject = { date: { $lte: expectedDate } };
+    
+        const result = handleDateFilterParams(mockReq);
+    
+        expect(result).toHaveProperty('date');
+        expect(result.date).toHaveProperty('$lte', expectedDate);
+        expect(result).toEqual(expectedObject);
+        });
     
     test('Should return an object with property date', () => {
     const mockReq = { query: { date: '2023-04-30' } };
@@ -51,18 +51,18 @@ describe("handleDateFilterParams", () => {
     });
     
     test('Should return an object with both property upTo, from', () => {
-    const mockReq = { query: { upTo: '2023-04-31', from: '2023-04-30' } };
-    const expectedDateFrom = new Date('2023-04-30T00:00:00.000Z');
-    const expectedDateTo = new Date('2023-04-31T23:59:59.000Z');
-    const expectedObject = { date: { $gte: expectedDateFrom, $lte: expectedDateTo } };
-
-    const result = handleDateFilterParams(mockReq);
-
-    expect(result).toHaveProperty('date');
-    expect(result.date).toHaveProperty('$gte', expectedDateFrom);
-    expect(result.date).toHaveProperty('$lte', expectedDateTo);
-    expect(result).toEqual(expectedObject);
-    });
+        const mockReq = { query: { upTo: '2023-04-26', from: '2023-04-25' } };
+        const expectedDateFrom = new Date('2023-04-25T00:00:00.000Z');
+        const expectedDateTo = new Date('2023-04-26T23:59:59.000Z');
+        const expectedObject = { date: { $gte: expectedDateFrom, $lte: expectedDateTo } };
+    
+        const result = handleDateFilterParams(mockReq);
+    
+        expect(result).toHaveProperty('date');
+        expect(result.date).toHaveProperty('$gte', expectedDateFrom);
+        expect(result.date).toHaveProperty('$lte', expectedDateTo);
+        expect(result).toEqual(expectedObject);
+        });
     
     test('Should return an object with both property upTo, from: > queryParams', () => {
     const mockReq = { query: { upTo: '2023-04-30', from: '2023-04-31', tmp: 'ciao' } };
@@ -103,9 +103,7 @@ describe("handleDateFilterParams", () => {
 
     test('Should return an empty object: inverted from and upTo', () => {    
         const mockReq = {query: {from: "2023-04-31", upTo: "2023-04-30"}};
-        const result = handleDateFilterParams(mockReq);
-        expect(result).toEqual({});
-
+        expect(() =>handleDateFilterParams(mockReq)).toThrow("both dates exceed boundaries of months or days");
     });
 
     test('Should throw an error:invalid from', () => {    

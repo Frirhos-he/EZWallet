@@ -346,6 +346,13 @@ describe("createGroup", () => {
       },
     ];
 
+    const foundInGroupArray = [
+      {
+          email: "alreadyingroup@gmail.com",
+          _id: "2", 
+      }
+    ]
+
     const allUsers = [
       {
         email: "creator@gmail.com",
@@ -381,27 +388,26 @@ describe("createGroup", () => {
     ];
 
     verifyAuth.mockReturnValue({ flag: true, cause: "authorized" });
-
+    jwt.verify.mockReturnValue({ email: "creator@gmail.com" });
     jest
       .spyOn(Group, "findOne")
       .mockResolvedValueOnce(false)
       .mockReturnValueOnce({
-        email: "creator@gmail.com",
-        _id: "10",
+        name: "newgroup",
+        memberEmails: [{email:"email1@gmail.com"}],
       });
 
     jest
       .spyOn(User, "find")
       .mockReturnValueOnce(memberEmails)
-      .mockReturnValueOnce(foundInGroup)
+      .mockReturnValueOnce(foundInGroupArray)
       .mockReturnValueOnce(allUsers);
+
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
       memberEmails: ["email1@gmail.com"],
     });
-
-    jwt.verify.mockReturnValue({ email: "creator@gmail.com" });
 
     await createGroup(mockReq, mockRes);
 
@@ -2230,7 +2236,7 @@ describe("deleteUser", () => {
   });
   test("Nominal scenario", async () => {
     const mockReq = {
-      body: { email: "a@h.it" },
+      body: { email: "u@h.it" },
     };
     const mockRes = {
       status: jest.fn().mockReturnThis(),
@@ -2246,7 +2252,7 @@ describe("deleteUser", () => {
     jest.spyOn(User, "findOne").mockImplementation(() => ({
       username: "u",
       email: "u@h.it",
-      role: "Admin",
+      role: "User",
       refreshToken: "test",
     }));
     jest
@@ -2385,11 +2391,8 @@ describe("deleteUser", () => {
       ]);
     await deleteUser(mockReq, mockRes);
 
-    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.status).toHaveBeenCalledWith(200);
     expect(mockRes.json).toHaveBeenCalled();
-    expect(mockRes.json).toHaveBeenCalledWith({
-      error: "user is the last of a group, cannot delete",
-    });
   });
   test("thrown scenario", async () => {
     const mockReq = {

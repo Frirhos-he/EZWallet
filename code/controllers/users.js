@@ -120,6 +120,7 @@ export const createGroup = async (req, res) => {
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
         const currentUserEmail = decodedRefreshToken.email;
 
+
         let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
         alreadyInGroup = alreadyInGroup.map(v =>  v.members)
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
@@ -141,30 +142,32 @@ export const createGroup = async (req, res) => {
              return  res.status(400).json({ error: 'User who called the Api is in a group'});
 
         memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
- 
+
         // Retrieve the list of all users
         let allUsers = await User.find({})
         allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
 
         // Select not existing members
         const membersNotFound = emailsVect.filter(e => !allUsers.map(u => u.email).includes(e))
-
         // Select members of the group
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email) && !membersNotFound.includes(m.email))
-  
+
         if (members.length == 0) 
           return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
 
         if(!emailsVect.includes(currentUserEmail)){
  
           let memberUser = await User.findOne({ email: currentUserEmail });  
+
           memberUser = Object.assign({}, { email: memberUser.email, user: memberUser._id })
+
           members.push(memberUser);
         }
 
+
         let updatedMembers = members.map(m => Object.assign({}, {email: m.email}))
         let updatedAlreadyInGroup = alreadyInGroup.map(m => Object.assign({}, {email: m.email}))
-        
+
         res.locals.refreshedTokenMessage = ""
 
         // Creating a new group

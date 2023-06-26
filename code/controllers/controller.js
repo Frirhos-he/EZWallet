@@ -489,10 +489,10 @@ export const getTransactionsByGroup = async (req, res) => {
                 return res.status(401).json({ error: groupAuth.cause }) 
         }
 
-        const usersById = matchedGroup.members.map((member) => member._id);
-        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const userByEmail = matchedGroup.members.map((member) => member.email);
+        const usersByUsername  = await User.find({email: {$in: userByEmail}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
-
+        
             res.locals.refreshedTokenMessage = ""
 
             transactions.aggregate([
@@ -557,8 +557,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             return res.status(400).json({ error: "the category does not exist" });
         }
 
-        const usersById = matchedGroup.members.map((member) => member._id);
-        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const userByEmail = matchedGroup.members.map((member) => member.email);
+        const usersByUsername  = await User.find({email: {$in: userByEmail}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
 
         res.locals.refreshedTokenMessage = ""

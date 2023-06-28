@@ -346,13 +346,6 @@ describe("createGroup", () => {
       },
     ];
 
-    const foundInGroupArray = [
-      {
-          email: "alreadyingroup@gmail.com",
-          _id: "2", 
-      }
-    ]
-
     const allUsers = [
       {
         email: "creator@gmail.com",
@@ -387,6 +380,12 @@ describe("createGroup", () => {
       },
     ];
 
+    const creatorUser =
+    {
+      email: "creator@gmail.com",
+      _id: "10",
+    }
+
     verifyAuth.mockReturnValue({ flag: true, cause: "authorized" });
     jwt.verify.mockReturnValue({ email: "creator@gmail.com" });
     jest
@@ -400,9 +399,12 @@ describe("createGroup", () => {
     jest
       .spyOn(User, "find")
       .mockReturnValueOnce(memberEmails)
-      .mockReturnValueOnce(foundInGroupArray)
+      .mockReturnValueOnce(foundInGroup)
       .mockReturnValueOnce(allUsers);
 
+    jest
+      .spyOn(User, "findOne")
+      .mockReturnValueOnce(creatorUser);
 
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
@@ -410,7 +412,11 @@ describe("createGroup", () => {
     });
 
     await createGroup(mockReq, mockRes);
-
+    
+    /*expect(mockRes.json).toHaveBeenCalledWith({//SUGHE
+      message: "sughe"
+    })*/
+    
     expect(mockRes.json).toHaveBeenCalledWith({
       data: {
         group: {

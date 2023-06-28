@@ -1154,7 +1154,6 @@ describe("getTransactionsByGroup", () => {
       .set("Cookie", `accessToken=${userToken};refreshToken=${userToken}`)
       .then((response) => {
         expect(response.status).toBe(200);
-        console.log(response.body)
         expect(response.body.data[0].username).toBe("tokenuser");
         expect(response.body.data[0].amount).toBe(12.54);
         expect(response.body.data[0].type).toBe("investment");

@@ -413,10 +413,6 @@ describe("createGroup", () => {
 
     await createGroup(mockReq, mockRes);
     
-    /*expect(mockRes.json).toHaveBeenCalledWith({//SUGHE
-      message: "sughe"
-    })*/
-    
     expect(mockRes.json).toHaveBeenCalledWith({
       data: {
         group: {

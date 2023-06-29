@@ -580,7 +580,7 @@ describe("getGroup", () => {
 });
 
 describe("addToGroup", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await Group.deleteMany({});
     await User.deleteMany({});
     await User.create({

@@ -194,7 +194,7 @@ describe("getUser", () => {
 });
 
 describe("createGroup", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await Group.deleteMany({});
     await User.deleteMany({});
     await User.create({
@@ -580,7 +580,7 @@ describe("getGroup", () => {
 });
 
 describe("addToGroup", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await Group.deleteMany({});
     await User.deleteMany({});
     await User.create({
@@ -887,6 +887,9 @@ describe("removeFromGroup", () => {
           error: "Empty email",
         });
         expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Empty email",
+        });
         done();
       })
       .catch((err) => done(err));
@@ -902,6 +905,9 @@ describe("removeFromGroup", () => {
           error: "Invalid email format",
         });
         expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Invalid email format",
+        });
         done();
       })
       .catch((err) => done(err));

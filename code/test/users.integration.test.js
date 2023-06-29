@@ -215,7 +215,7 @@ describe("createGroup", () => {
     });
   });
 
-  test("Nominal scneario", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .post("/api/groups")
       .set(
@@ -337,7 +337,7 @@ describe("createGroup", () => {
         expect(response.status).toBe(400);
         expect(response.body).toStrictEqual({
           error:
-            "All the members have emails that don't exist or are already inside anothre group",
+            "All the members have emails that don't exist or are already inside another group",
         });
         done();
       })
@@ -681,7 +681,7 @@ describe("addToGroup", () => {
         expect(response.status).toBe(400);
         expect(response.body).toStrictEqual({
           error:
-            "All the members have emails that don't exist or are already inside anothre group",
+            "All the members have emails that don't exist or are already inside another group",
         });
         done();
       })

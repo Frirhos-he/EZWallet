@@ -130,11 +130,13 @@ export const createGroup = async (req, res) => {
         alreadyInGroup = alreadyInGroup.map(v => Object.assign({}, { email: v.email, user: v.user }))
         
         // Check if the user who called is already in a group
-        const userWhoCalled = await User.findOne({ refreshToken: req.cookies.refreshToken })
+        const userWhoCalled = await User.findOne({ email: currentUserEmail })
         let alreadyInAGroupUserWhoCalled = [...alreadyInGroup];
+        
         alreadyInAGroupUserWhoCalled = alreadyInAGroupUserWhoCalled.filter(m => m.email == userWhoCalled.email)
-        if (alreadyInAGroupUserWhoCalled.length > 0) return res.status(400).json({ error: "User who called already in a group" })
-
+        
+        if (alreadyInAGroupUserWhoCalled.length > 0) return res.status(400).json({ error: 'User who called the Api is in a group' })
+        
         alreadyInGroup = alreadyInGroup.filter(m => emailsVect.includes(m.email))
         
         let foundInGroup = alreadyInGroup.filter(m => m.email == currentUserEmail);
@@ -154,7 +156,7 @@ export const createGroup = async (req, res) => {
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email) && !membersNotFound.includes(m.email))
         
         if (members.length == 0) 
-          return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
+          return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside another group' })
         
         if(!emailsVect.includes(currentUserEmail)){
           
@@ -341,7 +343,7 @@ export const addToGroup = async (req, res) => {
       const newMembers = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
 
       if (newMembers.length == 0) 
-        return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
+        return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside another group' })
 
       // Add to the group the new users
       let updatedGroup = await Group.findOneAndUpdate(

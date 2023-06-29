@@ -1035,7 +1035,6 @@ describe("deleteUser", () => {
           },
           refreshedTokenMessage: ""
         });
-        //TODO
         done();
       })
       .catch((err) => done(err));
@@ -1047,6 +1046,16 @@ describe("deleteUser", () => {
       .send({ email: bulma.email })
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
       .then((response) => {
+
+        expect(response.body).toStrictEqual({
+          "data": {
+                 "deletedFromGroup": true,
+                 "deletedTransactions": 0,
+               },
+               "refreshedTokenMessage": "",
+              }
+        );
+
         expect(response.status).toBe(200);
         done();
       })

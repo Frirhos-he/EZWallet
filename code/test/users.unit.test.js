@@ -2395,7 +2395,14 @@ describe("deleteUser", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(200);
     expect(mockRes.json).toHaveBeenCalled();
-  });
+    expect(mockRes.json).toHaveBeenCalledWith({
+         "data": {
+             "deletedFromGroup": true,
+             "deletedTransactions": undefined,
+           },
+           "refreshedTokenMessage": "",
+          });
+    });
   test("thrown scenario", async () => {
     const mockReq = {
       body: { email: "b@i.it" },

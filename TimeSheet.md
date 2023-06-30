@@ -1,6 +1,6 @@
 # Timesheet
 
-Report in this table the effort (in person hours) spent per week, per activity, per team. 
+Report in this table the effort (in person hours) spent per week, per activity, per team.
 [One person hour is the effort of one person working one hour.
 Two person hours is the effort of one person working 2 hours, or 2 persons working one hour. And so on.]
 You have to sum the working hours of each component of the team.
@@ -8,23 +8,19 @@ Count only effort spent on EZWallet (so do not count effort spent in virtual lab
 
 These figures will not be used to evaluate neither the project nor the team, they are meant as practical application of basic project management.
 
-| Week | requirement engineering | design | coding | unit testing | integration testing | acceptance testing | management | git maven |
-|:-----------:|:--------:|:-----------:|:-----------:|:----------:|:------------:|:---------------:|:-------------:|:--------------:|
-| mar 27 - apr 2 | | | | | | | | |
-| apr 3 - 9 | | | | | | | | |
-| apr 10 - 16| 6 ph|| | | | | | | 
-| apr 17 - 23| 4 ph | 5ph | 10ph| | | | | | 
-| apr 24 - apr 30 | 15ph |15ph | | | | | | | 
-| may 1 - 7  | | | | | | | | | 
-| may 8 - 14| | |20ph | | | | | | 
-| may 15 - 21| | |10ph | | | | | | 
-| may 22 - 28| | | | 10ph | | | | | 
-| may 29 - jun 4 | | | | 2ph | 15ph | | | | 
-| jun 5 - 11 | | | | | | 10ph | | | 
-| jun 12 -18 | | | | | | | | | 
-| jun 19 - 25 | | | | | | | | | 
-| jun 26 - jul 2 | | | | | | | | | 
-| jul 3 - 9 | | | | | | | | | 
-| jul 10 - 16 | | | | | | | | |
-| jul 17 - 23 | | | | | | | | |
-| jul 24 - 30 | | | | | | | | |
+|      Week       | requirement engineering | design | coding | unit testing | integration testing | acceptance testing | management | git maven |
+| :-------------: | :---------------------: | :----: | :----: | :----------: | :-----------------: | :----------------: | :--------: | :-------: |
+| mar 27 - apr 2  |                         |        |        |              |                     |                    |            |           |
+|    apr 3 - 9    |                         |        |        |              |                     |                    |            |           |
+|   apr 10 - 16   |          6 ph           |        |        |              |                     |                    |    1ph     |           |
+|   apr 17 - 23   |          4 ph           |  5ph   |  10ph  |              |                     |                    |            |           |
+| apr 24 - apr 30 |          15ph           |  15ph  |        |              |                     |                    |            |           |
+|    may 1 - 7    |                         |        |        |              |                     |                    |    2ph     |           |
+|   may 8 - 14    |                         |        |  20ph  |              |                     |                    |            |           |
+|   may 15 - 21   |                         |        |  30ph  |              |                     |                    |            |    2ph    |
+|   may 22 - 28   |                         |        |        |     20ph     |                     |                    |            |           |
+| may 29 - jun 4  |                         |        |        |     20ph     |        15ph         |                    |    2ph     |           |
+|   jun 5 - 11    |                         |        |        |     10ph     |        20ph         |                    |            |           |
+|   jun 12 -18    |                         |        |        |     5ph      |        25ph         |                    |    2ph     |           |
+|   jun 19 - 25   |                         |        |        |              |        10ph         |        2ph         |            |           |
+| jun 26 - jun 30 |                         |        |        |              |                     |        7ph         |    2ph     |           |

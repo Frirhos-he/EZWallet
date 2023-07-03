@@ -380,14 +380,20 @@ describe("createGroup", () => {
       },
     ];
 
-    verifyAuth.mockReturnValue({ flag: true, cause: "authorized" });
+    const creatorUser =
+    {
+      email: "creator@gmail.com",
+      _id: "10",
+    }
 
+    verifyAuth.mockReturnValue({ flag: true, cause: "authorized" });
+    jwt.verify.mockReturnValue({ email: "creator@gmail.com" });
     jest
       .spyOn(Group, "findOne")
       .mockResolvedValueOnce(false)
       .mockReturnValueOnce({
-        email: "creator@gmail.com",
-        _id: "10",
+        name: "newgroup",
+        memberEmails: [{email:"email1@gmail.com"}],
       });
 
     jest
@@ -396,15 +402,17 @@ describe("createGroup", () => {
       .mockReturnValueOnce(foundInGroup)
       .mockReturnValueOnce(allUsers);
 
+    jest
+      .spyOn(User, "findOne")
+      .mockReturnValueOnce(creatorUser);
+
     Group.prototype.save.mockResolvedValue({
       name: "newgroup",
       memberEmails: ["email1@gmail.com"],
     });
 
-    jwt.verify.mockReturnValue({ email: "creator@gmail.com" });
-
     await createGroup(mockReq, mockRes);
-
+    
     expect(mockRes.json).toHaveBeenCalledWith({
       data: {
         group: {
@@ -610,7 +618,7 @@ describe("createGroup", () => {
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({
       error:
-        "All the members have emails that don't exist or are already inside anothre group",
+        "All the members have emails that don't exist or are already inside another group",
     });
   });
 
@@ -1563,7 +1571,7 @@ describe("addToGroup", () => {
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({
       error:
-        "All the members have emails that don't exist or are already inside anothre group",
+        "All the members have emails that don't exist or are already inside another group",
     });
   });
 
@@ -2230,7 +2238,7 @@ describe("deleteUser", () => {
   });
   test("Nominal scenario", async () => {
     const mockReq = {
-      body: { email: "a@h.it" },
+      body: { email: "u@h.it" },
     };
     const mockRes = {
       status: jest.fn().mockReturnThis(),
@@ -2246,7 +2254,7 @@ describe("deleteUser", () => {
     jest.spyOn(User, "findOne").mockImplementation(() => ({
       username: "u",
       email: "u@h.it",
-      role: "Admin",
+      role: "User",
       refreshToken: "test",
     }));
     jest
@@ -2385,12 +2393,16 @@ describe("deleteUser", () => {
       ]);
     await deleteUser(mockReq, mockRes);
 
-    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.status).toHaveBeenCalledWith(200);
     expect(mockRes.json).toHaveBeenCalled();
     expect(mockRes.json).toHaveBeenCalledWith({
-      error: "user is the last of a group, cannot delete",
+         "data": {
+             "deletedFromGroup": true,
+             "deletedTransactions": undefined,
+           },
+           "refreshedTokenMessage": "",
+          });
     });
-  });
   test("thrown scenario", async () => {
     const mockReq = {
       body: { email: "b@i.it" },

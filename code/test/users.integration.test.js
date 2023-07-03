@@ -194,7 +194,7 @@ describe("getUser", () => {
 });
 
 describe("createGroup", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await Group.deleteMany({});
     await User.deleteMany({});
     await User.create({
@@ -215,7 +215,7 @@ describe("createGroup", () => {
     });
   });
 
-  test("Nominal scneario", (done) => {
+  test("Nominal scenario", (done) => {
     request(app)
       .post("/api/groups")
       .set(
@@ -337,7 +337,7 @@ describe("createGroup", () => {
         expect(response.status).toBe(400);
         expect(response.body).toStrictEqual({
           error:
-            "All the members have emails that don't exist or are already inside anothre group",
+            "All the members have emails that don't exist or are already inside another group",
         });
         done();
       })
@@ -681,7 +681,7 @@ describe("addToGroup", () => {
         expect(response.status).toBe(400);
         expect(response.body).toStrictEqual({
           error:
-            "All the members have emails that don't exist or are already inside anothre group",
+            "All the members have emails that don't exist or are already inside another group",
         });
         done();
       })
@@ -887,6 +887,9 @@ describe("removeFromGroup", () => {
           error: "Empty email",
         });
         expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Empty email",
+        });
         done();
       })
       .catch((err) => done(err));
@@ -902,6 +905,9 @@ describe("removeFromGroup", () => {
           error: "Invalid email format",
         });
         expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          error: "Invalid email format",
+        });
         done();
       })
       .catch((err) => done(err));
@@ -1029,7 +1035,6 @@ describe("deleteUser", () => {
           },
           refreshedTokenMessage: ""
         });
-        //TODO
         done();
       })
       .catch((err) => done(err));
@@ -1041,10 +1046,17 @@ describe("deleteUser", () => {
       .send({ email: bulma.email })
       .set("Cookie", `accessToken=${adminToken};refreshToken=${adminToken}`)
       .then((response) => {
-        expect(response.status).toBe(400);
+
         expect(response.body).toStrictEqual({
-          error: "user is the last of a group, cannot delete",
-        });
+          "data": {
+                 "deletedFromGroup": true,
+                 "deletedTransactions": 0,
+               },
+               "refreshedTokenMessage": "",
+              }
+        );
+
+        expect(response.status).toBe(200);
         done();
       })
       .catch((err) => done(err));

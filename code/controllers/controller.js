@@ -131,7 +131,9 @@ export const deleteCategory = async (req, res) => {
         
         types = [...new Set(types)];   //to elimate duplicates
         const typeListLength = types.length;
-        
+        //Check if passed array is empty
+        if (!typeListLength) 
+            return res.status(400).json({ error: "body request is an empty array" });  
         //Check if one of the categories is empty string
         if (types.some((element) => element.trim() === "")) 
             return res.status(400).json({ error: "at least one of the types in the array is an empty string" }); 
@@ -153,19 +155,31 @@ export const deleteCategory = async (req, res) => {
         if(totNumberCategories == 1)
                 return res.status(400).json({ error: "Only one category remaining in database" });
 
-        //TODO: Profs says that createAt is automatically created, it is not
-        // NEEDS TO ADD createAt or find it..
         //sort based on the oldest one
         allCategories.sort((a, b) => b.createdAt - a.createdAt);
-        const oldestCategory = allCategories[0];
+        
+        let oldestCategory;
+        //If total categories in db is strictly more than to be deleted categories, then set the oldest category to the oldest in db not present in type
+        let validType = false;
+        if(totNumberCategories > typeListLength){
+            for(let j=0 ; (j < totNumberCategories) && !validType ; j++){ //For every category in db until found a valid type not present in req body
+                if(types.indexOf(allCategories[j].type)==-1){  //If category in db is not in req body typelist
+                    validType = true;
+                    oldestCategory = allCategories[j];
+                }
+            }
+        }
+        else if(totNumberCategories == typeListLength){ //If total categories in db is the same of to be deleted categories, then pick the absolute oldest (even if present in req body typelist)
+            oldestCategory = allCategories[0];
+            types.pop(oldestCategory.type);
+        }
+        
+        
         //Updating affected transactions
             updateResult =  await transactions.updateMany(
             { type: { $in: types } },
             { $set: { type: oldestCategory.type } }
         );
-        if(totNumberCategories == typeListLength){ // would be necessary to leave the lastCreatedOne
-            types.pop(oldestCategory.type);  // so that the oldestCategory will be left unchanged   
-        }
 
         const deleteResult = await categories.deleteMany({ type: { $in: types }  });
 
@@ -475,11 +489,10 @@ export const getTransactionsByGroup = async (req, res) => {
                 return res.status(401).json({ error: groupAuth.cause }) 
         }
 
-        const usersById = matchedGroup.members.map((member) => member.user);
-
-            const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
-            const usernames = usersByUsername.map(user => user.username);
-            
+        const userByEmail = matchedGroup.members.map((member) => member.email);
+        const usersByUsername  = await User.find({email: {$in: userByEmail}},{username: 1, _id: 0}); 
+        const usernames = usersByUsername.map(user => user.username);
+        
             res.locals.refreshedTokenMessage = ""
 
             transactions.aggregate([
@@ -494,6 +507,7 @@ export const getTransactionsByGroup = async (req, res) => {
                 },
                 { $unwind: "$categories_info" }
             ]).then((result) => {
+
                 let dataResult = result.map(v => Object.assign({}, { username: v.username, amount: v.amount, type: v.type, color: v.categories_info.color, date: v.date }))
                 res.status(200).json({
                     data: dataResult,
@@ -543,8 +557,8 @@ export const getTransactionsByGroupByCategory = async (req, res) => {
             return res.status(400).json({ error: "the category does not exist" });
         }
 
-        const usersById = matchedGroup.members.map((member) => member.user);
-        const usersByUsername  = await User.find({_id: {$in: usersById}},{username: 1, _id: 0}); 
+        const userByEmail = matchedGroup.members.map((member) => member.email);
+        const usersByUsername  = await User.find({email: {$in: userByEmail}},{username: 1, _id: 0}); 
         const usernames = usersByUsername.map(user => user.username);
 
         res.locals.refreshedTokenMessage = ""

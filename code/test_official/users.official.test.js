@@ -1521,6 +1521,7 @@ describe("8: deleteUser", () => {
                             .then(async (response) => {
                                 const group = await Group.findOne({ name: "Group1" })
                                 expect(group).toBeNull()
+
                                 expect(response.status).toBe(200)
                                 expect(response.body.data.deletedTransactions).toBe(2)
                                 expect(response.body.data.deletedFromGroup).toBe(true)

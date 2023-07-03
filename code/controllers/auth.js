@@ -151,18 +151,20 @@ export const login = async (req, res) => {
  */
 export const logout = async (req, res) => {
     try {
-    const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
-
-    if(!simpleAuth.flag)
-        return res.status(401).json({ error: simpleAuth.cause }) 
-
-    const refreshToken = req.cookies.refreshToken
-    if(refreshToken == undefined || refreshToken == null || (typeof refreshToken === 'string' && refreshToken.trim() === "" ))
+        const refreshToken = req.cookies.refreshToken
+        if(refreshToken == undefined || refreshToken == null || (typeof refreshToken === 'string' && refreshToken.trim() === "" ))
             return res.status(400).json({ error: "refresh token missing" })
+        
+            const simpleAuth = verifyAuth(req, res, { authType: "Simple" })
 
-    const user = await User.findOne({ refreshToken: refreshToken })
-    if (!user) return res.status(400).json({error:'user not found'})
+        if(!simpleAuth.flag)
+            return res.status(401).json({ error: simpleAuth.cause }) 
 
+            
+
+        const user = await User.findOne({ refreshToken: refreshToken })
+        if (!user) return res.status(400).json({error:'user not found'})
+            
         user.refreshToken = null
         res.cookie("accessToken", "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })
         res.cookie('refreshToken', "", { httpOnly: true, path: '/api', maxAge: 0, sameSite: 'none', secure: true })

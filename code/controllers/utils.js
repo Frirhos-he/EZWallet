@@ -18,8 +18,22 @@ export const handleDateFilterParams = (req) => {
           return regex.test(dateString);
         };
 
-        const { date, from, upTo } = req.query;
+        const areBoundariesOk = (dateString) => {
+          const date = dateString.split("-")
 
+          const year = date[0]
+          const month = date[1]
+          const day = date[2]
+
+          if (parseInt(month) < 0 || parseInt(month) > 12) return false
+          
+          const daysInMonth = new Date(year, month, 0).getDate();  
+          if (parseInt(day) < 0 || parseInt(day) > daysInMonth) return false
+
+          return true
+        }
+
+        const { date, from, upTo } = req.query;
 
         if (date && (from || upTo)) {
           throw new Error('Cannot use both "date" and "from" or "upTo" parameters together');
@@ -28,6 +42,9 @@ export const handleDateFilterParams = (req) => {
         if (date) {
           if(!isValidDateFormat(date)){
               throw new Error("Date format is invalid");
+          }
+          if(!areBoundariesOk(date)) {
+              throw new Error("Date exceed boundaries of months or days");
           }
           const dateStartFormatted = new Date(`${date}T00:00:00.000Z`)
           const dateEndFormatted = new Date(`${date}T23:59:59.000Z`)
@@ -38,35 +55,47 @@ export const handleDateFilterParams = (req) => {
 
           if(!isValidDateFormat(upTo) && !isValidDateFormat(from)){
             throw new Error("both format are invalid");
-        }
+          }
           if(!isValidDateFormat(from)){
             throw new Error("from format is invalid");
-        }
+          }
           if(!isValidDateFormat(upTo)){
             throw new Error("upTo format is invalid");
-        }
-        const fromFormatted = new Date(`${from}T00:00:00.000Z`)
-        const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
+          }
+          
+          if(!areBoundariesOk(from) && areBoundariesOk(upTo))
+            throw new Error("both dates exceed boundaries of months or days");
+          if(!areBoundariesOk(from)) {
+            throw new Error("from exceed boundaries of months or days");
+          }
+          if(!areBoundariesOk(upTo)) {
+            throw new Error("upTo exceed boundaries of months or days");
+          }
+          
+          const fromFormatted = new Date(`${from}T00:00:00.000Z`)
+          const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
 
-        if(fromFormatted > upToFormatted) return {};
+          if(fromFormatted > upToFormatted) return {};
 
           return { date: { $gte: fromFormatted, $lte: upToFormatted } };
         }
       
         if (from) {
-          if(!isValidDateFormat(from)){
+          if(!isValidDateFormat(from))
             throw new Error("from format is invalid");
-        }
-        const fromFormatted = new Date(`${from}T00:00:00.000Z`)
+          if(!areBoundariesOk(from)) 
+            throw new Error("from exceed boundaries of months or days");
+          const fromFormatted = new Date(`${from}T00:00:00.000Z`)
           return { date: { $gte: fromFormatted } };
         }
       
         if (upTo) {
-          if(!isValidDateFormat(upTo)){
+          if(!isValidDateFormat(upTo))
             throw new Error("upTo format is invalid");
-        }
+          if(!areBoundariesOk(upTo)) 
+            throw new Error("upTo exceed boundaries of months or days");
 
-        const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
+          const upToFormatted = new Date(`${upTo}T23:59:59.000Z`)
           return { date: { $lte: upToFormatted } };
         }
       
@@ -149,7 +178,8 @@ export const verifyAuth = (req, res, info) => {
 
             case "Group":
               let members = info.members;
-              members = members.map(m => m.email)
+              if (members[0] && members[0].email)
+                members = members.map(m => m.email)
               if (!members.includes(decodedRefreshToken.email)) {
                  return { flag: false, cause: "User is not in the group" };
               }
@@ -199,7 +229,8 @@ export const verifyAuth = (req, res, info) => {
                   if(members == undefined){
                     return { flag: false, cause: "members are not defined" };
                   }  
-                  members = members.map(m => m.email)
+                  if (members[0] && members[0].email)
+                    members = members.map(m => m.email)
                   if (!members.includes(refreshToken.email)) {
                      return { flag: false, cause: "User is not in the group" };
                   }

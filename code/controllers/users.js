@@ -48,7 +48,7 @@ export const getUser = async (req, res) => {
               return res.status(401).json({ error:  adminAuth.cause }) 
       }
 
-      const user = await User.findOne({ refreshToken: req.cookies.refreshToken })
+      const user = await User.findOne({ username: req.params.username })
         if (!user) return res.status(400).json({ error: "User not found" })
       
       const userObject = Object.assign({}, { username: user.username, email: user.email, role: user.role })
@@ -91,7 +91,7 @@ export const createGroup = async (req, res) => {
         let emailsVect = memberEmails;
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression to check email format
-
+        
         // Iterate over each email in the vector
         for (const email of emailsVect) {
           // Check if the email is empty
@@ -104,7 +104,9 @@ export const createGroup = async (req, res) => {
             return res.status(400).json({ error: "Invalid email format" });
           }
         }
-      
+        
+
+
         // Check if the group already exist
         const group = await Group.findOne({ name: name });
         if (group)
@@ -112,48 +114,62 @@ export const createGroup = async (req, res) => {
 
         // Retrieve the list of users with their id from memberEmails
         let memberUsers = await User.find({ email: { $in: emailsVect } })
-   
+        
         //must add the user that required to create the group
         const cookie = req.cookies
         const decodedRefreshToken = jwt.verify(cookie.refreshToken, process.env.ACCESS_KEY);
         const currentUserEmail = decodedRefreshToken.email;
+        
 
         let alreadyInGroup = await Group.find({}, {members: 1, _id: 0})
+        
         alreadyInGroup = alreadyInGroup.map(v =>  v.members)
+        
         alreadyInGroup = [...new Set(alreadyInGroup.flat())];
+        
         alreadyInGroup = alreadyInGroup.map(v => Object.assign({}, { email: v.email, user: v.user }))
+        
+        // Check if the user who called is already in a group
+        const userWhoCalled = await User.findOne({ email: currentUserEmail })
+        let alreadyInAGroupUserWhoCalled = [...alreadyInGroup];
+        
+        alreadyInAGroupUserWhoCalled = alreadyInAGroupUserWhoCalled.filter(m => m.email == userWhoCalled.email)
+        
+        if (alreadyInAGroupUserWhoCalled.length > 0) return res.status(400).json({ error: 'User who called the Api is in a group' })
+        
         alreadyInGroup = alreadyInGroup.filter(m => emailsVect.includes(m.email))
-  
+        
         let foundInGroup = alreadyInGroup.filter(m => m.email == currentUserEmail);
-
+        
         if(foundInGroup.length != 0)
              return  res.status(400).json({ error: 'User who called the Api is in a group'});
 
         memberUsers = memberUsers.map(v => Object.assign({}, { email: v.email, user: v._id })) 
- 
+        
         // Retrieve the list of all users
         let allUsers = await User.find({})
         allUsers = allUsers.map(v => Object.assign({}, { email: v.email, user: v._id }))
-
+        
         // Select not existing members
         const membersNotFound = emailsVect.filter(e => !allUsers.map(u => u.email).includes(e))
-
         // Select members of the group
         const members = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email) && !membersNotFound.includes(m.email))
-  
+        
         if (members.length == 0) 
-          return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
-
+          return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside another group' })
+        
         if(!emailsVect.includes(currentUserEmail)){
- 
+          
           let memberUser = await User.findOne({ email: currentUserEmail });  
+          
           memberUser = Object.assign({}, { email: memberUser.email, user: memberUser._id })
+
           members.push(memberUser);
         }
-
+        
         let updatedMembers = members.map(m => Object.assign({}, {email: m.email}))
         let updatedAlreadyInGroup = alreadyInGroup.map(m => Object.assign({}, {email: m.email}))
-        
+
         res.locals.refreshedTokenMessage = ""
 
         // Creating a new group
@@ -327,7 +343,7 @@ export const addToGroup = async (req, res) => {
       const newMembers = memberUsers.filter(m => allUsers.map(u => u.email).includes(m.email) && !alreadyInGroup.map(u => u.email).includes(m.email))
 
       if (newMembers.length == 0) 
-        return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside anothre group' })
+        return res.status(400).json({ error: 'All the members have emails that don\'t exist or are already inside another group' })
 
       // Add to the group the new users
       let updatedGroup = await Group.findOneAndUpdate(
@@ -510,6 +526,10 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "The user doesn't exist" });
     }
+    if(user.role == "Admin"){
+      return res.status(400).json({ error: "The user is an admin" });
+
+    }
 
     // Check if inside a group
 
@@ -522,11 +542,12 @@ export const deleteUser = async (req, res) => {
       return memberEmail === userEmail;
     });
 
+    /*
     //if at least one found then we cannot delete the user
     if(userInGroupWithOneMember){
       return res.status(400).json({ error: "user is the last of a group, cannot delete" }) 
     }
-
+    */
     // Count the number of transactions to be deleted
     const transactionCount = await transactions.countDocuments({ username: user.username });
 
@@ -536,18 +557,31 @@ export const deleteUser = async (req, res) => {
     // Delete the user
     await User.deleteOne({ email: userEmail });
 
-    // Delete user from group
-    const deletedFromGroup = await Group.updateOne(
-      { members: { $elemMatch: { email: userEmail } } },
-      { $pull: { members: { email: userEmail } } }
-    );
+
+    // Find the group name that matches the email
+      const groupName = groupsWithOneMember.find(group => group.members[0].email === userEmail)?.name;
+      let deletedFromGroupFlag = false;
+      let deletedFromGroup;
+      if(userInGroupWithOneMember == true) {
+              // Delete the user's transactions
+              await Group.deleteOne({ name: groupName });
+              deletedFromGroupFlag = true;                  
+      }
+      else {
+            // Delete user from group
+            deletedFromGroup = await Group.updateOne(
+              { members: { $elemMatch: { email: userEmail } } },
+              { $pull: { members: { email: userEmail } } }
+            );
+                }
+
 
     res.locals.refreshedTokenMessage = ""
 
     res.status(200).json({
       data: {
         deletedTransactions: transactionCount,
-        deletedFromGroup: deletedFromGroup.modifiedCount > 0,
+        deletedFromGroup: deletedFromGroup?.modifiedCount > 0 || deletedFromGroupFlag == true,
       },
       refreshedTokenMessage: res.locals.refreshedTokenMessage
     });
